@@ -533,17 +533,17 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     assert(GammasdEta_.size() == numPFGammas);
     assert(GammasdPhi_.size() == numPFGammas);
     for ( size_t idxPFGamma = 0; idxPFGamma < numPFGammas; ++idxPFGamma ) {
-      float pt  = GammasPt_[idxPFGamma];
-      float dPhi = GammasdPhi_[idxPFGamma];
-      if ( dPhi > TMath::Pi() ) dPhi -= 2.*TMath::Pi();
-      else if ( dPhi < -TMath::Pi() ) dPhi += 2.*TMath::Pi();
-      float dEta = GammasdEta_[idxPFGamma];
-      sumPt  +=  pt;
-      sumPt2 += (pt*pt);
-      dEta   += (pt*dEta);
-      dEta2  += (pt*dEta*dEta);
-      dPhi   += (pt*dPhi);
-      dPhi2  += (pt*dPhi*dPhi);  
+      float gamma_pt  = GammasPt_[idxPFGamma];
+      float gamma_dPhi = GammasdPhi_[idxPFGamma];
+      if ( gamma_dPhi > TMath::Pi() ) gamma_dPhi -= 2.*TMath::Pi();
+      else if ( gamma_dPhi < -TMath::Pi() ) gamma_dPhi += 2.*TMath::Pi();
+      float gamma_dEta = GammasdEta_[idxPFGamma];
+      sumPt  +=  gamma_pt;
+      sumPt2 += (gamma_pt*gamma_pt);
+      dEta   += (gamma_pt*gamma_dEta);
+      dEta2  += (gamma_pt*gamma_dEta*gamma_dEta);
+      dPhi   += (gamma_pt*gamma_dPhi);
+      dPhi2  += (gamma_pt*gamma_dPhi*gamma_dPhi);  
     }
     
     float gammadPt = sumPt/pfTau->pt();
