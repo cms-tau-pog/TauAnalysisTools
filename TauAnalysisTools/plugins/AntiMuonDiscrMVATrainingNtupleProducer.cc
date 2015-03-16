@@ -143,8 +143,8 @@ namespace
   {
     if ( muon.outerTrack().isNonnull() ) {
       const reco::HitPattern& muonHitPattern = muon.outerTrack()->hitPattern();
-      for ( int iHit = 0; iHit < muonHitPattern.numberOfHits(); ++iHit ) {
-	uint32_t hit = muonHitPattern.getHitPattern(iHit);
+      for ( int iHit = 0; iHit < muonHitPattern.numberOfHits(reco::HitPattern::TRACK_HITS); ++iHit ) {
+	uint32_t hit = muonHitPattern.getHitPattern(reco::HitPattern::TRACK_HITS, iHit);
 	if ( hit == 0 ) break;	    
 	if ( muonHitPattern.muonHitFilter(hit) && (muonHitPattern.getHitType(hit) == TrackingRecHit::valid || muonHitPattern.getHitType(hit) == TrackingRecHit::bad) ) {
 	  int muonStation = muonHitPattern.getMuonStation(hit) - 1; // CV: map into range 0..3

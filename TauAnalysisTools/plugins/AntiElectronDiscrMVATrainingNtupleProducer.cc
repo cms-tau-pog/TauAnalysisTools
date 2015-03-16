@@ -323,7 +323,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       // Matchings
       Elec_AbsEta_ = TMath::Abs(matchedElectron->eta());
       Elec_Pt_ = matchedElectron->pt();
-      Elec_PFMvaOutput_ = TMath::Max(matchedElectron->mvaOutput().mva, float(-1.0));
+      // To be checked: more then one mva in the dataformats, since 72X
+      Elec_PFMvaOutput_ = TMath::Max(matchedElectron->mvaOutput().mva_e_pi, float(-1.0));
       Elec_EarlyBrem_ = matchedElectron->mvaInput().earlyBrem;
       Elec_LateBrem_= matchedElectron->mvaInput().lateBrem;
       Elec_Logsihih_ = log(matchedElectron->mvaInput().sigmaEtaEta);
@@ -332,7 +333,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 
       // Variables related to the SC
       Elec_HasSC_ = 0;
-      reco::SuperClusterRef pfSuperCluster = matchedElectron->pflowSuperCluster();
+      reco::SuperClusterRef pfSuperCluster = matchedElectron->parentSuperCluster();
       if ( pfSuperCluster.isNonnull() && pfSuperCluster.isAvailable() ) {
 	Elec_HasSC_ = 1;
 	Elec_Ee_ = 0.;
@@ -596,8 +597,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 	  gsfElectron != gsfElectrons->end(); ++gsfElectron ) {
       const reco::Track* track = (const reco::Track*)((gsfElectron)->gsfTrack().get());  
       assert(track);
-      const reco::HitPattern& p_inner = track->trackerExpectedHitsInner(); 
-      float nHits = p_inner.numberOfHits();
+      //const reco::HitPattern& p_inner = track->trackerExpectedHitsInner(); 
+      float nHits = track->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
       float dPhi  = fabs(gsfElectron->deltaPhiSuperClusterTrackAtVtx());
       float dEta  = fabs(gsfElectron->deltaEtaSuperClusterTrackAtVtx());
       float sihih = gsfElectron->sigmaIetaIeta();
