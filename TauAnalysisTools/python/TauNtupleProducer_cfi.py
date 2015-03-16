@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from RecoTauTag.TauAnalysisTools.truthTools_cfi import *
-from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import *
+from TauAnalysisTools.TauAnalysisTools.truthTools_cfi import *
+from TauAnalysisTools.TauAnalysisTools.tools.ntupleDefinitions import *
 
 #buildTauNtuple = cms.Sequence(makeTruthCollections)
 

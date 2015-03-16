@@ -1,4 +1,4 @@
-#include "RecoTauTag/TauAnalysisTools/interface/TauTrigMatch.h"
+#include "TauAnalysisTools/TauAnalysisTools/interface/TauTrigMatch.h"
 
 namespace {
 

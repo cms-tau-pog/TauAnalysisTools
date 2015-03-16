@@ -21,7 +21,7 @@
 #include "DataFormats/FWLite/interface/InputSource.h"
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
-#include "RecoTauTag/TauAnalysisTools/bin/tauIdMVATrainingAuxFunctions.h"
+#include "TauAnalysisTools/TauAnalysisTools/bin/tauIdMVATrainingAuxFunctions.h"
 
 #include <TSystem.h>
 #include <TFile.h>

@@ -1,5 +1,5 @@
 
-#include "RecoTauTag/TauAnalysisTools/interface/TauTrigMatch.h"
+#include "TauAnalysisTools/TauAnalysisTools/interface/TauTrigMatch.h"
 #include <TLorentzVector.h>
 #include "Math/GenVector/LorentzVector.h"
 

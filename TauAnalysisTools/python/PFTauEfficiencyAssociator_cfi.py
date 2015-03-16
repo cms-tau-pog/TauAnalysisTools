@@ -10,9 +10,9 @@
 
 '''
 import FWCore.ParameterSet.Config as cms
-from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import pftau_expressions, common_expressions
-from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import makeCuts 
-from RecoTauTag.TauAnalysisTools.fakeRate.associatorTools import *
+from TauAnalysisTools.TauAnalysisTools.tools.ntupleDefinitions import pftau_expressions, common_expressions
+from TauAnalysisTools.TauAnalysisTools.fakeRate.histogramConfiguration import makeCuts 
+from TauAnalysisTools.TauAnalysisTools.fakeRate.associatorTools import *
 
 # Get the histogram selection definitions.  We don't need to worry about what
 # the denominator is here, we just need the names

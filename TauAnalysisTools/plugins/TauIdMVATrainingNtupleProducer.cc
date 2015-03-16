@@ -1,4 +1,4 @@
-#include "RecoTauTag/TauAnalysisTools/plugins/TauIdMVATrainingNtupleProducer.h"
+#include "TauAnalysisTools/TauAnalysisTools/plugins/TauIdMVATrainingNtupleProducer.h"
 
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"

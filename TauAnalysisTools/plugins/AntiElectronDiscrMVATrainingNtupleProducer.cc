@@ -1,4 +1,4 @@
-#include "RecoTauTag/TauAnalysisTools/plugins/AntiElectronDiscrMVATrainingNtupleProducer.h"
+#include "TauAnalysisTools/TauAnalysisTools/plugins/AntiElectronDiscrMVATrainingNtupleProducer.h"
 
 #include "FWCore/Utilities/interface/Exception.h"
 

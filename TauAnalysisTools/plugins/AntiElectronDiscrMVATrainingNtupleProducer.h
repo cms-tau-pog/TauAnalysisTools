@@ -1,5 +1,5 @@
-#ifndef RecoTauTag_TauAnalysisTools_AntiElectronDiscrMVATrainingNtupleProducer_h
-#define RecoTauTag_TauAnalysisTools_AntiElectronDiscrMVATrainingNtupleProducer_h
+#ifndef TauAnalysisTools_TauAnalysisTools_AntiElectronDiscrMVATrainingNtupleProducer_h
+#define TauAnalysisTools_TauAnalysisTools_AntiElectronDiscrMVATrainingNtupleProducer_h
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"

@@ -15,7 +15,7 @@
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 #include "TTree.h"
 
-#include "RecoTauTag/TauAnalysisTools/interface/ExpressionNtupleColumn.h"
+#include "TauAnalysisTools/TauAnalysisTools/interface/ExpressionNtupleColumn.h"
 
 // so we don't conflict with FinalStateAnalysis
 namespace uct {

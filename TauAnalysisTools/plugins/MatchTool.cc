@@ -22,13 +22,13 @@
 #include <math.h>
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h" 
-#include "RecoTauTag/TauAnalysisTools/interface/ExpressionNtuple.h"
+#include "TauAnalysisTools/TauAnalysisTools/interface/ExpressionNtuple.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 //#include <GeneratorTau.h>
 
-#include "RecoTauTag/TauAnalysisTools/interface/TauTrigMatch.h"
+#include "TauAnalysisTools/TauAnalysisTools/interface/TauTrigMatch.h"
 
 
 class MatchTool : public edm::EDAnalyzer {

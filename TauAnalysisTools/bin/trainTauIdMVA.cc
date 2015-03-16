@@ -26,7 +26,7 @@
 
 #include "CondFormats/EgammaObjects/interface/GBRForest.h"
 
-#include "RecoTauTag/TauAnalysisTools/bin/tauIdMVATrainingAuxFunctions.h"
+#include "TauAnalysisTools/TauAnalysisTools/bin/tauIdMVATrainingAuxFunctions.h"
 
 #include "TMVA/Factory.h"
 #include "TMVA/MethodBase.h"

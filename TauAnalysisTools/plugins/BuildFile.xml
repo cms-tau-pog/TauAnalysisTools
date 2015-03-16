@@ -1,6 +1,6 @@
-<library   file="*.cc" name="RecoTauTagTauAnalysisToolsPlugins">
+<library   file="*.cc" name="TauAnalysisToolsTauAnalysisToolsPlugins">
   <flags EDM_PLUGIN="1"/>
-<use name="RecoTauTag/TauAnalysisTools"/>
+<use name="TauAnalysisTools/TauAnalysisTools"/>
 <use name="FWCore/Framework"/>
 <use name="FWCore/PluginManager"/>
 <use name="FWCore/ParameterSet"/>

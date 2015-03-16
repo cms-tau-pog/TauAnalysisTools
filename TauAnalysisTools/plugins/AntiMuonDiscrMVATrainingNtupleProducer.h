@@ -1,5 +1,5 @@
-#ifndef RecoTauTag_TauAnalysisTools_AntiMuonDiscrMVATrainingNtupleProducer_h  
-#define RecoTauTag_TauAnalysisTools_AntiMuonDiscrMVATrainingNtupleProducer_h 
+#ifndef TauAnalysisTools_TauAnalysisTools_AntiMuonDiscrMVATrainingNtupleProducer_h  
+#define TauAnalysisTools_TauAnalysisTools_AntiMuonDiscrMVATrainingNtupleProducer_h 
 
 /** \class AntiMuonDiscrMVATrainingNtupleProducer
  *
