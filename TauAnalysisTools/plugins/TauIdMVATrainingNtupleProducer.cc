@@ -103,7 +103,7 @@ TauIdMVATrainingNtupleProducer::TauIdMVATrainingNtupleProducer(const edm::Parame
     srcGenPileUpSummary_ = cfg.getParameter<edm::InputTag>("srcGenPileUpSummary");
   } else {
     edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileNameLumiCalc");
-    if ( !inputFileName.isLocal()) 
+    if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/) 
       throw cms::Exception("UnclEnCalibrationNtupleProducer") 
 	<< " Failed to find File = " << inputFileName << " !!\n";
     ifstream inputFile(inputFileName.fullPath().data());

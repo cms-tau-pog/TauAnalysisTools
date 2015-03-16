@@ -27,7 +27,7 @@ class ExpressionNtuple : private boost::noncopyable {
     ~ExpressionNtuple();
 
     // Setup the tree in the given TFile
-    void initialize(TFileDirectory& fs);
+    void initialize(TFileService& fs);
     // Fill the tree with an element with given index.
     void fill(const T& element, int idx = -1);
     // Get access to the internal tree
@@ -62,7 +62,7 @@ ExpressionNtuple<T>::ExpressionNtuple(const edm::ParameterSet& pset):
 
 template<class T> ExpressionNtuple<T>::~ExpressionNtuple() {}
 
-template<class T> void ExpressionNtuple<T>::initialize(TFileDirectory& fs) {
+template<class T> void ExpressionNtuple<T>::initialize(TFileService& fs) {
   tree_ = fs.make<TTree>("Ntuple", "Expression Ntuple");
   // Build branches
   for (size_t i = 0; i < columnNames_.size(); ++i) {
