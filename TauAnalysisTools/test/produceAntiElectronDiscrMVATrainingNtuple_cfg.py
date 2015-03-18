@@ -2,23 +2,23 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("produceAntiElectronDiscrMVATrainingNtuple")
 
-process.load('FWCore/MessageService/MessageLogger_cfi')
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.load('Configuration.StandardSequences.Geometry_cff')
-process.load('Configuration.Geometry.GeometryIdeal_cff')
-process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START53_V15::All')
+process.load("Configuration.Geometry.GeometryIdeal_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = cms.string("PHYS14_25_V1::All")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_5_3_x/skims/96E96DDB-61D3-E111-BEFB-001E67397D05.root'
+        'file:///nfs/dust/cms/user/fcolombo/VBF_HToTauTau_M-125_13TeV-powheg-pythia6_PU20bx25_tsg_PHYS14_25_V1-v2_0ACE16B2-5677-E411-87FF-7845C4FC3A40.root'
     )
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100)
 )
 
 #--------------------------------------------------------------------------------
@@ -115,16 +115,21 @@ tauIdDiscriminatorsToReRun = [
     "hpsPFTauDiscriminationByLooseElectronRejection",
     "hpsPFTauDiscriminationByMediumElectronRejection",
     "hpsPFTauDiscriminationByTightElectronRejection",
-    "hpsPFTauDiscriminationByMVA3rawElectronRejection",
-    "hpsPFTauDiscriminationByMVA3LooseElectronRejection",
-    "hpsPFTauDiscriminationByMVA3MediumElectronRejection",
-    "hpsPFTauDiscriminationByMVA3TightElectronRejection",
-    "hpsPFTauDiscriminationByMVA3VTightElectronRejection",
-    "hpsPFTauDiscriminationByMVA4rawElectronRejection",
-    "hpsPFTauDiscriminationByMVA4LooseElectronRejection",
-    "hpsPFTauDiscriminationByMVA4MediumElectronRejection",
-    "hpsPFTauDiscriminationByMVA4TightElectronRejection",
-    "hpsPFTauDiscriminationByMVA4VTightElectronRejection"
+    #"hpsPFTauDiscriminationByMVA3rawElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3LooseElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3MediumElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3TightElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3VTightElectronRejection",
+    #"hpsPFTauDiscriminationByMVA4rawElectronRejection",
+    #"hpsPFTauDiscriminationByMVA4LooseElectronRejection",
+    #"hpsPFTauDiscriminationByMVA4MediumElectronRejection",
+    #"hpsPFTauDiscriminationByMVA4TightElectronRejection",
+    #"hpsPFTauDiscriminationByMVA4VTightElectronRejection",
+    "hpsPFTauDiscriminationByMVA5rawElectronRejection",
+    "hpsPFTauDiscriminationByMVA5LooseElectronRejection",
+    "hpsPFTauDiscriminationByMVA5MediumElectronRejection",
+    "hpsPFTauDiscriminationByMVA5TightElectronRejection",
+    "hpsPFTauDiscriminationByMVA5VTightElectronRejection",
 ]
 for tauIdDiscriminator in tauIdDiscriminatorsToReRun:
     moduleToClone = getattr(process, tauIdDiscriminator)
@@ -231,11 +236,11 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         jetCollection = "genElectronMatchedPFJets"
     if not jetCollection:
         raise ValueError("Invalid Parameter 'jetCollection' = None !!")    
-    process.ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
-    process.ak5PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
-    process.recoTauAK5PFJets08Region.src = cms.InputTag(jetCollection)
-    process.ak5PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
-    process.combinatoricRecoTaus.jetSrc = cms.InputTag(jetCollection)
+    #process.ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
+    #process.ak5PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
+    #process.recoTauAK5PFJets08Region.src = cms.InputTag(jetCollection)
+    #process.ak5PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
+    #process.combinatoricRecoTaus.jetSrc = cms.InputTag(jetCollection)
 
 process.produceAntiElectronDiscrMVATrainingNtupleSequence.replace(process.PFTau, process.prePFTauSequence + process.PFTau)
 #--------------------------------------------------------------------------------
@@ -245,15 +250,15 @@ process.produceAntiElectronDiscrMVATrainingNtupleSequence.replace(process.PFTau,
 # (Summer'12 MC to 2012 run ABCD data)
 
 srcWeights = []
-if isMC:
-    from TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi import vertexMultiplicityReweight
-    process.vertexMultiplicityReweight3d2012RunABCD = vertexMultiplicityReweight.clone(
-        inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to208686_Mu17_Mu8.root"),
-        type = cms.string("gen3d"),
-        mcPeriod = cms.string("Summer12_S10")
-    )
-    process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.vertexMultiplicityReweight3d2012RunABCD
-    srcWeights.extend([ 'vertexMultiplicityReweight3d2012RunABCD' ])
+#if isMC:
+    #from TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi import vertexMultiplicityReweight
+    #process.vertexMultiplicityReweight3d2012RunABCD = vertexMultiplicityReweight.clone(
+        #inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to208686_Mu17_Mu8.root"),
+        #type = cms.string("gen3d"),
+        #mcPeriod = cms.string("Summer12_S10")
+    #)
+    #process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.vertexMultiplicityReweight3d2012RunABCD
+    #srcWeights.extend([ 'vertexMultiplicityReweight3d2012RunABCD' ])
 #--------------------------------------------------------------------------------
 
 process.antiElectronDiscrMVATrainingNtupleProducer = cms.EDAnalyzer("AntiElectronDiscrMVATrainingNtupleProducer",
@@ -270,20 +275,14 @@ process.antiElectronDiscrMVATrainingNtupleProducer = cms.EDAnalyzer("AntiElectro
         AntiELoose = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByLooseElectronRejection'),
         AntiEMedium = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMediumElectronRejection'),
         AntiETight = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByTightElectronRejection'),
-        AntiEMVA3raw = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA3rawElectronRejection'),
-        AntiEMVA3category = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA3rawElectronRejection:category'),
-        AntiELooseMVA3 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA3LooseElectronRejection'),
-        AntiEMediumMVA3 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA3MediumElectronRejection'),
-        AntiETightMVA3 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA3TightElectronRejection'),
-        AntiEVTightMVA3 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA3VTightElectronRejection'),
-        AntiEMVA4raw = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA4rawElectronRejection'),
-        AntiEMVA4category = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA4rawElectronRejection:category'),                                                                
-        AntiELooseMVA4 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA4LooseElectronRejection'),
-        AntiEMediumMVA4 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA4MediumElectronRejection'),
-        AntiETightMVA4 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA4TightElectronRejection'),
-        AntiEVTightMVA4 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA4VTightElectronRejection'),                                                                
+        AntiEMVA5raw = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5rawElectronRejection'),
+        AntiEMVA5category = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5rawElectronRejection:category'),
+        AntiELooseMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5LooseElectronRejection'),
+        AntiEMediumMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5MediumElectronRejection'),
+        AntiETightMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5TightElectronRejection'),
+        AntiEVTightMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5VTightElectronRejection'),                                                               
     ),
-    srcGsfElectrons = cms.InputTag('gsfElectrons'),
+    srcGsfElectrons = cms.InputTag('gedGsfElectrons'),
     srcPrimaryVertex = cms.InputTag('selectedOfflinePrimaryVertices'),
     srcGenElectrons = cms.InputTag('genElectrons'),
     srcGenTaus = cms.InputTag('tauGenJetsSelectorAllHadrons'),
