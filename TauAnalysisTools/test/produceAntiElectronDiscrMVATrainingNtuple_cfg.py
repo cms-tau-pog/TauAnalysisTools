@@ -18,7 +18,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
 )
 
 #--------------------------------------------------------------------------------
@@ -236,11 +236,11 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         jetCollection = "genElectronMatchedPFJets"
     if not jetCollection:
         raise ValueError("Invalid Parameter 'jetCollection' = None !!")    
-    #process.ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
-    #process.ak5PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
-    #process.recoTauAK5PFJets08Region.src = cms.InputTag(jetCollection)
-    #process.ak5PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
-    #process.combinatoricRecoTaus.jetSrc = cms.InputTag(jetCollection)
+    process.ak4PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
+    process.ak4PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
+    process.recoTauAK4PFJets08Region.src = cms.InputTag(jetCollection)
+    process.ak4PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
+    process.combinatoricRecoTaus.jetSrc = cms.InputTag(jetCollection)
 
 process.produceAntiElectronDiscrMVATrainingNtupleSequence.replace(process.PFTau, process.prePFTauSequence + process.PFTau)
 #--------------------------------------------------------------------------------

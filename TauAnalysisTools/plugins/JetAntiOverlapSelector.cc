@@ -12,3 +12,4 @@ typedef ObjectSelector<ParticleAntiOverlapSelector<reco::PFJet> > PFJetAntiOverl
 
 DEFINE_FWK_MODULE(CaloJetAntiOverlapSelector);
 DEFINE_FWK_MODULE(PFJetAntiOverlapSelector);
+
