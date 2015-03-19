@@ -1,5 +1,5 @@
-#ifndef TauAnalysis_CandidateTools_ParticleAntiOverlapSelector_h
-#define TauAnalysis_CandidateTools_ParticleAntiOverlapSelector_h
+#ifndef TauAnalysisTools_TauAnalysisTools_ParticleAntiOverlapSelector_h
+#define TauAnalysisTools_TauAnalysisTools_ParticleAntiOverlapSelector_h
 
 /** \class ParticleAntiOverlapSelector
  *
@@ -9,10 +9,6 @@
  * \author Alfredo Gurrola, Texas A&M;
  *  modified by Konstantinos A. Petridis,
  *              Christian Veelken
- *
- * \version $Revision: 1.2 $
- *
- * $Id: ParticleAntiOverlapSelector.h,v 1.2 2013/06/28 20:10:41 veelken Exp $
  *
  */
 
