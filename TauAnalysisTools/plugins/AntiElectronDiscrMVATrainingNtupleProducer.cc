@@ -62,7 +62,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Elec_AbsEta", &Elec_AbsEta_, "Elec_AbsEta/F");
   tree_->Branch("Elec_Pt", &Elec_Pt_, "Elec_Pt/F");
   tree_->Branch("Elec_HasSC", &Elec_HasSC_, "Elec_HasSC/I");
-  tree_->Branch("Elec_PFMvaOutput", &Elec_PFMvaOutput_, "Elec_PFMvaOutput/F");
+  tree_->Branch("Elec_MvaOut", &Elec_MvaOut_, "Elec_MvaOut/F");
+  tree_->Branch("Elec_MvaOutIsolated", &Elec_MvaOutIsolated_, "Elec_MvaOutIsolated/F");
   tree_->Branch("Elec_Ee", &Elec_Ee_, "Elec_Ee/F");
   tree_->Branch("Elec_Egamma", &Elec_Egamma_, "Elec_Egamma/F");
   tree_->Branch("Elec_Pin", &Elec_Pin_, "Elec_Pin/F");
@@ -70,10 +71,15 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Elec_EtotOverPin", &Elec_EtotOverPin_, "Elec_EtotOverPin/F");
   tree_->Branch("Elec_EeOverPout", &Elec_EeOverPout_, "Elec_EeOverPout/F");
   tree_->Branch("Elec_EgammaOverPdif", &Elec_EgammaOverPdif_, "Elec_EgammaOverPdif/F");
-  tree_->Branch("Elec_EarlyBrem", &Elec_EarlyBrem_, "Elec_EarlyBrem/I");
-  tree_->Branch("Elec_LateBrem", &Elec_LateBrem_, "Elec_LateBrem/I");
-  tree_->Branch("Elec_Logsihih", &Elec_Logsihih_, "Elec_Logsihih/F");
-  tree_->Branch("Elec_DeltaEta", &Elec_DeltaEta_, "Elec_DeltaEta/F");
+  tree_->Branch("Elec_MvaInEarlyBrem", &Elec_MvaInEarlyBrem_, "Elec_MvaInEarlyBrem/I");
+  tree_->Branch("Elec_MvaInLateBrem", &Elec_MvaInLateBrem_, "Elec_MvaInLateBrem/I");
+  tree_->Branch("Elec_MvaInSigmaEtaEta", &Elec_MvaInSigmaEtaEta_, "Elec_MvaInSigmaEtaEta/F");
+  tree_->Branch("Elec_MvaInHadEnergy", &Elec_MvaInHadEnergy_, "Elec_MvaInHadEnergy/F");
+  tree_->Branch("Elec_MvaInDeltaEta", &Elec_MvaInDeltaEta_, "Elec_MvaInDeltaEta/F");
+  tree_->Branch("Elec_MvaInNClusterOutMustache", &Elec_MvaInNClusterOutMustache_, "Elec_MvaInNClusterOutMustache/I");
+  tree_->Branch("Elec_MvaInEtOutMustache", &Elec_MvaInEtOutMustache_, "Elec_MvaInEtOutMustache/F");
+  tree_->Branch("Elec_SigmaEtaEta", &Elec_SigmaEtaEta_, "Elec_SigmaEtaEta/F");
+  tree_->Branch("Elec_SigmaEtaEta_full5x5", &Elec_SigmaEtaEta_full5x5_, "Elec_SigmaEtaEta_full5x5/F");
   tree_->Branch("Elec_HoHplusE", &Elec_HoHplusE_, "Elec_HoHplusE/F");
   tree_->Branch("Elec_Fbrem", &Elec_Fbrem_, "Elec_Fbrem/F");
   tree_->Branch("Elec_HasKF", &Elec_HasKF_, "Elec_HasKF/I");
@@ -142,6 +148,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Tau_GammaPhiMom", &Tau_GammaPhiMom_, "Tau_GammaPhiMom/F");
   tree_->Branch("Tau_GammaEnFrac", &Tau_GammaEnFrac_, "Tau_GammaEnFrac/F");
   tree_->Branch("Tau_HadrMva", &Tau_HadrMva_, "Tau_HadrMva/F");
+  tree_->Branch("Tau_HadrMvaIsolated", &Tau_HadrMvaIsolated_, "Tau_HadrMvaIsolated/F");
   for ( std::vector<tauIdDiscrEntryType>::iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
 	tauIdDiscriminator != tauIdDiscrEntries_.end(); ++tauIdDiscriminator ) {
     tree_->Branch(Form("Tau_%s", tauIdDiscriminator->branchName_.data()), &tauIdDiscriminator->value_, Form("Tau_%s/F", tauIdDiscriminator->branchName_.data()));
@@ -247,6 +254,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_GammaPhiMom_ = -99;
     Tau_GammaEnFrac_ = -99;
     Tau_HadrMva_ = -99;
+    Tau_HadrMvaIsolated_= -99.;
     Tau_MatchElePassVeto_ = -99;
     Tau_DecayMode_ = -99;
     Tau_MatchElePassVeto_ = -99;
@@ -262,11 +270,17 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     
     Elec_AbsEta_ = -99;
     Elec_Pt_ = -99;
-    Elec_PFMvaOutput_ = -99;
-    Elec_EarlyBrem_ =  -99;
-    Elec_LateBrem_=  -99;
-    Elec_Logsihih_ =  -99;
-    Elec_DeltaEta_ = -99;
+    Elec_MvaOut_ = -99;
+    Elec_MvaOutIsolated_ = -99;
+    Elec_MvaInEarlyBrem_ =  -99;
+    Elec_MvaInLateBrem_=  -99;
+    Elec_MvaInSigmaEtaEta_ =  -99;
+    Elec_MvaInHadEnergy_ = -99;
+    Elec_MvaInDeltaEta_ = -99;
+    Elec_MvaInNClusterOutMustache_ = -99;
+    Elec_MvaInEtOutMustache_ = -99;
+    Elec_SigmaEtaEta_ = -99;
+    Elec_SigmaEtaEta_full5x5_ = -99;
     Elec_Fbrem_ =  -99;
     // Variables related to the SC
     Elec_HasSC_ = -99;
@@ -323,12 +337,17 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       // Matchings
       Elec_AbsEta_ = TMath::Abs(matchedElectron->eta());
       Elec_Pt_ = matchedElectron->pt();
-      // To be checked: more then one mva in the dataformats, since 72X
-      Elec_PFMvaOutput_ = TMath::Max(matchedElectron->mvaOutput().mva_e_pi, float(-1.0));
-      Elec_EarlyBrem_ = matchedElectron->mvaInput().earlyBrem;
-      Elec_LateBrem_= matchedElectron->mvaInput().lateBrem;
-      Elec_Logsihih_ = log(matchedElectron->mvaInput().sigmaEtaEta);
-      Elec_DeltaEta_ = matchedElectron->mvaInput().deltaEta;
+      Elec_MvaOut_ = TMath::Max(matchedElectron->mvaOutput().mva_e_pi, float(-1.0));
+      Elec_MvaOutIsolated_ = TMath::Max(matchedElectron->mvaOutput().mva_Isolated, float(-1.0));
+      Elec_MvaInEarlyBrem_ = matchedElectron->mvaInput().earlyBrem;
+      Elec_MvaInLateBrem_= matchedElectron->mvaInput().lateBrem;
+      Elec_MvaInSigmaEtaEta_ = matchedElectron->mvaInput().sigmaEtaEta;
+      Elec_MvaInHadEnergy_ = matchedElectron->mvaInput().hadEnergy;
+      Elec_MvaInDeltaEta_ = matchedElectron->mvaInput().deltaEta;
+      Elec_MvaInNClusterOutMustache_ = matchedElectron->mvaInput().nClusterOutsideMustache;
+      Elec_MvaInEtOutMustache_ = matchedElectron->mvaInput().etOutsideMustache;
+      Elec_SigmaEtaEta_ = matchedElectron->sigmaEtaEta();
+      Elec_SigmaEtaEta_full5x5_ = matchedElectron->full5x5_sigmaEtaEta();
       Elec_Fbrem_ = matchedElectron->fbrem();
 
       // Variables related to the SC
@@ -386,14 +405,20 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 	std::cout << "Elec_Pin: " << Elec_Pin_ << ", Elec_Pout: " << Elec_Pout_ << std::endl;
 	std::cout << "Elec_HasKF: " << Elec_HasKF_ << std::endl;
 	std::cout << "Elec_HasGSF: " << Elec_HasGSF_ << std::endl;
-	std::cout << "Elec_PFMvaOutput: " << Elec_PFMvaOutput_ << std::endl;
+	std::cout << "Elec_MvaOut: " << Elec_MvaOut_ << std::endl;
+	std::cout << "Elec_MvaOutIsolated: " << Elec_MvaOutIsolated_ << std::endl;
 	std::cout << "Elec_EtotOverPin: " << Elec_EtotOverPin_ << std::endl;
 	std::cout << "Elec_EeOverPout: " << Elec_EeOverPout_ << std::endl;
 	std::cout << "Elec_EgammaOverPdif: " << Elec_EgammaOverPdif_ << std::endl;
-	std::cout << "Elec_EarlyBrem: " << Elec_EarlyBrem_ << std::endl;
-	std::cout << "Elec_LateBrem: " << Elec_LateBrem_ << std::endl;
-	std::cout << "Elec_Logsihih: " << Elec_Logsihih_ << std::endl;
-	std::cout << "Elec_DeltaEta: " << Elec_DeltaEta_ << std::endl;
+	std::cout << "Elec_MvaInEarlyBrem: " << Elec_MvaInEarlyBrem_ << std::endl;
+	std::cout << "Elec_MvaInLateBrem: " << Elec_MvaInLateBrem_ << std::endl;
+	std::cout << "Elec_MvaInSigmaEtaEta: " << Elec_MvaInSigmaEtaEta_ << std::endl;
+	std::cout << "Elec_MvaInHadEnergy: " << Elec_MvaInHadEnergy_ << std::endl;
+	std::cout << "Elec_MvaInDeltaEta: " << Elec_MvaInDeltaEta_ << std::endl;
+	std::cout << "Elec_MvaInNClusterOutMustache: " << Elec_MvaInNClusterOutMustache_ << std::endl;
+	std::cout << "Elec_MvaInEtOutMustache: " << Elec_MvaInEtOutMustache_ << std::endl;
+	std::cout << "Elec_SigmaEtaEta: " << Elec_SigmaEtaEta_ << std::endl;
+	std::cout << "Elec_SigmaEtaEta_full5x5: " << Elec_SigmaEtaEta_full5x5_ << std::endl; 
 	std::cout << "Elec_HoHplusE: " << Elec_HoHplusE_ << std::endl;
 	std::cout << "Elec_FBrem: " << Elec_Fbrem_ << std::endl;
 	std::cout << "Elec_Chi2KF: " << Elec_Chi2KF_ << std::endl;
@@ -560,7 +585,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_GammaPhiMom_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
     Tau_GammaEnFrac_ = gammadPt;
     Tau_VisMass_ = pfTau->mass();
-    Tau_HadrMva_ = TMath::Max(pfTau->electronPreIDOutput(), float(-1.));
+    Tau_HadrMva_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_e_pi(), float(-1.));
+    Tau_HadrMvaIsolated_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_Isolated(), float(-1.));
 
     if ( verbosity_ ) {
       std::cout << "GammaEtaMom: " << Tau_GammaEtaMom_ << std::endl;
