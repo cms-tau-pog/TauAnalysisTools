@@ -147,8 +147,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Tau_GammaEtaMom", &Tau_GammaEtaMom_, "Tau_GammaEtaMom/F");
   tree_->Branch("Tau_GammaPhiMom", &Tau_GammaPhiMom_, "Tau_GammaPhiMom/F");
   tree_->Branch("Tau_GammaEnFrac", &Tau_GammaEnFrac_, "Tau_GammaEnFrac/F");
-  tree_->Branch("Tau_HadrMva", &Tau_HadrMva_, "Tau_HadrMva/F");
-  tree_->Branch("Tau_HadrMvaIsolated", &Tau_HadrMvaIsolated_, "Tau_HadrMvaIsolated/F");
+  tree_->Branch("Tau_HadrMvaOut", &Tau_HadrMvaOut_, "Tau_HadrMvaOut/F");
+  tree_->Branch("Tau_HadrMvaOutIsolated", &Tau_HadrMvaOutIsolated_, "Tau_HadrMvaOutIsolated/F");
   for ( std::vector<tauIdDiscrEntryType>::iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
 	tauIdDiscriminator != tauIdDiscrEntries_.end(); ++tauIdDiscriminator ) {
     tree_->Branch(Form("Tau_%s", tauIdDiscriminator->branchName_.data()), &tauIdDiscriminator->value_, Form("Tau_%s/F", tauIdDiscriminator->branchName_.data()));
@@ -253,8 +253,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_GammaEtaMom_ = -99;
     Tau_GammaPhiMom_ = -99;
     Tau_GammaEnFrac_ = -99;
-    Tau_HadrMva_ = -99;
-    Tau_HadrMvaIsolated_= -99.;
+    Tau_HadrMvaOut_ = -99;
+    Tau_HadrMvaOutIsolated_= -99.;
     Tau_MatchElePassVeto_ = -99;
     Tau_DecayMode_ = -99;
     Tau_MatchElePassVeto_ = -99;
@@ -585,8 +585,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_GammaPhiMom_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
     Tau_GammaEnFrac_ = gammadPt;
     Tau_VisMass_ = pfTau->mass();
-    Tau_HadrMva_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_e_pi(), float(-1.));
-    Tau_HadrMvaIsolated_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_Isolated(), float(-1.));
+    Tau_HadrMvaOut_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_e_pi(), float(-1.));
+    Tau_HadrMvaOutIsolated_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_Isolated(), float(-1.));
 
     if ( verbosity_ ) {
       std::cout << "GammaEtaMom: " << Tau_GammaEtaMom_ << std::endl;

@@ -6,6 +6,7 @@ import os
 import shlex
 import string
 import subprocess
+from datetime import date
 
 samples = {
     'ZplusJets_madgraph_signal' : {
@@ -214,7 +215,7 @@ monitor = dashboard
 queue timeout = 10:00:00
 
 [storage]
-se path = srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples
+se path = srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples/2015-03-24
 se output files = antiElectronDiscrMVATrainingNtuple.root
 se output pattern = @NICK@/@NICK@_@MY_JOBID@.root
 
@@ -222,8 +223,8 @@ se output pattern = @NICK@/@NICK@_@MY_JOBID@.root
 sites = -samtests -group_admin -monitor -lcgadmin -cern -ucsd -cmsprod -cmsprodhi
 
 [CMSSW_Advanced]
-project area = ../../../../
-events per job = 30000
+project area = ../../../../../
+events per job = 100000
 se runtime      = True
 software requirements = False
 prepare config = True
@@ -360,7 +361,7 @@ for sampleName, sampleOption in samples.items():
     else: # Data
         crabCommands_create_and_submit.append('%s -submit -c %s' % (executable_crab, crabOptions['ui_working_dir']))
 
-gcFileName = "gc_tauIdMVATrainingNtupleProduction_%s.cfg" % (version)
+gcFileName = "gc_tauIdMVATrainingNtupleProduction_%s_%s.cfg" % (version, date.today())
 gcFileName_full = os.path.join(submissionDirectoryGc, gcFileName)
 gcFile = open(gcFileName_full, 'w')
 gcConfig = gc_template.substitute(gcOptions)

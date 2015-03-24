@@ -13,7 +13,7 @@ process.GlobalTag.globaltag = cms.string("PHYS14_25_V1::All")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:///nfs/dust/cms/user/fcolombo/VBF_HToTauTau_M-125_13TeV-powheg-pythia6_PU20bx25_tsg_PHYS14_25_V1-v2_0ACE16B2-5677-E411-87FF-7845C4FC3A40.root'
+        'file:///nfs/dust/cms/user/fcolombo/DYJetsToLL_M-50_13TeV-madgraph-pythia8_AODSIM_PU20bx25_PHYS14_25_V1-v1_00CC714A-F86B-E411-B99A-0025904B5FB8.root'
     )
 )
 

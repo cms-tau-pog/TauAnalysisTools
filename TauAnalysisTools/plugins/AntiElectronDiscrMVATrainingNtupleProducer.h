@@ -132,8 +132,8 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Tau_GammaEtaMom_;
   float Tau_GammaPhiMom_;
   float Tau_GammaEnFrac_;
-  float Tau_HadrMva_;
-  float Tau_HadrMvaIsolated_;
+  float Tau_HadrMvaOut_;
+  float Tau_HadrMvaOutIsolated_;
   int Tau_DecayMode_;
   int Tau_MatchElePassVeto_;
   float Tau_VtxZ_;
