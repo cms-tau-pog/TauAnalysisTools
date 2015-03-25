@@ -144,7 +144,7 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   int Elec_GenEleFromZTauTauMatch_;
   int Elec_GenHadMatch_;
   int Elec_GenJetMatch_;
-  float Elec_AbsEta_;
+  float Elec_Eta_;
   float Elec_Pt_;
   int Elec_HasSC_;
   float Elec_MvaOut_;
@@ -167,8 +167,12 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Elec_SigmaEtaEta_full5x5_; 
   float Elec_HoHplusE_;
   float Elec_Fbrem_;
+  float Elec_Eecal_;
+  float Elec_DeltaEta_;
+  float Elec_DeltaPhi_;
   int Elec_HasKF_;
   float Elec_Chi2KF_;
+  float Elec_Chi2NormKF_;
   int Elec_KFNumHits_;
   int Elec_KFNumPixelHits_;
   int Elec_KFNumStripHits_;
@@ -177,6 +181,7 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Elec_KFTrackEta_;
   int Elec_HasGSF_;
   float Elec_Chi2GSF_;
+  float Elec_Chi2NormGSF_;
   int Elec_GSFNumHits_;
   int Elec_GSFNumPixelHits_;
   int Elec_GSFNumStripHits_;

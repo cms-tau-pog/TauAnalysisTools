@@ -59,7 +59,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   // GsfElectron variables
   tree_->Branch("Elec_GenEleMatch", &Elec_GenEleMatch_, "Elec_GenEleMatch/I");
   tree_->Branch("Elec_GenHadMatch", &Elec_GenHadMatch_, "Elec_GenHadMatch/I");
-  tree_->Branch("Elec_AbsEta", &Elec_AbsEta_, "Elec_AbsEta/F");
+  tree_->Branch("Elec_Eta", &Elec_Eta_, "Elec_Eta/F");
   tree_->Branch("Elec_Pt", &Elec_Pt_, "Elec_Pt/F");
   tree_->Branch("Elec_HasSC", &Elec_HasSC_, "Elec_HasSC/I");
   tree_->Branch("Elec_MvaOut", &Elec_MvaOut_, "Elec_MvaOut/F");
@@ -82,8 +82,12 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Elec_SigmaEtaEta_full5x5", &Elec_SigmaEtaEta_full5x5_, "Elec_SigmaEtaEta_full5x5/F");
   tree_->Branch("Elec_HoHplusE", &Elec_HoHplusE_, "Elec_HoHplusE/F");
   tree_->Branch("Elec_Fbrem", &Elec_Fbrem_, "Elec_Fbrem/F");
+  tree_->Branch("Elec_Eecal", &Elec_Eecal_, "Elec_Eecal/F");
+  tree_->Branch("Elec_DeltaEta", &Elec_DeltaEta_, "Elec_DeltaEta/F");
+  tree_->Branch("Elec_DeltaPhi", &Elec_DeltaPhi_, "Elec_DeltaPhi/F"); 
   tree_->Branch("Elec_HasKF", &Elec_HasKF_, "Elec_HasKF/I");
   tree_->Branch("Elec_Chi2KF",&Elec_Chi2KF_,"Elec_Chi2KF/F");
+  tree_->Branch("Elec_Chi2NormKF",&Elec_Chi2NormKF_,"Elec_Chi2NormKF/F");
   tree_->Branch("Elec_KFNumHits", &Elec_KFNumHits_, "Elec_KFNumHits/I");
   tree_->Branch("Elec_KFNumPixelHits", &Elec_KFNumPixelHits_, "Elec_KFNumPixelHits/I");
   tree_->Branch("Elec_KFNumStripHits", &Elec_KFNumStripHits_, "Elec_KFNumStripHits/I");
@@ -92,6 +96,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Elec_KFTrackEta", &Elec_KFTrackEta_, "Elec_KFTrackEta/F");
   tree_->Branch("Elec_HasGSF", &Elec_HasGSF_, "Elec_HasGSF/I");
   tree_->Branch("Elec_Chi2GSF", &Elec_Chi2GSF_, "Elec_Chi2GSF/F");
+  tree_->Branch("Elec_Chi2NormGSF", &Elec_Chi2NormGSF_, "Elec_Chi2NormGSF/F");
   tree_->Branch("Elec_GSFNumHits", &Elec_GSFNumHits_, "Elec_GSFNumHits/I");
   tree_->Branch("Elec_GSFNumPixelHits", &Elec_GSFNumPixelHits_, "Elec_GSFNumPixelHits/I");
   tree_->Branch("Elec_GSFNumStripHits", &Elec_GSFNumStripHits_, "Elec_GSFNumStripHits/I");
@@ -268,7 +273,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     NumGenEle_ = 0;
     NumGenHad_ = 0;
     
-    Elec_AbsEta_ = -99;
+    Elec_Eta_ = -99;
     Elec_Pt_ = -99;
     Elec_MvaOut_ = -99;
     Elec_MvaOutIsolated_ = -99;
@@ -281,7 +286,10 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Elec_MvaInEtOutMustache_ = -99;
     Elec_SigmaEtaEta_ = -99;
     Elec_SigmaEtaEta_full5x5_ = -99;
-    Elec_Fbrem_ =  -99;
+    Elec_Fbrem_ = -99;
+    Elec_Eecal_ = -99.;
+    Elec_DeltaEta_ = -99.;
+    Elec_DeltaPhi_ = -99.;
     // Variables related to the SC
     Elec_HasSC_ = -99;
     Elec_Ee_ = -99;
@@ -294,6 +302,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Elec_HoHplusE_ = -99;
     Elec_HasKF_ = -99;
     Elec_Chi2KF_ = -99;
+    Elec_Chi2NormKF_ = -99;
     Elec_KFNumHits_ = -99;
     Elec_KFNumPixelHits_ = -99;
     Elec_KFNumStripHits_ = -99;
@@ -302,6 +311,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Elec_KFTrackEta_ = -99;
     Elec_HasGSF_ = -99;
     Elec_Chi2GSF_ = -99;
+    Elec_Chi2NormGSF_ = -99;
     Elec_GSFNumHits_ = -99;
     Elec_GSFNumPixelHits_ = -99;
     Elec_GSFNumStripHits_ = -99;
@@ -335,7 +345,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       }
 
       // Matchings
-      Elec_AbsEta_ = TMath::Abs(matchedElectron->eta());
+      Elec_Eta_ = matchedElectron->eta();
       Elec_Pt_ = matchedElectron->pt();
       Elec_MvaOut_ = TMath::Max(matchedElectron->mvaOutput().mva_e_pi, float(-1.0));
       Elec_MvaOutIsolated_ = TMath::Max(matchedElectron->mvaOutput().mva_Isolated, float(-1.0));
@@ -349,6 +359,9 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       Elec_SigmaEtaEta_ = matchedElectron->sigmaEtaEta();
       Elec_SigmaEtaEta_full5x5_ = matchedElectron->full5x5_sigmaEtaEta();
       Elec_Fbrem_ = matchedElectron->fbrem();
+      Elec_Eecal_ = matchedElectron->ecalEnergy();
+      Elec_DeltaEta_ = matchedElectron->deltaEtaSeedClusterTrackAtCalo();
+      Elec_DeltaPhi_ = matchedElectron->deltaPhiSeedClusterTrackAtCalo();
 
       // Variables related to the SC
       Elec_HasSC_ = 0;
@@ -375,7 +388,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       Elec_HasKF_ = 0;
       if ( matchedElectron->closestCtfTrackRef().isNonnull() ) {
 	Elec_HasKF_ = 1;
-	Elec_Chi2KF_ = matchedElectron->closestCtfTrackRef()->normalizedChi2();
+	Elec_Chi2KF_ = matchedElectron->closestCtfTrackRef()->chi2();
+	Elec_Chi2NormKF_ = matchedElectron->closestCtfTrackRef()->normalizedChi2();
 	Elec_KFNumHits_ = matchedElectron->closestCtfTrackRef()->numberOfValidHits();
 	Elec_KFNumPixelHits_ = matchedElectron->closestCtfTrackRef()->hitPattern().numberOfValidPixelHits();
 	Elec_KFNumStripHits_ = matchedElectron->closestCtfTrackRef()->hitPattern().numberOfValidStripHits();
@@ -388,7 +402,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       Elec_HasGSF_ = 0;
       if ( matchedElectron->gsfTrack().isNonnull() ) {
 	Elec_HasGSF_ = 1;
-	Elec_Chi2GSF_ = matchedElectron->gsfTrack()->normalizedChi2();
+	Elec_Chi2GSF_ = matchedElectron->gsfTrack()->chi2();
+	Elec_Chi2NormGSF_ = matchedElectron->gsfTrack()->normalizedChi2();
 	Elec_GSFNumHits_ = matchedElectron->gsfTrack()->numberOfValidHits();
 	Elec_GSFNumPixelHits_ = matchedElectron->gsfTrack()->hitPattern().numberOfValidPixelHits();
 	Elec_GSFNumStripHits_ = matchedElectron->gsfTrack()->hitPattern().numberOfValidStripHits();
@@ -398,10 +413,10 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       }
 
       if ( verbosity_ ) {
-	std::cout << "Elec_AbsEta: " << Elec_AbsEta_ << std::endl;
+	std::cout << "Elec_Eta: " << Elec_Eta_ << std::endl;
 	std::cout << "Elec_Pt: " << Elec_Pt_ << std::endl;
 	std::cout << "Elec_HasSC: " << Elec_HasSC_ << std::endl;
-	std::cout << "Elec_Ee: " << Elec_Ee_ << ", Elec_Egamma: " << Elec_Egamma_ << std::endl;
+	std::cout << "Elec_Ee: " << Elec_Ee_ << ", Elec_Egamma: " << Elec_Egamma_ << ", Elec_Eecal: " << Elec_Eecal_ << std::endl;
 	std::cout << "Elec_Pin: " << Elec_Pin_ << ", Elec_Pout: " << Elec_Pout_ << std::endl;
 	std::cout << "Elec_HasKF: " << Elec_HasKF_ << std::endl;
 	std::cout << "Elec_HasGSF: " << Elec_HasGSF_ << std::endl;
@@ -421,8 +436,9 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 	std::cout << "Elec_SigmaEtaEta_full5x5: " << Elec_SigmaEtaEta_full5x5_ << std::endl; 
 	std::cout << "Elec_HoHplusE: " << Elec_HoHplusE_ << std::endl;
 	std::cout << "Elec_FBrem: " << Elec_Fbrem_ << std::endl;
-	std::cout << "Elec_Chi2KF: " << Elec_Chi2KF_ << std::endl;
-	std::cout << "Elec_Chi2GSF: " << Elec_Chi2GSF_ << std::endl;
+	std::cout << "Elec_DeltaEta: " << Elec_DeltaEta_ << ", Elec_DeltaPhi: " << Elec_DeltaPhi_ << std::endl;
+	std::cout << "Elec_Chi2KF: " << Elec_Chi2KF_ << ", Elec_Chi2NormKF: " << Elec_Chi2NormKF_ << std::endl;
+	std::cout << "Elec_Chi2GSF: " << Elec_Chi2GSF_ << ", Elec_Chi2NormGSF: " << Elec_Chi2NormGSF_ << std::endl;
 	std::cout << "Elec_GSFNumHits: " << Elec_GSFNumHits_ << std::endl;
 	std::cout << "Elec_GSFNumPixelHits: " << Elec_GSFNumPixelHits_ << std::endl;
 	std::cout << "Elec_GSFNumStripHits: " << Elec_GSFNumStripHits_ << std::endl;
