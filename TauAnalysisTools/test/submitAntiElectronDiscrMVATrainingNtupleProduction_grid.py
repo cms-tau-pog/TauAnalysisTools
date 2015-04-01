@@ -215,12 +215,12 @@ monitor = dashboard
 queue timeout = 10:00:00
 
 [storage]
-se path = srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples/2015-03-24
+se path = $se_path
 se output files = antiElectronDiscrMVATrainingNtuple.root
 se output pattern = @NICK@/@NICK@_@MY_JOBID@.root
 
 [grid]
-sites = -samtests -group_admin -monitor -lcgadmin -cern -ucsd -cmsprod -cmsprodhi
+sites = -samtests -group_admin -monitor -lcgadmin -cern -ucsd -cmsprod -cmsprodhi -brunel
 
 [CMSSW_Advanced]
 project area = ../../../../../
@@ -257,7 +257,7 @@ crabCommands_create_and_submit = []
 crabCommands_publish           = []
 
 gcOptions = {
-	"submission_directory" : os.path.relpath(submissionDirectoryGc, "."),
+	"se_path" : "srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples/%s" % date.today()
 }
 
 for sampleName, sampleOption in samples.items():

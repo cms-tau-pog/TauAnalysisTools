@@ -143,14 +143,14 @@ struct branchEntryType
     outputValueL_ = inputValueL_;
   }
   std::string branchName_;
-  enum { kInt_t, kFloat_t, kLong_t };
+  enum { kInt_t, kFloat_t, kULong64_t };
   int branchType_;
   Float_t inputValueF_;
   Int_t inputValueI_;
-  Long_t inputValueL_;
+  ULong64_t inputValueL_;
   Float_t outputValueF_;
   Int_t outputValueI_;
-  Long_t outputValueL_;
+  ULong64_t outputValueL_;
 };
 
 struct categoryEntryType
@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
     int branchType = -1;
     if      ( branchType_string == "I" ) branchType = branchEntryType::kInt_t;
     else if ( branchType_string == "F" ) branchType = branchEntryType::kFloat_t;
-    else if ( branchType_string == "l" ) branchType = branchEntryType::kLong_t;
+    else if ( branchType_string == "l" ) branchType = branchEntryType::kULong64_t;
     else {
       std::cerr << "<extendTreeAntiElectronDiscrMVA>:" << std::endl;
       std::cerr << " Branch type = " << branchType_string << " not supported --> Branch = " << branchName << " will NOT be copied to outputTree !!" << std::endl;
@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
 	branch != branches_to_copy.end(); ++branch ) {
     if ( (*branch)->branchType_ == branchEntryType::kInt_t ) {
       inputTree->SetBranchAddress((*branch)->branchName_.data(), &(*branch)->inputValueI_);
-    } else if ( (*branch)->branchType_ == branchEntryType::kLong_t ) {
+    } else if ( (*branch)->branchType_ == branchEntryType::kULong64_t ) {
       inputTree->SetBranchAddress((*branch)->branchName_.data(), &(*branch)->inputValueL_);
     } else if ( (*branch)->branchType_ == branchEntryType::kFloat_t ) {
       inputTree->SetBranchAddress((*branch)->branchName_.data(), &(*branch)->inputValueF_);
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
 	branch != branches_to_copy.end(); ++branch ) {
     if ( (*branch)->branchType_ == branchEntryType::kInt_t ) {
       outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueI_, Form("%s/I", (*branch)->branchName_.data()));
-    } else if ( (*branch)->branchType_ == branchEntryType::kLong_t ) {
+    } else if ( (*branch)->branchType_ == branchEntryType::kULong64_t ) {
       outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueL_, Form("%s/l", (*branch)->branchName_.data()));
     } else if ( (*branch)->branchType_ == branchEntryType::kFloat_t ) {
       outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueF_, Form("%s/F", (*branch)->branchName_.data()));    
