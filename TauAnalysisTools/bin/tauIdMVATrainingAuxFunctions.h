@@ -8,6 +8,8 @@
 #include "TMVA/IMethod.h"
 #include "TMVA/MethodBDT.h"
 
+#include "Cintex/Cintex.h"
+
 #include <TFile.h>
 #include <TTree.h>
 #include <TTreeFormula.h>
@@ -38,6 +40,7 @@ void saveGBRForest(GBRForest* gbr, const std::string& mvaName, const std::string
   if ( idx != std::string::npos ) outputFileName_gbr.append(std::string(outputFileName, idx));
   std::cout << " outputFileName = " << outputFileName_gbr << std::endl;
 
+  ROOT::Cintex::Cintex::Enable();
   TFile* outputFile = new TFile(outputFileName_gbr.data(), "RECREATE");
   outputFile->WriteObject(gbr, mvaName.data());
   delete outputFile;
