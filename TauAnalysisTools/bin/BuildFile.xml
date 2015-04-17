@@ -65,6 +65,7 @@
   <use   name="PhysicsTools/FWLite"/>
   <use   name="root"/>
   <use   name="roottmva"/>
+  <use   name="TauAnalysisTools/TauAnalysisTools"/>
 </bin>
 <bin   file="computeWPcutsAntiElectronDiscrMVA.cc" name="computeWPcutsAntiElectronDiscrMVA">
   <use   name="FWCore/FWLite"/>
