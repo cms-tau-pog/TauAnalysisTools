@@ -83,6 +83,9 @@ process.extendTreeAntiElectronDiscrMVA = cms.PSet(
     outputTreeName = cms.string('extendedTree'),
 
     categories = cms.PSet(),
+    mva = cms.PSet( 
+        mvaWeightPath = cms.string('') 
+    ),
 
     samples = cms.vstring(allSamples),
 

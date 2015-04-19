@@ -20,6 +20,8 @@
 #include "DataFormats/FWLite/interface/InputSource.h"
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
+#include "TauAnalysisTools/TauAnalysisTools/interface/AntiElectronIDMVA.h"
+
 #include <TFile.h>
 #include <TChain.h>
 #include <TTree.h>
@@ -225,6 +227,31 @@ int main(int argc, char* argv[])
   std::vector<branchEntryType*> branches_to_copy;
   branchEntryType* branch_Tau_EtaAtEcalEntrance = 0;
   branchEntryType* branch_Tau_PhiAtEcalEntrance = 0;
+  branchEntryType* branch_Tau_Pt = 0;
+  branchEntryType* branch_Tau_LeadChargedPFCandPt = 0;
+  branchEntryType* branch_Tau_EmFraction = 0;
+  branchEntryType* branch_Tau_HadrHoP = 0;
+  branchEntryType* branch_Tau_HadrEoP = 0;
+  branchEntryType* branch_Tau_VisMass = 0;
+  branchEntryType* branch_Tau_NumGammaCands = 0;
+  branchEntryType* branch_Tau_GammaEtaMom = 0;
+  branchEntryType* branch_Tau_GammaPhiMom = 0;
+  branchEntryType* branch_Tau_GammaEnFrac = 0;
+  branchEntryType* branch_Elec_EtotOverPin = 0;
+  branchEntryType* branch_Elec_Chi2NormGSF = 0;
+  branchEntryType* branch_Elec_Chi2NormKF = 0;
+  branchEntryType* branch_Elec_GSFNumHits = 0;
+  branchEntryType* branch_Elec_KFNumHits = 0;
+  branchEntryType* branch_Elec_GSFTrackResol = 0;
+  branchEntryType* branch_Elec_GSFTracklnPt = 0;
+  branchEntryType* branch_Elec_Pin = 0;
+  branchEntryType* branch_Elec_Pout = 0;
+  branchEntryType* branch_Elec_Eecal = 0;
+  branchEntryType* branch_Elec_DeltaEta = 0;
+  branchEntryType* branch_Elec_DeltaPhi = 0;
+  branchEntryType* branch_Elec_MvaInSigmaEtaEta = 0;
+  branchEntryType* branch_Elec_MvaInHadEnergy = 0;
+  branchEntryType* branch_Elec_MvaInDeltaEta = 0;
 
   TObjArray* branches = inputTree->GetListOfBranches();
   int numBranches = branches->GetEntries();
@@ -247,8 +274,33 @@ int main(int argc, char* argv[])
     branch_to_copy->branchName_ = branchName;
     branch_to_copy->branchType_ = branchType;
     branches_to_copy.push_back(branch_to_copy);
-    if ( branchName == "Tau_EtaAtEcalEntrance" ) branch_Tau_EtaAtEcalEntrance = branch_to_copy;
-    if ( branchName == "Tau_PhiAtEcalEntrance" ) branch_Tau_PhiAtEcalEntrance = branch_to_copy;
+    if ( branchName == "Tau_EtaAtEcalEntrance" )   branch_Tau_EtaAtEcalEntrance   = branch_to_copy;
+    if ( branchName == "Tau_PhiAtEcalEntrance" )   branch_Tau_PhiAtEcalEntrance   = branch_to_copy;
+    if ( branchName == "Tau_Pt" )                  branch_Tau_Pt                  = branch_to_copy;
+    if ( branchName == "Tau_LeadChargedPFCandPt" ) branch_Tau_LeadChargedPFCandPt = branch_to_copy;
+    if ( branchName == "Tau_EmFraction" )          branch_Tau_EmFraction          = branch_to_copy;
+    if ( branchName == "Tau_HadrHoP" )             branch_Tau_HadrHoP             = branch_to_copy;
+    if ( branchName == "Tau_HadrEoP" )             branch_Tau_HadrEoP             = branch_to_copy;
+    if ( branchName == "Tau_VisMass" )             branch_Tau_VisMass             = branch_to_copy;
+    if ( branchName == "Tau_NumGammaCands" )       branch_Tau_NumGammaCands       = branch_to_copy;
+    if ( branchName == "Tau_GammaEtaMom" )         branch_Tau_GammaEtaMom         = branch_to_copy;
+    if ( branchName == "Tau_GammaPhiMom" )         branch_Tau_GammaPhiMom         = branch_to_copy;
+    if ( branchName == "Tau_GammaEnFrac" )         branch_Tau_GammaEnFrac         = branch_to_copy;
+    if ( branchName == "Elec_EtotOverPin" )        branch_Elec_EtotOverPin        = branch_to_copy;
+    if ( branchName == "Elec_Chi2NormGSF" )        branch_Elec_Chi2NormGSF        = branch_to_copy;
+    if ( branchName == "Elec_Chi2NormKF" )         branch_Elec_Chi2NormKF         = branch_to_copy;
+    if ( branchName == "Elec_GSFNumHits" )         branch_Elec_GSFNumHits         = branch_to_copy;
+    if ( branchName == "Elec_KFNumHits" )          branch_Elec_KFNumHits          = branch_to_copy;
+    if ( branchName == "Elec_GSFTrackResol" )      branch_Elec_GSFTrackResol      = branch_to_copy;
+    if ( branchName == "Elec_GSFTracklnPt" )       branch_Elec_GSFTracklnPt       = branch_to_copy;
+    if ( branchName == "Elec_Pin" )                branch_Elec_Pin                = branch_to_copy;
+    if ( branchName == "Elec_Pout" )               branch_Elec_Pout               = branch_to_copy;
+    if ( branchName == "Elec_Eecal" )              branch_Elec_Eecal              = branch_to_copy;
+    if ( branchName == "Elec_DeltaEta" )           branch_Elec_DeltaEta           = branch_to_copy;
+    if ( branchName == "Elec_DeltaPhi" )           branch_Elec_DeltaPhi           = branch_to_copy;
+    if ( branchName == "Elec_MvaInSigmaEtaEta" )   branch_Elec_MvaInSigmaEtaEta   = branch_to_copy;
+    if ( branchName == "Elec_MvaInHadEnergy" )     branch_Elec_MvaInHadEnergy     = branch_to_copy;
+    if ( branchName == "Elec_MvaInDeltaEta" )      branch_Elec_MvaInDeltaEta      = branch_to_copy;
   }
   if ( !(branch_Tau_EtaAtEcalEntrance && branch_Tau_PhiAtEcalEntrance) ) 
     throw cms::Exception("extendTreeAntiElectronDiscrMVA") 
@@ -285,6 +337,9 @@ int main(int argc, char* argv[])
     categories.push_back(category);
   }
 
+  edm::ParameterSet cfgMva = cfgExtendTreeAntiElectronDiscrMVA.getParameter<edm::ParameterSet>("mva");
+  AntiElectronIDMVA* mva = new AntiElectronIDMVA(cfgMva);
+
   // CV: need to call TChain::LoadTree before processing first event 
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
@@ -315,6 +370,8 @@ int main(int argc, char* argv[])
   
   Int_t value_Tau_Category;
   outputTree->Branch("Tau_Category", &value_Tau_Category, "Tau_Category/I");
+  Float_t value_mva;
+  outputTree->Branch("mva", &value_mva, "mva/F");
 
   int currentTreeNumber = inputTree->GetTreeNumber();
 
@@ -347,12 +404,14 @@ int main(int argc, char* argv[])
     }
     
     value_Tau_Category = 0;
+    int category_idx = -1;
     int numCategories_passed = 0;
     for ( std::vector<categoryEntryType*>::iterator category = categories.begin();
 	  category != categories.end(); ++category ) {
       if ( (*category)->selection_->EvalInstance() > 0.5 ) {
 	//std::cout << "Entry #" << iEntry << " passes selection for category = " << (*category)->name_ << " (idx = " << (*category)->idx_ << ")" << std::endl;
 	value_Tau_Category += (1 << (*category)->idx_);
+	category_idx = (*category)->idx_;
 	++numCategories_passed;
       }
     }
@@ -360,6 +419,41 @@ int main(int argc, char* argv[])
       std::cerr << "Entry #" << iEntry << " passes selection for " << numCategories_passed << " categories --> CHECK !!" << std::endl;
     }
     //std::cout << "--> value_Tau_Category = " << value_Tau_Category << std::endl;
+
+    value_mva = -99.;
+    if ( mva->isInitialized() ) {
+
+      value_mva = mva->MVAValue(category_idx,
+                                branch_Tau_Pt->inputValueF_,
+                                branch_Tau_EtaAtEcalEntrance->inputValueF_,
+                                branch_Tau_LeadChargedPFCandPt->inputValueF_,
+                                branch_Tau_EmFraction->inputValueF_,
+                                branch_Tau_HadrHoP->inputValueF_,
+                                branch_Tau_HadrEoP->inputValueF_,
+                                branch_Tau_VisMass->inputValueF_,
+                                value_Tau_dCrackEta,
+                                value_Tau_dCrackPhi,
+                                branch_Tau_NumGammaCands->inputValueI_,
+                                branch_Tau_GammaEtaMom->inputValueF_,
+                                branch_Tau_GammaPhiMom->inputValueF_,
+                                branch_Tau_GammaEnFrac->inputValueF_,
+                                branch_Elec_EtotOverPin->inputValueF_,
+                                branch_Elec_Chi2NormGSF->inputValueF_,
+                                branch_Elec_Chi2NormKF->inputValueF_,
+                                branch_Elec_GSFNumHits->inputValueI_,
+                                branch_Elec_KFNumHits->inputValueI_,
+                                branch_Elec_GSFTrackResol->inputValueF_,
+                                branch_Elec_GSFTracklnPt->inputValueF_,
+                                branch_Elec_Pin->inputValueF_,
+                                branch_Elec_Pout->inputValueF_,
+                                branch_Elec_Eecal->inputValueF_,
+                                branch_Elec_DeltaEta->inputValueF_,
+                                branch_Elec_DeltaPhi->inputValueF_,
+                                branch_Elec_MvaInSigmaEtaEta->inputValueF_,
+                                branch_Elec_MvaInHadEnergy->inputValueF_,
+                                branch_Elec_MvaInDeltaEta->inputValueF_
+                               );
+    }
 
     outputTree->Fill();
   }
