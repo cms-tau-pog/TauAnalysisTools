@@ -4,7 +4,9 @@
 #include <TString.h>
 #include <TObjArray.h>
 #include <TObjString.h>
+#include <TH1.h>
 #include <TGraph.h>
+#include <TGraphErrors.h>
 #include <TMath.h>
 #include <TROOT.h>
 #include <TSystem.h>
@@ -108,6 +110,8 @@ struct graphWrapperType
   int category_;
   std::vector<double> x_;
   std::vector<double> y_;
+  std::vector<double> xLow_;
+  std::vector<double> xUp_;
 };
 
 void dumpWPsAntiElectronDiscr()
@@ -115,22 +119,30 @@ void dumpWPsAntiElectronDiscr()
 //--- suppress the output canvas 
   gROOT->SetBatch(true);
 
-  std::string inputFileName = "/data1/veelken/tmp/antiElectronDiscrMVATraining/antiElectronDiscr_v1_2/";
+  std::string inputFileName = "/nfs/dust/cms/user/fcolombo/HiggsToTauTau/TauPOG/antiElectronDiscrMVATraining/fixTauGSF_scenario3_v2_lessVars_WZJetsSignals/";
   inputFileName.append("computeWPcutsAntiElectronDiscrMVA_mvaAntiElectronDiscr5.root");
 
   std::string wpTreeName = "wpCutsTree";
 
   std::vector<int> categories;
-  for ( int iCategory = 0; iCategory < 16; ++iCategory ) {
-    categories.push_back(iCategory);
-  }
+  //for ( int iCategory = 0; iCategory < 16; ++iCategory ) {
+  //  categories.push_back(iCategory);
+  //}
+  categories.push_back(0);
+  categories.push_back(2);
+  categories.push_back(5);
+  categories.push_back(7);
+  categories.push_back(8);
+  categories.push_back(10);
+  categories.push_back(13);
+  categories.push_back(15);
 
   std::vector<double> targetSignalEfficiencies;
-  targetSignalEfficiencies.push_back(0.99);
-  targetSignalEfficiencies.push_back(0.96);
-  targetSignalEfficiencies.push_back(0.91);
+  targetSignalEfficiencies.push_back(0.95);
+  targetSignalEfficiencies.push_back(0.90);
   targetSignalEfficiencies.push_back(0.85);
-  targetSignalEfficiencies.push_back(0.79);
+  targetSignalEfficiencies.push_back(0.80);
+  targetSignalEfficiencies.push_back(0.70);
   
   std::vector<workingPointEntryType> workingPoints = readWorkingPoints(inputFileName, wpTreeName, categories);
   
@@ -139,13 +151,16 @@ void dumpWPsAntiElectronDiscr()
   for ( std::vector<workingPointEntryType>::iterator workingPoint = workingPoints.begin();
 	workingPoint != workingPoints.end(); ++workingPoint ) {
     bool isInTargetSignalEfficiencies = false;
+
     for ( std::vector<double>::const_iterator targetSignalEfficiency = targetSignalEfficiencies.begin();
 	  targetSignalEfficiency != targetSignalEfficiencies.end(); ++targetSignalEfficiency ) {
       if ( TMath::Abs(workingPoint->targetSignalEfficiency_ - (*targetSignalEfficiency)) < 0.003 ) isInTargetSignalEfficiencies = true;
-    } 
+    }
+ 
     if ( isInTargetSignalEfficiencies ) {
       std::cout << "targetSignalEfficiency = " << workingPoint->targetSignalEfficiency_ << ":" << std::endl;
       std::cout << " Pt = " << workingPoint->minPt_ << ".." << workingPoint->maxPt_ << std::endl;
+
       for ( std::vector<int>::const_iterator category = categories.begin();
 	    category != categories.end(); ++category ) {
 	std::cout << "  category #" << (*category) << ": cut = " << workingPoint->cuts_[*category] << std::endl;
@@ -168,20 +183,22 @@ void dumpWPsAntiElectronDiscr()
 	  graphWrapper_matched->category_ = (*category);
 	  graphWrappers.push_back(graphWrapper_matched);	  
 	}
-	if ( workingPoint->minPt_ == 0. ) {
-	  // CV: use constant cut on BDT output in low Pt region dominated by SM Drell -> Yan ee background
-	  graphWrapper_matched->x_.push_back(workingPoint->minPt_);
-	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
-	  graphWrapper_matched->x_.push_back(workingPoint->maxPt_);
-	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
-	} else if ( workingPoint->minPt_ >= 400. ) {
-	  graphWrapper_matched->x_.push_back(400.);
-	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
-	} else {
+//	if ( workingPoint->minPt_ == 0. ) {
+//	  // CV: use constant cut on BDT output in low Pt region dominated by SM Drell -> Yan ee background
+//	  graphWrapper_matched->x_.push_back(workingPoint->minPt_);
+//	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
+//	  graphWrapper_matched->x_.push_back(workingPoint->maxPt_);
+//	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
+//	} else if ( workingPoint->minPt_ >= 400. ) {
+//	  graphWrapper_matched->x_.push_back(400.);
+//	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
+//	} else {
 	  double avPt = 0.5*(workingPoint->minPt_ + workingPoint->maxPt_);
-	  graphWrapper_matched->x_.push_back(avPt);
-	  graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
-	}
+          graphWrapper_matched->xLow_.push_back(workingPoint->minPt_);
+          graphWrapper_matched->xUp_.push_back(workingPoint->maxPt_);
+          graphWrapper_matched->x_.push_back(avPt);
+          graphWrapper_matched->y_.push_back(workingPoint->cuts_[*category]);
+//	}
       }
     }
   }
@@ -190,16 +207,33 @@ void dumpWPsAntiElectronDiscr()
 
   for ( std::vector<graphWrapperType*>::const_iterator graphWrapper = graphWrappers.begin();
 	graphWrapper != graphWrappers.end(); ++graphWrapper ) {
-    int numPoints = (*graphWrapper)->x_.size();
+
+    unsigned int numPoints = (*graphWrapper)->x_.size();
     assert((*graphWrapper)->y_.size() == numPoints);
-    TGraph* graph = new TGraph(numPoints);
+    TGraphErrors* graph = new TGraphErrors(numPoints);
     std::string graphName = Form("eff%1.0fcat%i", (*graphWrapper)->targetSignalEfficiency_*100., (*graphWrapper)->category_);
+    std::string graphTitle = Form("Category #%i (target signal efficiency = %1.0f %%)", (*graphWrapper)->category_, (*graphWrapper)->targetSignalEfficiency_*100.);
     graph->SetName(graphName.data());
-    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+    graph->SetTitle(graphTitle.data());
+
+    for ( unsigned int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+      double xLow = (*graphWrapper)->xLow_[iPoint];
+      double xUp = (*graphWrapper)->xUp_[iPoint];
       double x = (*graphWrapper)->x_[iPoint];
       double y = (*graphWrapper)->y_[iPoint];
-      graph->SetPoint(iPoint, x, y);
+
+      if ( xUp >= 1.e+6 ) xUp = 1000.;
+      graph->SetPoint(iPoint, 0.5*(xUp + xLow), y);
+      graph->SetPointError(iPoint, 0.5*(xUp - xLow), 0.);
     }
+
+    graph->SetMarkerStyle(20);
+    graph->SetMarkerColor(1);
+    graph->SetLineColor(1);
+    graph->SetLineWidth(1);
+    graph->GetXaxis()->SetTitle("Pt");
+    graph->GetYaxis()->SetTitle("cut value");
+    graph->GetYaxis()->SetRangeUser(-1., 1.);
     graph->Write();
   }
 
