@@ -142,7 +142,7 @@ void dumpWPsAntiElectronDiscr()
   targetSignalEfficiencies.push_back(0.90);
   targetSignalEfficiencies.push_back(0.85);
   targetSignalEfficiencies.push_back(0.80);
-  targetSignalEfficiencies.push_back(0.70);
+  targetSignalEfficiencies.push_back(0.75);
   
   std::vector<workingPointEntryType> workingPoints = readWorkingPoints(inputFileName, wpTreeName, categories);
   

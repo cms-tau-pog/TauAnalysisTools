@@ -217,7 +217,8 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
 		    const TH1* histogram2_numerator, const TH1* histogram2_denominator, const std::string& legendEntry2,
 		    const TH1* histogram3_numerator, const TH1* histogram3_denominator, const std::string& legendEntry3,
 		    const TH1* histogram4_numerator, const TH1* histogram4_denominator, const std::string& legendEntry4,
-		    const std::string& xAxisTitle,
+		    const TH1* histogram5_numerator, const TH1* histogram5_denominator, const std::string& legendEntry5,
+		    const std::string& xAxisTitle, double xMin, double xMax,
                     bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle,
 		    double legendX0, double legendY0, 
 		    const std::string& outputFileName)
@@ -225,7 +226,7 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
   TCanvas* canvas = new TCanvas("canvas", "canvas", canvasSizeX, canvasSizeY);
   canvas->SetLogy(useLogScale);
 
-  TH1* dummyHistogram = new TH1D("dummyH", "dummyH", 10, histogram1_numerator->GetXaxis()->GetXmin(), histogram1_numerator->GetXaxis()->GetXmax());
+  TH1* dummyHistogram = new TH1D("dummyH", "dummyH", 10, xMin, xMax);
   dummyHistogram->SetTitle("");
   dummyHistogram->SetStats(false);
   dummyHistogram->SetMaximum(yMax);
@@ -239,15 +240,17 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
 
   dummyHistogram->Draw();
 
-  int colors[4] = { 1, 2, 3, 4 };
-  int markerStyles[4] = { 22, 32, 20, 24 };
+  int colors[5] = { 1, 2, 3, 4, 7 };
+  int markerStyles[5] = { 20, 21, 22, 23, 33 };
+  float markerSizes[5] = { 1., 1., 1.3, 1.3, 1.8 };
 
   int numGraphs = 1;
   if ( histogram2_numerator && histogram2_denominator ) ++numGraphs;
   if ( histogram3_numerator && histogram3_denominator ) ++numGraphs;
   if ( histogram4_numerator && histogram4_denominator ) ++numGraphs;
+  if ( histogram5_numerator && histogram5_denominator ) ++numGraphs;
 
-  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.30, legendY0 + 0.05*numGraphs, "", "brNDC"); 
+  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.30, legendY0 + 0.035*numGraphs, "", "brNDC"); 
   legend->SetFillColor(0);
   legend->SetShadowColor(0);
   
@@ -255,6 +258,7 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
   graph1->SetLineColor(colors[0]);
   graph1->SetMarkerColor(colors[0]);
   graph1->SetMarkerStyle(markerStyles[0]);
+  graph1->SetMarkerSize(markerSizes[0]);
   graph1->Draw("p");
   legend->AddEntry(graph1, legendEntry1.data(), "lp");    
 
@@ -264,6 +268,7 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
     graph2->SetLineColor(colors[1]);
     graph2->SetMarkerColor(colors[1]);
     graph2->SetMarkerStyle(markerStyles[1]);
+    graph2->SetMarkerSize(markerSizes[1]);
     graph2->Draw("p");
     legend->AddEntry(graph2, legendEntry2.data(), "lp");
   }
@@ -274,6 +279,7 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
     graph3->SetLineColor(colors[2]);
     graph3->SetMarkerColor(colors[2]);
     graph3->SetMarkerStyle(markerStyles[2]);
+    graph3->SetMarkerSize(markerSizes[2]);
     graph3->Draw("p");
     legend->AddEntry(graph3, legendEntry3.data(), "lp");
   }
@@ -284,8 +290,20 @@ void showEfficiency(const TString& title, double canvasSizeX, double canvasSizeY
     graph4->SetLineColor(colors[3]);
     graph4->SetMarkerColor(colors[3]);
     graph4->SetMarkerStyle(markerStyles[3]);
+    graph4->SetMarkerSize(markerSizes[3]);
     graph4->Draw("p");
     legend->AddEntry(graph4, legendEntry4.data(), "lp");
+  }
+
+  TGraphAsymmErrors* graph5 = 0;
+  if ( histogram5_numerator && histogram5_denominator ) {
+    graph5 = getEfficiency(histogram5_numerator, histogram5_denominator);
+    graph5->SetLineColor(colors[4]);
+    graph5->SetMarkerColor(colors[4]);
+    graph5->SetMarkerStyle(markerStyles[4]);
+    graph5->SetMarkerSize(markerSizes[4]);
+    graph5->Draw("p");
+    legend->AddEntry(graph5, legendEntry5.data(), "lp");
   }
 
   legend->Draw();
@@ -327,13 +345,13 @@ void showDistribution(const TString& title, double canvasSizeX, double canvasSiz
   TCanvas* canvas = new TCanvas("canvas", "canvas", canvasSizeX, canvasSizeY);
   canvas->SetLogy(useLogScale);
 
-  int colors[4] = { 1, 2, 3, 4 };
-  int markerStyles[4] = { 22, 32, 20, 24 };
+  int colors[2] = { 1, 2 };
+  int markerStyles[2] = { 20, 21 };
 
   int numHistograms = 1;
   if ( histogram2 ) ++numHistograms;
 
-  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.44, legendY0 + 0.05*numHistograms, "", "brNDC"); 
+  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.30, legendY0 + 0.05*numHistograms, "", "brNDC"); 
   legend->SetFillColor(0);
   legend->SetShadowColor(0);
 
@@ -344,8 +362,8 @@ void showDistribution(const TString& title, double canvasSizeX, double canvasSiz
   histogram1->SetLineColor(colors[0]);
   histogram1->SetMarkerColor(colors[0]);
   histogram1->SetMarkerStyle(markerStyles[0]);
-  histogram1->Draw("e1p");
-  legend->AddEntry(histogram1, legendEntry1.data(), "p");
+  histogram1->Draw("elp");
+  legend->AddEntry(histogram1, legendEntry1.data(), "lp");
 
   TAxis* xAxis = histogram1->GetXaxis();
   xAxis->SetTitle(xAxisTitle.data());
@@ -357,8 +375,8 @@ void showDistribution(const TString& title, double canvasSizeX, double canvasSiz
     histogram2->SetLineColor(colors[1]);
     histogram2->SetMarkerColor(colors[1]);
     histogram2->SetMarkerStyle(markerStyles[1]);
-    histogram2->Draw("e1psame");
-    legend->AddEntry(histogram2, legendEntry2.data(), "p");
+    histogram2->Draw("elp,same");
+    legend->AddEntry(histogram2, legendEntry2.data(), "lp");
   }
 
   legend->Draw();
@@ -599,22 +617,26 @@ struct plotEntryType
     //double ptBinning[ptNumBins + 1] = { 
     //  20., 22.5, 25., 27.5, 30., 32.5, 35., 37.5, 40., 45., 50., 55., 60., 70., 80., 90., 100., 125., 150., 175., 200., 250., 300., 400., 500.
     //};
-    const int ptNumBins = 16;
+    //const int ptNumBins = 16;
+    //double ptBinning[ptNumBins + 1] = { 
+    //  20., 22.5, 25., 27.5, 30., 32.5, 35., 37.5, 40., 45., 50., 55., 60., 70., 80., 90., 100.
+    //};
+    const int ptNumBins = 10;
     double ptBinning[ptNumBins + 1] = { 
-      20., 22.5, 25., 27.5, 30., 32.5, 35., 37.5, 40., 45., 50., 55., 60., 70., 80., 90., 100.
+      20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120.
     };
     std::string histogramNamePt_numerator = Form("histogramPt_%s_numerator", name_.data());
     histogramPt_numerator_ = new TH1D(histogramNamePt_numerator.data(), histogramNamePt_numerator.data(), ptNumBins, ptBinning);
     std::string histogramNamePt_denominator = Form("histogramPt_%s_denominator", name_.data());
     histogramPt_denominator_ = new TH1D(histogramNamePt_denominator.data(), histogramNamePt_denominator.data(), ptNumBins, ptBinning);
     std::string histogramNameEta_numerator = Form("histogramEta_%s_numerator", name_.data());
-    histogramEta_numerator_ = new TH1D(histogramNameEta_numerator.data(), histogramNameEta_numerator.data(), 23, 0., 2.3);
+    histogramEta_numerator_ = new TH1D(histogramNameEta_numerator.data(), histogramNameEta_numerator.data(), 24, -2.3, 2.3);
     std::string histogramNameEta_denominator = Form("histogramEta_%s_denominator", name_.data());
-    histogramEta_denominator_ = new TH1D(histogramNameEta_denominator.data(), histogramNameEta_denominator.data(), 23, 0., 2.3);
+    histogramEta_denominator_ = new TH1D(histogramNameEta_denominator.data(), histogramNameEta_denominator.data(), 24, -2.3, 2.3);
     std::string histogramNameNvtx_numerator = Form("histogramNvtx_%s_numerator", name_.data());
-    histogramNvtx_numerator_ = new TH1D(histogramNameNvtx_numerator.data(), histogramNameNvtx_numerator.data(), 40, -0.5, 39.5);
+    histogramNvtx_numerator_ = new TH1D(histogramNameNvtx_numerator.data(), histogramNameNvtx_numerator.data(), 9, 0., 35.);
     std::string histogramNameNvtx_denominator = Form("histogramNvtx_%s_denominator", name_.data());
-    histogramNvtx_denominator_ = new TH1D(histogramNameNvtx_denominator.data(), histogramNameNvtx_denominator.data(), 40, -0.5, 39.5);
+    histogramNvtx_denominator_ = new TH1D(histogramNameNvtx_denominator.data(), histogramNameNvtx_denominator.data(), 9, 0., 35.);
     std::string histogramNameMVAoutput_vs_Pt = Form("histogramMVAoutput_vs_Pt_%s", name_.data());
     histogramMVAoutput_vs_Pt_ = new TH2D(histogramNameMVAoutput_vs_Pt.data(), histogramNameMVAoutput_vs_Pt.data(), ptNumBins, ptBinning, 20200, -1.01, +1.01);
     std::string histogramNamePt = Form("histogramPt_%s", name_.data());
@@ -720,9 +742,9 @@ void fillPlots(const std::string& inputFileName, const std::string& treeName, pl
       continue;
  
     if ( inputFileName.find("signal.root") != std::string::npos )
-      plots_signal->fillHistograms(mvaOutput, TMath::Log2(category), recTauPt, TMath::Abs(recTauEta), numVertices, evtWeight);
+      plots_signal->fillHistograms(mvaOutput, TMath::Log2(category), recTauPt, recTauEta, numVertices, evtWeight);
     else if ( inputFileName.find("background.root") != std::string::npos )
-      plots_background->fillHistograms(mvaOutput, TMath::Log2(category), recTauPt, TMath::Abs(recTauEta), numVertices, evtWeight);
+      plots_background->fillHistograms(mvaOutput, TMath::Log2(category), recTauPt, recTauEta, numVertices, evtWeight);
   }
 
   delete tree;
@@ -790,7 +812,8 @@ void plotAntiElectronDiscrMVAEfficiency_and_FakeRate()
   mvaEntries.push_back(new mvaEntryType(path+sigFileName, path+bkgFileName, mvaCutsFile, 0.95));
   mvaEntries.push_back(new mvaEntryType(path+sigFileName, path+bkgFileName, mvaCutsFile, 0.90));
   mvaEntries.push_back(new mvaEntryType(path+sigFileName, path+bkgFileName, mvaCutsFile, 0.85));
-  mvaEntries.push_back(new mvaEntryType(path+sigFileName, path+bkgFileName, mvaCutsFile, 0.80)); 
+  mvaEntries.push_back(new mvaEntryType(path+sigFileName, path+bkgFileName, mvaCutsFile, 0.80));
+  mvaEntries.push_back(new mvaEntryType(path+sigFileName, path+bkgFileName, mvaCutsFile, 0.75)); 
 
   for ( std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();
 	mvaEntry != mvaEntries.end(); ++mvaEntry ) {
@@ -803,70 +826,7 @@ void plotAntiElectronDiscrMVAEfficiency_and_FakeRate()
   }
 
 
-//--- efficiency/fake-rate plots (vs. pT, eta, Nvtx) 
-  showEfficiency("Z #rightarrow #tau#tau", 600, 600,
-    mvaEntries[0]->plots_signal_->histogramPt_numerator_, mvaEntries[0]->plots_signal_->histogramPt_denominator_, mvaEntries[0]->legendEntry_,
-    mvaEntries[1]->plots_signal_->histogramPt_numerator_, mvaEntries[1]->plots_signal_->histogramPt_denominator_, mvaEntries[1]->legendEntry_,
-    mvaEntries[2]->plots_signal_->histogramPt_numerator_, mvaEntries[2]->plots_signal_->histogramPt_denominator_, mvaEntries[2]->legendEntry_,
-    mvaEntries[3]->plots_signal_->histogramPt_numerator_, mvaEntries[3]->plots_signal_->histogramPt_denominator_, mvaEntries[3]->legendEntry_,
-    "P_{T} / GeV",
-    false, 0.2, 1.4, "Efficiency",
-    0.50, 0.2, 
-    "plots/plotAntiElectronMVAEfficiency_vs_Pt.png");
-
-  showEfficiency("Z #rightarrow #tau#tau", 600, 600,
-    mvaEntries[0]->plots_signal_->histogramEta_numerator_, mvaEntries[0]->plots_signal_->histogramEta_denominator_, mvaEntries[0]->legendEntry_,
-    mvaEntries[1]->plots_signal_->histogramEta_numerator_, mvaEntries[1]->plots_signal_->histogramEta_denominator_, mvaEntries[1]->legendEntry_,
-    mvaEntries[2]->plots_signal_->histogramEta_numerator_, mvaEntries[2]->plots_signal_->histogramEta_denominator_, mvaEntries[2]->legendEntry_,
-    mvaEntries[3]->plots_signal_->histogramEta_numerator_, mvaEntries[3]->plots_signal_->histogramEta_denominator_, mvaEntries[3]->legendEntry_,
-    "#eta",
-    false, 0.2, 1.4, "Efficiency", 
-    0.50, 0.2, 
-    "plots/plotAntiElectronMVAEfficiency_vs_Eta.png");
-
-  showEfficiency("Z #rightarrow #tau#tau", 600, 600,
-    mvaEntries[0]->plots_signal_->histogramNvtx_numerator_, mvaEntries[0]->plots_signal_->histogramNvtx_denominator_, mvaEntries[0]->legendEntry_,
-    mvaEntries[1]->plots_signal_->histogramNvtx_numerator_, mvaEntries[1]->plots_signal_->histogramNvtx_denominator_, mvaEntries[1]->legendEntry_,
-    mvaEntries[2]->plots_signal_->histogramNvtx_numerator_, mvaEntries[2]->plots_signal_->histogramNvtx_denominator_, mvaEntries[2]->legendEntry_,
-    mvaEntries[3]->plots_signal_->histogramNvtx_numerator_, mvaEntries[3]->plots_signal_->histogramNvtx_denominator_, mvaEntries[3]->legendEntry_,
-    "N_{vtx}",
-    false, 0.2, 1.4, "Efficiency",
-    0.50, 0.2, 
-    "plots/plotAntiElectronMVAEfficiency_vs_Nvtx.png");
-
-
-  showEfficiency("Z #rightarrow ee", 600, 600,
-    mvaEntries[0]->plots_background_->histogramPt_numerator_, mvaEntries[0]->plots_background_->histogramPt_denominator_, mvaEntries[0]->legendEntry_,
-    mvaEntries[1]->plots_background_->histogramPt_numerator_, mvaEntries[1]->plots_background_->histogramPt_denominator_, mvaEntries[1]->legendEntry_,
-    mvaEntries[2]->plots_background_->histogramPt_numerator_, mvaEntries[2]->plots_background_->histogramPt_denominator_, mvaEntries[2]->legendEntry_,
-    mvaEntries[3]->plots_background_->histogramPt_numerator_, mvaEntries[3]->plots_background_->histogramPt_denominator_, mvaEntries[3]->legendEntry_,
-    "P_{T} / GeV",
-    true, 1.e-5, 10., "Fake-rate",
-    0.50, 0.65,
-    "plots/plotAntiElectronMVAFakeRate_vs_Pt.png");
-
-  showEfficiency("Z #rightarrow ee", 600, 600,
-    mvaEntries[0]->plots_background_->histogramEta_numerator_, mvaEntries[0]->plots_background_->histogramEta_denominator_, mvaEntries[0]->legendEntry_,
-    mvaEntries[1]->plots_background_->histogramEta_numerator_, mvaEntries[1]->plots_background_->histogramEta_denominator_, mvaEntries[1]->legendEntry_,
-    mvaEntries[2]->plots_background_->histogramEta_numerator_, mvaEntries[2]->plots_background_->histogramEta_denominator_, mvaEntries[2]->legendEntry_,
-    mvaEntries[3]->plots_background_->histogramEta_numerator_, mvaEntries[3]->plots_background_->histogramEta_denominator_, mvaEntries[3]->legendEntry_,
-    "#eta",
-    true, 1.e-5, 10., "Fake-rate",
-    0.50, 0.65,
-    "plots/plotAntiElectronMVAFakeRate_vs_Eta.png");
-
-  showEfficiency("Z #rightarrow ee", 600, 600,
-    mvaEntries[0]->plots_background_->histogramNvtx_numerator_, mvaEntries[0]->plots_background_->histogramNvtx_denominator_, mvaEntries[0]->legendEntry_,
-    mvaEntries[1]->plots_background_->histogramNvtx_numerator_, mvaEntries[1]->plots_background_->histogramNvtx_denominator_, mvaEntries[1]->legendEntry_,
-    mvaEntries[2]->plots_background_->histogramNvtx_numerator_, mvaEntries[2]->plots_background_->histogramNvtx_denominator_, mvaEntries[2]->legendEntry_,
-    mvaEntries[3]->plots_background_->histogramNvtx_numerator_, mvaEntries[3]->plots_background_->histogramNvtx_denominator_, mvaEntries[3]->legendEntry_,
-    "N_{vtx}",
-    true, 1.e-5, 10., "Fake-rate",
-    0.50, 0.65,
-    "plots/plotAntiElectronMVAFakeRate_vs_Nvtx.png");
-
-
-//--- normalize histograms and plot single distributions (pT, eta, Nvtx)
+//--- print summary informations on integrated efficiency/fake-rate
   for ( std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();
 	mvaEntry != mvaEntries.end(); ++mvaEntry ) {
 
@@ -878,6 +838,82 @@ void plotAntiElectronDiscrMVAEfficiency_and_FakeRate()
     std::cout << (*mvaEntry)->legendEntry_ << std::endl;
     std::cout << "integrated eff: " << integralSignalNum << "/" << integralSignalDen << " = " << integralSignalNum/integralSignalDen << std::endl;
     std::cout << "integrated fake-rate: " << integralBkgNum << "/" << integralBkgDen << " = " << integralBkgNum/integralBkgDen << std::endl;
+
+  }
+
+
+//--- efficiency/fake-rate plots (vs. pT, eta, Nvtx) 
+  showEfficiency("Z #rightarrow #tau#tau", 600, 600,
+    mvaEntries[0]->plots_signal_->histogramPt_numerator_, mvaEntries[0]->plots_signal_->histogramPt_denominator_, mvaEntries[0]->legendEntry_,
+    mvaEntries[1]->plots_signal_->histogramPt_numerator_, mvaEntries[1]->plots_signal_->histogramPt_denominator_, mvaEntries[1]->legendEntry_,
+    mvaEntries[2]->plots_signal_->histogramPt_numerator_, mvaEntries[2]->plots_signal_->histogramPt_denominator_, mvaEntries[2]->legendEntry_,
+    mvaEntries[3]->plots_signal_->histogramPt_numerator_, mvaEntries[3]->plots_signal_->histogramPt_denominator_, mvaEntries[3]->legendEntry_,
+    mvaEntries[4]->plots_signal_->histogramPt_numerator_, mvaEntries[4]->plots_signal_->histogramPt_denominator_, mvaEntries[4]->legendEntry_,
+    "P_{T} / GeV", 10., 130.,
+    false, 0.2, 1.4, "Efficiency",
+    0.6, 0.7, 
+    "plots/plotAntiElectronMVAEfficiency_vs_Pt.png");
+
+  showEfficiency("Z #rightarrow #tau#tau", 600, 600,
+    mvaEntries[0]->plots_signal_->histogramEta_numerator_, mvaEntries[0]->plots_signal_->histogramEta_denominator_, mvaEntries[0]->legendEntry_,
+    mvaEntries[1]->plots_signal_->histogramEta_numerator_, mvaEntries[1]->plots_signal_->histogramEta_denominator_, mvaEntries[1]->legendEntry_,
+    mvaEntries[2]->plots_signal_->histogramEta_numerator_, mvaEntries[2]->plots_signal_->histogramEta_denominator_, mvaEntries[2]->legendEntry_,
+    mvaEntries[3]->plots_signal_->histogramEta_numerator_, mvaEntries[3]->plots_signal_->histogramEta_denominator_, mvaEntries[3]->legendEntry_,
+    mvaEntries[4]->plots_signal_->histogramEta_numerator_, mvaEntries[4]->plots_signal_->histogramEta_denominator_, mvaEntries[4]->legendEntry_,
+    "#eta", -2.9, 2.9,
+    false, 0.2, 1.4, "Efficiency", 
+    0.6, 0.7, 
+    "plots/plotAntiElectronMVAEfficiency_vs_Eta.png");
+
+  showEfficiency("Z #rightarrow #tau#tau", 600, 600,
+    mvaEntries[0]->plots_signal_->histogramNvtx_numerator_, mvaEntries[0]->plots_signal_->histogramNvtx_denominator_, mvaEntries[0]->legendEntry_,
+    mvaEntries[1]->plots_signal_->histogramNvtx_numerator_, mvaEntries[1]->plots_signal_->histogramNvtx_denominator_, mvaEntries[1]->legendEntry_,
+    mvaEntries[2]->plots_signal_->histogramNvtx_numerator_, mvaEntries[2]->plots_signal_->histogramNvtx_denominator_, mvaEntries[2]->legendEntry_,
+    mvaEntries[3]->plots_signal_->histogramNvtx_numerator_, mvaEntries[3]->plots_signal_->histogramNvtx_denominator_, mvaEntries[3]->legendEntry_,
+    mvaEntries[4]->plots_signal_->histogramNvtx_numerator_, mvaEntries[4]->plots_signal_->histogramNvtx_denominator_, mvaEntries[4]->legendEntry_,
+    "N_{vtx}", -4., 39.,
+    false, 0.2, 1.4, "Efficiency",
+    0.6, 0.7, 
+    "plots/plotAntiElectronMVAEfficiency_vs_Nvtx.png");
+
+
+  showEfficiency("Z #rightarrow ee", 600, 600,
+    mvaEntries[0]->plots_background_->histogramPt_numerator_, mvaEntries[0]->plots_background_->histogramPt_denominator_, mvaEntries[0]->legendEntry_,
+    mvaEntries[1]->plots_background_->histogramPt_numerator_, mvaEntries[1]->plots_background_->histogramPt_denominator_, mvaEntries[1]->legendEntry_,
+    mvaEntries[2]->plots_background_->histogramPt_numerator_, mvaEntries[2]->plots_background_->histogramPt_denominator_, mvaEntries[2]->legendEntry_,
+    mvaEntries[3]->plots_background_->histogramPt_numerator_, mvaEntries[3]->plots_background_->histogramPt_denominator_, mvaEntries[3]->legendEntry_,
+    mvaEntries[4]->plots_background_->histogramPt_numerator_, mvaEntries[4]->plots_background_->histogramPt_denominator_, mvaEntries[4]->legendEntry_,
+    "P_{T} / GeV", 10., 130.,
+    true, 1.e-5, 10., "Fake-rate",
+    0.6, 0.7,
+    "plots/plotAntiElectronMVAFakeRate_vs_Pt.png");
+
+  showEfficiency("Z #rightarrow ee", 600, 600,
+    mvaEntries[0]->plots_background_->histogramEta_numerator_, mvaEntries[0]->plots_background_->histogramEta_denominator_, mvaEntries[0]->legendEntry_,
+    mvaEntries[1]->plots_background_->histogramEta_numerator_, mvaEntries[1]->plots_background_->histogramEta_denominator_, mvaEntries[1]->legendEntry_,
+    mvaEntries[2]->plots_background_->histogramEta_numerator_, mvaEntries[2]->plots_background_->histogramEta_denominator_, mvaEntries[2]->legendEntry_,
+    mvaEntries[3]->plots_background_->histogramEta_numerator_, mvaEntries[3]->plots_background_->histogramEta_denominator_, mvaEntries[3]->legendEntry_,
+    mvaEntries[4]->plots_background_->histogramEta_numerator_, mvaEntries[4]->plots_background_->histogramEta_denominator_, mvaEntries[4]->legendEntry_,
+    "#eta", -2.9, 2.9,
+    true, 1.e-5, 10., "Fake-rate",
+    0.6, 0.7,
+    "plots/plotAntiElectronMVAFakeRate_vs_Eta.png");
+
+  showEfficiency("Z #rightarrow ee", 600, 600,
+    mvaEntries[0]->plots_background_->histogramNvtx_numerator_, mvaEntries[0]->plots_background_->histogramNvtx_denominator_, mvaEntries[0]->legendEntry_,
+    mvaEntries[1]->plots_background_->histogramNvtx_numerator_, mvaEntries[1]->plots_background_->histogramNvtx_denominator_, mvaEntries[1]->legendEntry_,
+    mvaEntries[2]->plots_background_->histogramNvtx_numerator_, mvaEntries[2]->plots_background_->histogramNvtx_denominator_, mvaEntries[2]->legendEntry_,
+    mvaEntries[3]->plots_background_->histogramNvtx_numerator_, mvaEntries[3]->plots_background_->histogramNvtx_denominator_, mvaEntries[3]->legendEntry_,
+    mvaEntries[4]->plots_background_->histogramNvtx_numerator_, mvaEntries[4]->plots_background_->histogramNvtx_denominator_, mvaEntries[4]->legendEntry_,
+    "N_{vtx}", -4., 39.,
+    true, 1.e-5, 10., "Fake-rate",
+    0.6, 0.7,
+    "plots/plotAntiElectronMVAFakeRate_vs_Nvtx.png");
+
+
+//--- normalize histograms and plot single distributions (pT, eta, Nvtx)
+  for ( std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();
+	mvaEntry != mvaEntries.end(); ++mvaEntry ) {
 
     normalizeHistogram((*mvaEntry)->plots_signal_->histogramPt_numerator_);
     normalizeHistogram((*mvaEntry)->plots_signal_->histogramPt_denominator_);
@@ -898,7 +934,7 @@ void plotAntiElectronDiscrMVAEfficiency_and_FakeRate()
       (*mvaEntry)->plots_background_->histogramPt_denominator_, "Background",
       "P_{T} / GeV",
       true, 1.e-3, 1., "a.u.",
-      0.40, 0.75,
+      0.6, 0.78,
       TString(Form("plots/plotAntiElectronMVAEfficiency_and_FakeRate_denominatorPt_%s.png", (*mvaEntry)->legendEntry_.data())).ReplaceAll(" ", "").Data());
 
     showDistribution("", 600, 600,
@@ -906,15 +942,15 @@ void plotAntiElectronDiscrMVAEfficiency_and_FakeRate()
       (*mvaEntry)->plots_background_->histogramEta_denominator_, "Background",
       "#eta",
       true, 1.e-3, 1., "a.u.",
-      0.40, 0.75,
+      0.6, 0.78,
       TString(Form("plots/plotAntiElectronMVAEfficiency_and_FakeRate_denominatorEta_%s.png", (*mvaEntry)->legendEntry_.data())).ReplaceAll(" ", "").Data());
 
     showDistribution("", 600, 600,
       (*mvaEntry)->plots_signal_->histogramNvtx_denominator_, "Signal",
       (*mvaEntry)->plots_background_->histogramNvtx_denominator_, "Background",
       "N_{vtx}",
-      true, 1.e-3, 1., "a.u.",
-      0.40, 0.75,
+      true, 1.e-5, 1., "a.u.",
+      0.6, 0.78,
       TString(Form("plots/plotAntiElectronMVAEfficiency_and_FakeRate_denominatorNvtx_%s.png", (*mvaEntry)->legendEntry_.data())).ReplaceAll(" ", "").Data());
 
 /*
@@ -986,6 +1022,7 @@ void plotAntiElectronDiscrMVAEfficiency_and_FakeRate()
       TString(Form("plots/plotAntiElectronMVAEfficiency_MVAcutVsPtConstFakeRate_%s.png", (*mvaEntry)->legendEntry_.data())).ReplaceAll(" ", "").Data());
 */
   }
+
 
   for ( std::vector<mvaEntryType*>::iterator it = mvaEntries.begin();
 	it != mvaEntries.end(); ++it ) {
