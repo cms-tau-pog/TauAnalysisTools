@@ -4,7 +4,7 @@ import os
 
 version = 'antiElectronDiscr_v1_2'
 
-inputFilePath = "/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples/2015-03-30/"
+inputFilePath = "/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples/2015-04-11/"
 
 outputFilePath = "/nfs/dust/cms/user/fcolombo/HiggsToTauTau/TauPOG/antiElectronDiscrMVATraining/%s/" % version
 
@@ -22,7 +22,6 @@ categories = {
     'NoEleMatch_woGwoGSF_Barrel' : {
         'inputVariables' : [
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
@@ -39,7 +38,6 @@ categories = {
     'NoEleMatch_wGwoGSF_Barrel' : {
         'inputVariables' : [
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
@@ -59,47 +57,51 @@ categories = {
     },
     'woGwGSF_Barrel' : {
         'inputVariables' : [
-            'Elec_EtotOverPin/F',
-            'Elec_EgammaOverPdif/F',
-            'Elec_Fbrem/F',
-            'Elec_Chi2NormGSF/F',
+            'TMath::Max(-0.1, Elec_EtotOverPin)/F',
+            'TMath::Log(Elec_Chi2NormGSF)/F',
             'Elec_GSFNumHits/I',
-            'Elec_GSFTrackResol/F',
+            'TMath::Log(Elec_GSFTrackResol)/F',
             'Elec_GSFTracklnPt/F',
-            'Elec_GSFTrackEta/F',
+            '(Elec_GSFNumHits - Elec_KFNumHits)/(Elec_GSFNumHits + Elec_KFNumHits)/F',
+            'TMath::Log(Elec_Chi2NormKF)/F',
+            'TMath::Min(TMath::Abs(Elec_Pin - Elec_Pout)/Elec_Pin, 1.)/F',
+            'TMath::Min(Elec_Eecal/Elec_Pout, 20.)/F',
+            'Elec_DeltaEta/F',
+            'Elec_DeltaPhi/F',
+            'TMath::Min(Elec_MvaInSigmaEtaEta, 0.01)/F',
+            'TMath::Min(Elec_MvaInHadEnergy, 20)/F',
+            'TMath::Min(Elec_MvaInDeltaEta, 0.1)/F',
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
             'Tau_HadrHoP/F',
             'Tau_HadrEoP/F',
             'Tau_VisMass/F',
-            'Tau_HadrMvaOut/F',
-            'Tau_GSFChi2/F',
-            '(Tau_GSFNumHits - Tau_KFNumHits)/(Tau_GSFNumHits + Tau_KFNumHits)/F',
-            'Tau_GSFTrackResol/F',
-            'Tau_GSFTracklnPt/F',
-            'Tau_GSFTrackEta/F',
             'Tau_dCrackEta/F',
             'Tau_dCrackPhi/F'
         ],
-        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands < 0.5 && (Tau_HasGsf > 0.5 || Elec_HasGSF > 0.5)' \
+        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands < 0.5' \
           + ' && Tau_EtaAtEcalEntrance > -1.479 && Tau_EtaAtEcalEntrance < 1.479',
         'idx' : 5
     },
     'wGwGSF_Barrel' : {
         'inputVariables' : [
-            'Elec_EtotOverPin/F',
-            'Elec_EgammaOverPdif/F',
-            'Elec_Fbrem/F',
-            'Elec_Chi2NormGSF/F',
+            'TMath::Max(-0.1, Elec_EtotOverPin)/F',
+            'TMath::Log(Elec_Chi2NormGSF)/F',
             'Elec_GSFNumHits/I',
-            'Elec_GSFTrackResol/F',
+            'TMath::Log(Elec_GSFTrackResol)/F',
             'Elec_GSFTracklnPt/F',
-            'Elec_GSFTrackEta/F',
+            '(Elec_GSFNumHits - Elec_KFNumHits)/(Elec_GSFNumHits + Elec_KFNumHits)/F',
+            'TMath::Log(Elec_Chi2NormKF)/F',
+            'TMath::Min(TMath::Abs(Elec_Pin - Elec_Pout)/Elec_Pin, 1.)/F',
+            'TMath::Min(Elec_Eecal/Elec_Pout, 20.)/F',
+            'Elec_DeltaEta/F',
+            'Elec_DeltaPhi/F',
+            'TMath::Min(Elec_MvaInSigmaEtaEta, 0.01)/F',
+            'TMath::Min(Elec_MvaInHadEnergy, 20)/F',
+            'TMath::Min(Elec_MvaInDeltaEta, 0.1)/F',
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
@@ -107,26 +109,19 @@ categories = {
             'Tau_HadrHoP/F',
             'Tau_HadrEoP/F',
             'Tau_VisMass/F',
-            'Tau_HadrMvaOut/F',
             'Tau_GammaEtaMom/F',
             'Tau_GammaPhiMom/F',
             'Tau_GammaEnFrac/F',
-            'Tau_GSFChi2/F',
-            '(Tau_GSFNumHits - Tau_KFNumHits)/(Tau_GSFNumHits + Tau_KFNumHits)/F',
-            'Tau_GSFTrackResol/F',
-            'Tau_GSFTracklnPt/F',
-            'Tau_GSFTrackEta/F',
             'Tau_dCrackEta/F',
             'Tau_dCrackPhi/F'
         ],
-        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands > 0.5 && (Tau_HasGsf > 0.5 || Elec_HasGSF > 0.5)' \
+        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands > 0.5' \
           + ' && Tau_EtaAtEcalEntrance > -1.479 && Tau_EtaAtEcalEntrance < 1.479',
         'idx' : 7
     },
     'NoEleMatch_woGwoGSF_Endcap' : {
         'inputVariables' : [
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
@@ -142,7 +137,6 @@ categories = {
     'NoEleMatch_wGwoGSF_Endcap' : {
         'inputVariables' : [
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
@@ -161,46 +155,50 @@ categories = {
     },
     'woGwGSF_Endcap' : {
         'inputVariables' : [
-            'Elec_EtotOverPin/F',
-            'Elec_EgammaOverPdif/F',
-            'Elec_Fbrem/F',
-            'Elec_Chi2NormGSF/F',
+            'TMath::Max(-0.1, Elec_EtotOverPin)/F',
+            'TMath::Log(Elec_Chi2NormGSF)/F',
             'Elec_GSFNumHits/I',
-            'Elec_GSFTrackResol/F',
+            'TMath::Log(Elec_GSFTrackResol)/F',
             'Elec_GSFTracklnPt/F',
-            'Elec_GSFTrackEta/F',
+            '(Elec_GSFNumHits - Elec_KFNumHits)/(Elec_GSFNumHits + Elec_KFNumHits)/F',
+            'TMath::Log(Elec_Chi2NormKF)/F',
+            'TMath::Min(TMath::Abs(Elec_Pin - Elec_Pout)/Elec_Pin, 1.)/F',
+            'TMath::Min(Elec_Eecal/Elec_Pout, 20.)/F',
+            'Elec_DeltaEta/F',
+            'Elec_DeltaPhi/F',
+            'TMath::Min(Elec_MvaInSigmaEtaEta, 0.01)/F',
+            'TMath::Min(Elec_MvaInHadEnergy, 20)/F',
+            'TMath::Min(Elec_MvaInDeltaEta, 0.1)/F',
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
             'Tau_HadrHoP/F',
             'Tau_HadrEoP/F',
             'Tau_VisMass/F',
-            'Tau_HadrMvaOut/F',
-            'Tau_GSFChi2/F',
-            '(Tau_GSFNumHits - Tau_KFNumHits)/(Tau_GSFNumHits + Tau_KFNumHits)/F',
-            'Tau_GSFTrackResol/F',
-            'Tau_GSFTracklnPt/F',
-            'Tau_GSFTrackEta/F',
             'Tau_dCrackEta/F'
         ],
-        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands < 0.5 && (Tau_HasGsf > 0.5 || Elec_HasGSF > 0.5)' \
+        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands < 0.5' \
           + ' && ((Tau_EtaAtEcalEntrance > -2.3 && Tau_EtaAtEcalEntrance < -1.479) || (Tau_EtaAtEcalEntrance > 1.479 && Tau_EtaAtEcalEntrance < 2.3))',
         'idx' : 13
     },
     'wGwGSF_Endcap' : {
         'inputVariables' : [
-            'Elec_EtotOverPin/F',
-            'Elec_EgammaOverPdif/F',
-            'Elec_Fbrem/F',
-            'Elec_Chi2NormGSF/F',
+            'TMath::Max(-0.1, Elec_EtotOverPin)/F',
+            'TMath::Log(Elec_Chi2NormGSF)/F',
             'Elec_GSFNumHits/I',
-            'Elec_GSFTrackResol/F',
+            'TMath::Log(Elec_GSFTrackResol)/F',
             'Elec_GSFTracklnPt/F',
-            'Elec_GSFTrackEta/F',
+            '(Elec_GSFNumHits - Elec_KFNumHits)/(Elec_GSFNumHits + Elec_KFNumHits)/F',
+            'TMath::Log(Elec_Chi2NormKF)/F',
+            'TMath::Min(TMath::Abs(Elec_Pin - Elec_Pout)/Elec_Pin, 1.)/F',
+            'TMath::Min(Elec_Eecal/Elec_Pout, 20.)/F',
+            'Elec_DeltaEta/F',
+            'Elec_DeltaPhi/F',
+            'TMath::Min(Elec_MvaInSigmaEtaEta, 0.01)/F',
+            'TMath::Min(Elec_MvaInHadEnergy, 20)/F',
+            'TMath::Min(Elec_MvaInDeltaEta, 0.1)/F',
             'Tau_EtaAtEcalEntrance/F',
-            'Tau_LeadChargedPFCandEtaAtEcalEntrance/F',
             'TMath::Min(2., Tau_LeadChargedPFCandPt/TMath::Max(1., Tau_Pt))/F',
             'TMath::Log(TMath::Max(1., Tau_Pt))/F',
             'Tau_EmFraction/F',
@@ -208,18 +206,12 @@ categories = {
             'Tau_HadrHoP/F',
             'Tau_HadrEoP/F',
             'Tau_VisMass/F',
-            'Tau_HadrMvaOut/F',
             'Tau_GammaEtaMom/F',
             'Tau_GammaPhiMom/F',
             'Tau_GammaEnFrac/F',
-            'Tau_GSFChi2/F',
-            '(Tau_GSFNumHits - Tau_KFNumHits)/(Tau_GSFNumHits + Tau_KFNumHits)/F',
-            'Tau_GSFTrackResol/F',
-            'Tau_GSFTracklnPt/F',
-            'Tau_GSFTrackEta/F',
             'Tau_dCrackEta/F'
         ],
-        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands > 0.5 && (Tau_HasGsf > 0.5 || Elec_HasGSF > 0.5)' \
+        'addPreselection' : 'Tau_GsfEleMatch > 0.5 && Tau_NumGammaCands > 0.5' \
           + ' && ((Tau_EtaAtEcalEntrance > -2.3 && Tau_EtaAtEcalEntrance < -1.479) || (Tau_EtaAtEcalEntrance > 1.479 && Tau_EtaAtEcalEntrance < 2.3))',
         'idx' : 15
     }
@@ -230,7 +222,7 @@ mvaDiscriminators = {
         'preselection'        : preselection_newDMs,
         'applyPtReweighting'  : False,
         'applyEtaReweighting' : False,
-        'reweight'            : 'none',
+        'reweight'            : '',
         'applyEventPruning'   : 0,
         'mvaTrainingOptions'  : "!H:!V:NTrees=600:BoostType=Grad:Shrinkage=0.30:UseBaggedGrad:GradBaggingFraction=0.6:SeparationType=GiniIndex:nCuts=20:PruneMethod=CostComplexity:PruneStrength=50:NNodesMax=5",
         'categories'          : categories,
