@@ -12,5 +12,10 @@
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="boost"/>
 <use name="FWCore/Utilities"/>
+<use name="RecoVertex/KalmanVertexFit"/>
+<use name="TrackingTools/Records"/>
+<use name="TrackingTools/IPTools"/>
+<use name="RecoBTag/BTagTools"/>
+<use name="RecoBTag/SecondaryVertex"/>
 </library>
 

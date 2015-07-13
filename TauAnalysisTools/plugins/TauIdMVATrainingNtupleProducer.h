@@ -32,6 +32,8 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
+#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
+
 #include <TTree.h>
 #include <TMatrixD.h>
 #include <TString.h>
@@ -53,7 +55,7 @@ class TauIdMVATrainingNtupleProducer : public edm::EDProducer
 
  private:
 
-  void setRecTauValues(const reco::PFTauRef&, const edm::Event&);
+  void setRecTauValues(const reco::PFTauRef&, const edm::Event&, const edm::EventSetup&);
   void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const reco::GenParticle*, const reco::Candidate::LorentzVector&, int);
   void setGenParticleMatchValues(const std::string&, const reco::Candidate::LorentzVector&, const reco::GenParticle*);
   void setNumPileUpValue(const edm::Event&);
@@ -108,13 +110,19 @@ class TauIdMVATrainingNtupleProducer : public edm::EDProducer
   struct tauIsolationEntryType
   {
     tauIsolationEntryType(const std::string& name, const edm::ParameterSet& cfg)
-      : srcChargedIsoPtSum_(cfg.getParameter<edm::InputTag>("chargedIsoPtSum")),
-	srcNeutralIsoPtSum_(cfg.getParameter<edm::InputTag>("neutralIsoPtSum")),
-	srcPUcorrPtSum_(cfg.getParameter<edm::InputTag>("puCorrPtSum"))
+    : srcChargedIsoPtSum_(cfg.getParameter<edm::InputTag>("chargedIsoPtSum")),
+      srcNeutralIsoPtSum_(cfg.getParameter<edm::InputTag>("neutralIsoPtSum")),
+      srcPUcorrPtSum_(cfg.getParameter<edm::InputTag>("puCorrPtSum")),
+      srcNeutralIsoPtSumWeight_(cfg.getParameter<edm::InputTag>("neutralIsoPtSumWeight")),
+      srcFootprintCorrection_(cfg.getParameter<edm::InputTag>("footprintCorrection")),
+      srcPhotonPtSumOutsideSignalCone_(cfg.getParameter<edm::InputTag>("photonPtSumOutsideSignalCone"))
     {
       branchNameChargedIsoPtSum_ = Form("%sChargedIsoPtSum", name.data());
       branchNameNeutralIsoPtSum_ = Form("%sNeutralIsoPtSum", name.data());
       branchNamePUcorrPtSum_     = Form("%sPUcorrPtSum", name.data());
+      branchNameNeutralIsoPtSumWeight_ = Form("%sNeutralIsoPtSumWeight", name.data());
+      branchNameFootprintCorrection_   = Form("%sFootprintCorrection", name.data());
+      branchNamePhotonPtSumOutsideSignalCone_ = Form("%sPhotonPtSumOutsideSignalCone", name.data());
     }
     ~tauIsolationEntryType() {}
     edm::InputTag srcChargedIsoPtSum_;
@@ -123,6 +131,12 @@ class TauIdMVATrainingNtupleProducer : public edm::EDProducer
     std::string branchNameNeutralIsoPtSum_;
     edm::InputTag srcPUcorrPtSum_;
     std::string branchNamePUcorrPtSum_;
+    edm::InputTag srcNeutralIsoPtSumWeight_;
+    std::string branchNameNeutralIsoPtSumWeight_;
+    edm::InputTag srcFootprintCorrection_;
+    std::string branchNameFootprintCorrection_;
+    edm::InputTag srcPhotonPtSumOutsideSignalCone_;
+    std::string branchNamePhotonPtSumOutsideSignalCone_;
   };
   std::vector<tauIsolationEntryType> tauIsolationEntries_;
 
@@ -176,6 +190,8 @@ class TauIdMVATrainingNtupleProducer : public edm::EDProducer
   TTree* ntuple_;
 
   int verbosity_;
+
+  SignedTransverseImpactParameter* STIP;
 };
 
 #endif

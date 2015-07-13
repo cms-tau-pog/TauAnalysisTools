@@ -20,6 +20,11 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoBTag/SecondaryVertex/interface/SecondaryVertex.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+
 #include <TPRegexp.h>
 #include <TObjArray.h>
 #include <TObjString.h>
@@ -140,6 +145,8 @@ TauIdMVATrainingNtupleProducer::TauIdMVATrainingNtupleProducer(const edm::Parame
 
   verbosity_ = ( cfg.exists("verbosity") ) ?
     cfg.getParameter<int>("verbosity") : 0;
+
+  STIP = new SignedTransverseImpactParameter();
 }
 
 TauIdMVATrainingNtupleProducer::~TauIdMVATrainingNtupleProducer()
@@ -181,6 +188,9 @@ void TauIdMVATrainingNtupleProducer::beginJob()
     addBranchF(tauIsolation->branchNameChargedIsoPtSum_);
     addBranchF(tauIsolation->branchNameNeutralIsoPtSum_);
     addBranchF(tauIsolation->branchNamePUcorrPtSum_);    
+    addBranchF(tauIsolation->branchNameNeutralIsoPtSumWeight_);
+    addBranchF(tauIsolation->branchNameFootprintCorrection_);
+    addBranchF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_);
   }
   addBranch_XYZ("recImpactParamPCA");
   addBranchF("recImpactParam");
@@ -188,6 +198,31 @@ void TauIdMVATrainingNtupleProducer::beginJob()
   addBranch_XYZ("recImpactParamPCA3D");
   addBranchF("recImpactParam3D");
   addBranchF("recImpactParamSign3D");
+  //additional variables from Francesco///
+  addBranchF("recImpactParamZ");
+  addBranchF("recImpactParamSignZ");
+  addBranchF("recImpactParamTk2");
+  addBranchF("recImpactParamSignTk2");
+  addBranchF("recImpactParam3DTk2");
+  addBranchF("recImpactParamSign3DTk2");
+  addBranchF("recImpactParamZTk2");
+  addBranchF("recImpactParamSignZTk2");
+  addBranchF("recImpactParamTk3");
+  addBranchF("recImpactParamSignTk3");
+  addBranchF("recImpactParam3DTk3");
+  addBranchF("recImpactParamSign3DTk3");
+  addBranchF("recImpactParamZTk3");
+  addBranchF("recImpactParamSignZTk3");
+  addBranchF("recDecayLengthTk1");
+  addBranchF("recDecayLengthSignTk1");
+  addBranchF("recDecayLengthTk2");
+  addBranchF("recDecayLengthSignTk2");
+  addBranchF("recDecayLengthTk3");
+  addBranchF("recDecayLengthSignTk3");
+  addBranchF("recDecayDist2D");
+  addBranchF("recDecayDistSign2D");
+  addBranchF("recChi2DiffEvtVertex");
+  ///////////////////////////////////
   addBranchI("hasRecDecayVertex");
   addBranch_XYZ("recDecayVertex");
   addBranch_Cov("recDecayVertexCov");
@@ -202,6 +237,16 @@ void TauIdMVATrainingNtupleProducer::beginJob()
     addBranchI(vertexCollection->branchName_multiplicity_);
     addBranch_XYZ(vertexCollection->branchName_position_);
   }
+  addBranchF("recTauPtWeightedDetaStrip");
+  addBranchF("recTauPtWeightedDphiStrip");
+  addBranchF("recTauPtWeightedDrSignal");
+  addBranchF("recTauPtWeightedDrIsolation");
+  addBranchI("recTauNphoton");
+  addBranchF("recTauEratio");
+  addBranchF("recTauLeadingTrackChi2");
+  addBranchI("recTauNphotonSignal");
+  addBranchI("recTauNphotonIso");
+  addBranchI("recTauNphotonTotal");
   addBranchF("numPileUp");
   addBranch_EnPxPyPz("genTau");
   addBranchF("genTauDeltaR");
@@ -227,7 +272,156 @@ void TauIdMVATrainingNtupleProducer::beginJob()
   addBranchF("evtWeight");
 }
 
-void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTau, const edm::Event& evt)
+namespace
+{
+  //varibales from Yuta
+  const std::vector<reco::PFCandidatePtr>& getPFGammas(const reco::PFTau& tau, bool signal = true) {
+    if (signal)
+      return tau.signalPFGammaCands();
+    return tau.isolationPFGammaCands();
+  }
+
+  bool isInside(float photon_pt, float deta, float dphi){
+
+    if(photon_pt==0){return false;}
+
+    if(
+       (dphi < TMath::Min(0.3, TMath::Max(0.05, 0.352476*TMath::Power(photon_pt, -0.707716)))) && \
+       (deta < TMath::Min(0.15, TMath::Max(0.05, 0.197077*TMath::Power(photon_pt, -0.658701))))
+       ){
+      return true;
+    }
+
+    return false;
+
+  }
+
+  float returnChi2(const reco::PFTau& tau){
+
+    // leading charged hadron PFCand in signal cone
+
+    Float_t LeadingTracknormalizedChi2 = 0;
+
+    const reco::PFCandidatePtr& leadingPFCharged = tau.leadPFChargedHadrCand() ;
+    if ( leadingPFCharged.isNonnull() ) {
+      reco::TrackRef tref = leadingPFCharged -> trackRef();
+      if ( tref.isNonnull() ) {
+        LeadingTracknormalizedChi2 = (float)(tref -> normalizedChi2());
+      }
+    }
+
+    return LeadingTracknormalizedChi2;
+  }
+  
+  float returnEratio(const reco::PFTau& tau){
+
+    std::vector<reco::PFCandidatePtr> constsignal = tau.signalPFCands();
+    Float_t EcalEnInSignalPFCands = 0;
+    Float_t HcalEnInSignalPFCands = 0;
+
+    typedef std::vector <reco::PFCandidatePtr>::iterator constituents_iterator;
+    for(constituents_iterator it=constsignal.begin(); it != constsignal.end(); ++it) {
+      reco::PFCandidatePtr & icand = *it;
+      EcalEnInSignalPFCands += icand -> ecalEnergy();
+      HcalEnInSignalPFCands += icand -> hcalEnergy();
+    }
+
+    Float_t total = EcalEnInSignalPFCands + HcalEnInSignalPFCands;
+    if(total==0) return -1;
+    else return EcalEnInSignalPFCands/total;
+  }
+
+  float pt_weighted_dx(const reco::PFTau& tau, int mode = 0, int var = 0, int decaymode = -1){
+  
+    float sum_pt = 0.;
+    float sum_dx_pt = 0.;
+    float signalrad = std::max(0.05, std::min(0.1, 3./tau.pt()));
+    int is3prong = (decaymode==10);
+
+    auto& cands = getPFGammas(tau, mode < 2);
+
+    for (auto& cand : cands) {
+      // only look at electrons/photons with pT > 0.5
+      if (cand->pt() < 0.5)
+	continue;
+
+      float dr = reco::deltaR(*cand, tau);
+      float deta = std::abs(cand->eta() - tau.eta());
+      float dphi = std::abs(reco::deltaPhi(cand->phi(), tau.phi()));
+      float pt = cand->pt();
+
+      bool flag = isInside(pt, deta, dphi);
+
+      if(is3prong==0){
+	if (mode == 2 || (mode == 0 && dr < signalrad) || (mode == 1 && dr > signalrad)) {
+	  sum_pt += pt;
+	  if (var == 0)
+	    sum_dx_pt += pt * dr;
+	  else if (var == 1)
+	    sum_dx_pt += pt * deta;
+	  else if (var == 2)
+	    sum_dx_pt += pt * dphi;
+	}
+      }else if(is3prong==1){
+
+	if( (mode==2 && flag==false) || (mode==1 && flag==true) || mode==0){
+	  sum_pt += pt;
+        
+	  if (var == 0)
+	    sum_dx_pt += pt * dr;
+	  else if (var == 1)
+	    sum_dx_pt += pt * deta;
+	  else if (var == 2)
+	    sum_dx_pt += pt * dphi;
+	}
+      }
+    }
+ 
+    if (sum_pt > 0.)
+      return sum_dx_pt/sum_pt;  
+    return 0.;
+  }
+
+  float pt_weighted_dr_signal(const reco::PFTau& tau, int dm) {
+    return pt_weighted_dx(tau, 0, 0, dm);
+  }
+
+  float pt_weighted_deta_strip(const reco::PFTau& tau, int dm) {
+    if(dm==10){
+      return pt_weighted_dx(tau, 2, 1, dm);
+    }else{
+      return pt_weighted_dx(tau, 1, 1, dm);
+    }
+  }
+
+  float pt_weighted_dphi_strip(const reco::PFTau& tau, int dm) {
+    if(dm==10){
+      return pt_weighted_dx(tau, 2, 2, dm);
+    }else{
+      return pt_weighted_dx(tau, 1, 2, dm);
+    }
+  }
+
+  float pt_weighted_dr_iso(const reco::PFTau& tau, int dm) {
+    return pt_weighted_dx(tau, 2, 0, dm);
+  }
+
+  unsigned int n_photons_total(const reco::PFTau& tau) {
+    unsigned int n_photons = 0;
+    for (auto& cand : tau.signalPFGammaCands()) {
+      if (cand->pt() > 0.5)
+	++n_photons;
+    }
+    for (auto& cand : tau.isolationPFGammaCands()) {
+      if (cand->pt() > 0.5)
+	++n_photons;
+    }
+    return n_photons;
+  }
+
+}
+
+void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTau, const edm::Event& evt, const edm::EventSetup& es)
 {
   setValue_EnPxPyPz("recTau", recTau->p4());
   setValue_EnPxPyPz("recTauAlternate", recTau->alternatLorentzVect());
@@ -271,6 +465,118 @@ void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTa
   setValueF("recDecayDistSign", recTauLifetimeInfo.flightLengthSig());
   setValue_XYZ("recEvtVertex", recTauLifetimeInfo.primaryVertexPos());
   setValue_Cov("recEvtVertexCov", recTauLifetimeInfo.primaryVertexCov());
+  //1d IP & Variables from Francesco
+  GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
+  if(recTauLifetimeInfo.hasSecondaryVertex()){
+    float recDecayDist2D_ = reco::SecondaryVertex::computeDist2d(*(recTauLifetimeInfo.primaryVertex()), *secVertex, direction, true).value();
+    float recDecayDistSign2D_ = reco::SecondaryVertex::computeDist2d(*(recTauLifetimeInfo.primaryVertex()), *secVertex, direction, true).significance();
+    setValueF("recDecayDist2D", recDecayDist2D_);
+    setValueF("recDecayDistSign2D", recDecayDistSign2D_);
+  }
+  else{
+    setValueF("recDecayDist2D", -999.);
+    setValueF("recDecayDistSign2D", -999.);
+  }
+
+  edm::ESHandle<TransientTrackBuilder> transTrackBuilder;
+  es.get<TransientTrackRecord>().get("TransientTrackBuilder",transTrackBuilder);
+  if ( recTau->leadPFChargedHadrCand().isNonnull() && recTau->leadPFChargedHadrCand()->bestTrack() != 0){
+    const reco::Track* leadtrk = recTau->leadPFChargedHadrCand()->bestTrack();
+    reco::TransientTrack ttrk = transTrackBuilder->build(&*leadtrk);
+    std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk, direction, *(recTauLifetimeInfo.primaryVertex()) );
+    setValueF("recImpactParamZ", ip_z.second.value());
+    setValueF("recImpactParamSignZ", (ip_z.second.error() != 0) ? ip_z.second.value()/ip_z.second.error() : 0.);
+    std::pair<bool,Measurement1D> dl_tk1 = IPTools::signedDecayLength3D(ttrk, direction, *(recTauLifetimeInfo.primaryVertex()) );
+    setValueF("recDecayLengthTk1", dl_tk1.second.value());
+    setValueF("recDecayLengthSignTk1", dl_tk1.second.significance());
+  }
+  else{
+    setValueF("recImpactParamZ", -999.);
+    setValueF("recImpactParamSignZ", -999.);
+    setValueF("recDecayLengthTk1", -999.);
+    setValueF("recDecayLengthSignTk1", -999.);
+  }
+  if(recTau->signalPFChargedHadrCands().size() > 1){
+    const std::vector<reco::PFCandidatePtr> SigChCands = recTau->signalPFChargedHadrCands();
+    const reco::Track* leadtrk2 = SigChCands[1]->bestTrack();
+    if(leadtrk2){
+      reco::TransientTrack ttrk2 = transTrackBuilder->build(&*leadtrk2);
+      GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
+      std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk2, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recImpactParamZTk2", ip_z.second.value());
+      setValueF("recImpactParamSignZTk2", (ip_z.second.error() != 0) ? ip_z.second.value()/ip_z.second.error() : 0.);
+      std::pair<bool,Measurement1D> ip_xy = IPTools::signedTransverseImpactParameter(ttrk2, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recImpactParamTk2", ip_xy.second.value());
+      setValueF("recImpactParamSignTk2", (ip_xy.second.error() != 0) ? ip_xy.second.value()/ip_xy.second.error() : 0.);
+      std::pair<bool,Measurement1D> ip_3d = IPTools::signedImpactParameter3D(ttrk2, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recImpactParam3DTk2", ip_3d.second.value());
+      setValueF("recImpactParamSign3DTk2", (ip_3d.second.error() != 0) ? ip_3d.second.value()/ip_3d.second.error() : 0.);
+      std::pair<bool,Measurement1D> dl_tk2 = IPTools::signedDecayLength3D(ttrk2, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recDecayLengthTk2", dl_tk2.second.value());
+      setValueF("recDecayLengthSignTk2", dl_tk2.second.significance());
+    }
+    else{
+      setValueF("recImpactParamTk2", -999.);
+      setValueF("recImpactParamSignTk2", -999.);
+      setValueF("recImpactParam3DTk2", -999.);
+      setValueF("recImpactParamSign3DTk2", -999.);
+      setValueF("recImpactParamZTk2", -999.);
+      setValueF("recImpactParamSignZTk2", -999.);
+      setValueF("recDecayLengthTk2", -999.);
+      setValueF("recDecayLengthSignTk2", -999.);
+    }
+  }
+  else{
+    setValueF("recImpactParamTk2", -999.);
+    setValueF("recImpactParamSignTk2", -999.);
+    setValueF("recImpactParam3DTk2", -999.);
+    setValueF("recImpactParamSign3DTk2", -999.);
+    setValueF("recImpactParamZTk2", -999.);
+    setValueF("recImpactParamSignZTk2", -999.);
+    setValueF("recDecayLengthTk2", -999.);
+    setValueF("recDecayLengthSignTk2", -999.);
+  }
+  if(recTau->signalPFChargedHadrCands().size() > 2){
+    const std::vector<reco::PFCandidatePtr> SigChCands = recTau->signalPFChargedHadrCands();
+    const reco::Track* leadtrk3= SigChCands[2]->bestTrack();
+    if(leadtrk3){
+      reco::TransientTrack ttrk3 = transTrackBuilder->build(&*leadtrk3);
+      GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
+      std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk3, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recImpactParamZTk3", ip_z.second.value());
+      setValueF("recImpactParamSignZTk3", (ip_z.second.error() != 0) ? ip_z.second.value()/ip_z.second.error() : 0.);
+      std::pair<bool,Measurement1D> ip_xy = IPTools::signedTransverseImpactParameter(ttrk3, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recImpactParamTk3", ip_xy.second.value());
+      setValueF("recImpactParamSignTk3", (ip_xy.second.error() != 0) ? ip_xy.second.value()/ip_xy.second.error() : 0.);
+      std::pair<bool,Measurement1D> ip_3d = IPTools::signedImpactParameter3D(ttrk3, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recImpactParam3DTk3", ip_3d.second.value());
+      setValueF("recImpactParamSign3DTk3", (ip_3d.second.error() != 0) ? ip_3d.second.value()/ip_3d.second.error() : 0.);
+      std::pair<bool,Measurement1D> dl_tk3 = IPTools::signedDecayLength3D(ttrk3, direction, *(recTauLifetimeInfo.primaryVertex()) );
+      setValueF("recDecayLengthTk3", dl_tk3.second.value());
+      setValueF("recDecayLengthSignTk3", dl_tk3.second.significance());
+    }
+    else{
+      setValueF("recImpactParamTk3", -999.);
+      setValueF("recImpactParamSignTk3", -999.);
+      setValueF("recImpactParam3DTk3", -999.);
+      setValueF("recImpactParamSign3DTk3", -999.);
+      setValueF("recImpactParamZTk3", -999.);
+      setValueF("recImpactParamSignZTk3", -999.);
+      setValueF("recDecayLengthTk3", -999.);
+      setValueF("recDecayLengthSignTk3", -999.);
+    }
+  }
+  else{
+    setValueF("recImpactParamTk3", -999.);
+    setValueF("recImpactParamSignTk3", -999.);
+    setValueF("recImpactParam3DTk3", -999.);
+    setValueF("recImpactParamSign3DTk3", -999.);
+    setValueF("recImpactParamZTk3", -999.);
+    setValueF("recImpactParamSignZTk3", -999.);
+    setValueF("recDecayLengthTk3", -999.);
+    setValueF("recDecayLengthSignTk3", -999.);
+  }
+  /////////////////////////////////////////////
   for ( std::vector<tauIdDiscrEntryType>::const_iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
 	tauIdDiscriminator != tauIdDiscrEntries_.end(); ++tauIdDiscriminator ) {
     edm::Handle<reco::PFTauDiscriminator> discriminator;
@@ -288,7 +594,37 @@ void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTa
     edm::Handle<reco::PFTauDiscriminator> puCorrPtSum;
     evt.getByLabel(tauIsolation->srcPUcorrPtSum_, puCorrPtSum);
     setValueF(tauIsolation->branchNamePUcorrPtSum_, (*puCorrPtSum)[recTau]);
+    edm::Handle<reco::PFTauDiscriminator> neutralIsoPtSumWeight;
+    evt.getByLabel(tauIsolation->srcNeutralIsoPtSumWeight_, neutralIsoPtSumWeight);
+    setValueF(tauIsolation->branchNameNeutralIsoPtSumWeight_, (*neutralIsoPtSumWeight)[recTau]);
+    edm::Handle<reco::PFTauDiscriminator> footprintCorrection;
+    evt.getByLabel(tauIsolation->srcFootprintCorrection_, footprintCorrection);
+    setValueF(tauIsolation->branchNameFootprintCorrection_, (*footprintCorrection)[recTau]);
+    edm::Handle<reco::PFTauDiscriminator> photonPtSumOutsideSignalCone;
+    evt.getByLabel(tauIsolation->srcPhotonPtSumOutsideSignalCone_, photonPtSumOutsideSignalCone);
+    setValueF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_, (*photonPtSumOutsideSignalCone)[recTau]);
   }
+  //variables from Yuta for dynamic strip
+  int tau_decaymode = recTau->decayMode();
+  setValueF("recTauPtWeightedDetaStrip", pt_weighted_deta_strip(*recTau, tau_decaymode));
+  setValueF("recTauPtWeightedDphiStrip", pt_weighted_dphi_strip(*recTau, tau_decaymode));
+  setValueF("recTauPtWeightedDrSignal", pt_weighted_dr_signal(*recTau, tau_decaymode));
+  setValueF("recTauPtWeightedDrIsolation", pt_weighted_dr_iso(*recTau, tau_decaymode));
+  setValueI("recTauNphoton", n_photons_total(*recTau));
+  setValueF("recTauEratio", returnEratio(*recTau));
+  setValueF("recTauLeadingTrackChi2", returnChi2(*recTau));
+  setValueI("recTauNphotonSignal", recTau->signalPFGammaCands().size());
+  setValueI("recTauNphotonIso", recTau->isolationPFGammaCands().size());
+  setValueI("recTauNphotonTotal", recTau->signalPFGammaCands().size()+recTau->isolationPFGammaCands().size());
+  
+  edm::Handle<reco::VertexCollection> vertices;
+  evt.getByLabel("offlinePrimaryVertices", vertices);
+  if ( vertices->size() >= 1 ) {
+    float recChi2DiffEvtVertex_ = (vertices->front().normalizedChi2() - recTauLifetimeInfo.primaryVertex()->normalizedChi2());
+    setValueF("recChi2DiffEvtVertex", recChi2DiffEvtVertex_);
+  }
+  else{ setValueF("recChi2DiffEvtVertex", -999.); }
+
 }
 
 void TauIdMVATrainingNtupleProducer::setGenTauMatchValues(
@@ -550,7 +886,7 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
   size_t numRecTaus = recTaus->size();
   for ( size_t iRecTau = 0; iRecTau < numRecTaus; ++iRecTau ) {
     reco::PFTauRef recTau(recTaus, iRecTau);
-    setRecTauValues(recTau, evt);
+    setRecTauValues(recTau, evt, es);
 
     const reco::GenParticle* genTau_matched = 0;
     reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);
