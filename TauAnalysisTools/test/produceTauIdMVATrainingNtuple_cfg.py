@@ -9,15 +9,17 @@ process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START53_V15::All')
+process.GlobalTag.globaltag = cms.string('PHYS14_25_V1::All')
+
+#process.add_(cms.Service("PrintLoadingPlugins"))
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_5_3_x/skims/96E96DDB-61D3-E111-BEFB-001E67397D05.root'
-        ##'file:/data1/veelken/CMSSW_5_3_x/skims/QCD_Pt-470to600_MuEnrichedPt5_TuneZ2star_8TeV_pythia6_AOD.root'
-        ##'file:/data1/veelken/CMSSW_5_3_x/skims/selEvents_pfCandCaloEnNan_AOD.root'
-        ##'/store/user/veelken/CMSSW_5_3_x/skims/simQCDmuEnrichedPt470to600_AOD_1_1_A8V.root'
-        ##'/store/user/veelken/CMSSW_5_3_x/skims/simQCD_Pt-600to800_AOD_1_1_25m.root'
+        #'file:/data1/veelken/CMSSW_5_3_x/skims/96E96DDB-61D3-E111-BEFB-001E67397D05.root'
+        #'file:/nfs/dust/cms/user/anayak/CMS/Ntuple_Phys14TauId/AOD_VBFHTauTau_fromYuta.root'
+        #'root://xrootd.ba.infn.it//store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/AODSIM/PU20bx25_PHYS14_25_V1-v1/00000/00CC714A-F86B-E411-B99A-0025904B5FB8.root'
+        #'file:/afs/cern.ch/work/f/fromeo/public/TauRunII/GluGluToHToTauTau_M125_D08.root'
+        'root://xrootd.ba.infn.it//store/cmst3/user/ytakahas/CMG/QCD_Pt-15to3000_Tune4C_Flat_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v1/AODSIM/Dynamic95_20150520/aod_1.root'
     ),
     ##eventsToProcess = cms.untracked.VEventRange(
     ##    '1:917:1719279',
@@ -33,7 +35,7 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-##type = 'SignalMC'
+#type = 'SignalMC'
 type = 'BackgroundMC'
 #--------------------------------------------------------------------------------
 
@@ -59,6 +61,7 @@ process.load("RecoTauTag/Configuration/RecoPFTauTag_cff")
 # CV: hpsPFTauPrimaryVertexProducer module takes more than 5 seconds per event for high Pt QCD background samples
 #    --> disable tau lifetime reconstruction for 'hpsPFTauProducer' collection for now and run it on 'tausForTauIdMVATraining' collection only !!
 ##process.produceAndDiscriminateHPSPFTaus.remove(process.hpsPFTauVertexAndImpactParametersSeq)
+process.hpsPFTauTransverseImpactParameters.useFullCalculation = cms.bool(True)
 process.produceTauIdMVATrainingNtupleSequence += process.PFTau
 
 ##process.combinatoricRecoTaus.modifiers[2].verbosity = cms.int32(1)
@@ -85,8 +88,9 @@ process.tausForTauIdMVATrainingDiscriminationByDecayModeFinding = process.hpsPFT
 )
 process.produceTauIdMVATrainingNtupleSequence += process.tausForTauIdMVATrainingDiscriminationByDecayModeFinding
 
-dRisoCones = [ 0.4, 0.5, 0.8 ]
-ptThresholds = [ 'Loose8Hits', 'Medium8Hits', 'Tight8Hits', 'Loose3Hits', 'Medium3Hits', 'Tight3Hits' ]
+dRisoCones = [ 0.3, 0.4, 0.5, 0.8 ]
+#ptThresholds = [ 'Loose8Hits', 'Medium8Hits', 'Tight8Hits', 'Loose3Hits', 'Medium3Hits', 'Tight3Hits' ]
+ptThresholds = [ 'Loose3Hits', 'Medium3Hits', 'Tight3Hits' ] 
 moduleNames_tauIsoPtSum = {} # key = (dRisoCone, 'loose'/'medium'/'tight', 'chargedIsoPtSum'/'neutralIsoPtSum'/'puCorrPtSum')
 for dRisoCone in dRisoCones:
     moduleNames_tauIsoPtSum[dRisoCone] = {}
@@ -163,6 +167,64 @@ for dRisoCone in dRisoCones:
         process.produceTauIdMVATrainingNtupleSequence += modulePUcorrPtSum
         moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['puCorrPtSum'] = moduleNamePUcorrPtSum
 
+        moduleNeutralIsoPtSumWeight = moduleToClone.clone(
+            PFTauProducer = cms.InputTag('tausForTauIdMVATraining'),
+            ApplyDiscriminationByECALIsolation = cms.bool(False),
+            ApplyDiscriminationByWeightedECALIsolation = cms.bool(True),
+            ApplyDiscriminationByTrackerIsolation = cms.bool(False),
+            UseAllPFCandsForWeights = cms.bool(True),
+            applySumPtCut = cms.bool(False),
+            applyDeltaBetaCorrection = cms.bool(False),
+            storeRawSumPt = cms.bool(True),
+            storeRawPUsumPt = cms.bool(False),
+            customOuterCone = cms.double(dRisoCone),
+            isoConeSizeForDeltaBeta = cms.double(0.8*(dRisoCone/0.5)),
+            verbosity = cms.int32(0)
+        )
+        moduleNeutralIsoPtSumWeight.Prediscriminants.decayMode.Producer = cms.InputTag('tausForTauIdMVATrainingDiscriminationByDecayModeFinding')
+        moduleNameNeutralIsoPtSumWeight = "tauNeutralIsoPtSumWeightDeltaR%02.0fPtThresholds%s" % (dRisoCone*10., ptThreshold)
+        setattr(process, moduleNameNeutralIsoPtSumWeight, moduleNeutralIsoPtSumWeight)
+        process.produceTauIdMVATrainingNtupleSequence += moduleNeutralIsoPtSumWeight
+        moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['neutralIsoPtSumWeight'] = moduleNameNeutralIsoPtSumWeight
+        
+        moduleFootprintCorrection = moduleToClone.clone(
+            PFTauProducer = cms.InputTag('tausForTauIdMVATraining'),
+            ApplyDiscriminationByECALIsolation = cms.bool(False),
+            ApplyDiscriminationByTrackerIsolation = cms.bool(False),
+            applySumPtCut = cms.bool(False),
+            applyDeltaBetaCorrection = cms.bool(False),
+            storeRawSumPt = cms.bool(False),
+            storeRawFootprintCorrection = cms.bool(True),
+            storeRawPUsumPt = cms.bool(False),     
+            customOuterCone = cms.double(dRisoCone),
+            isoConeSizeForDeltaBeta = cms.double(0.8),
+            verbosity = cms.int32(0)
+            )
+        moduleFootprintCorrection.Prediscriminants.decayMode.Producer = cms.InputTag('tausForTauIdMVATrainingDiscriminationByDecayModeFinding')
+        moduleNameFootprintCorrection = "tauFootprintCorrectionDeltaR%02.0fPtThresholds%s" % (dRisoCone*10., ptThreshold)
+        setattr(process, moduleNameFootprintCorrection, moduleFootprintCorrection)
+        process.produceTauIdMVATrainingNtupleSequence += moduleFootprintCorrection
+        moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['footprintCorrection'] = moduleNameFootprintCorrection
+        
+        modulePhotonPtSumOutsideSignalCone = moduleToClone.clone(
+            PFTauProducer = cms.InputTag('tausForTauIdMVATraining'),
+            ApplyDiscriminationByECALIsolation = cms.bool(False),
+            ApplyDiscriminationByTrackerIsolation = cms.bool(False),
+            applySumPtCut = cms.bool(False),
+            applyDeltaBetaCorrection = cms.bool(False),
+            storeRawSumPt = cms.bool(False),
+            storeRawPUsumPt = cms.bool(False),
+            storeRawPhotonSumPt_outsideSignalCone = cms.bool(True),
+            customOuterCone = cms.double(dRisoCone),
+            isoConeSizeForDeltaBeta = cms.double(0.8*(dRisoCone/0.5)),
+            verbosity = cms.int32(0)
+        )
+        modulePhotonPtSumOutsideSignalCone.Prediscriminants.decayMode.Producer = cms.InputTag('tausForTauIdMVATrainingDiscriminationByDecayModeFinding')
+        moduleNamePhotonPtSumOutsideSignalCone = "tauPhotonPtSumOutsideSignalConeDeltaR%02.0fPtThresholds%s" % (dRisoCone*10., ptThreshold)
+        setattr(process, moduleNamePhotonPtSumOutsideSignalCone, modulePhotonPtSumOutsideSignalCone)
+        process.produceTauIdMVATrainingNtupleSequence += modulePhotonPtSumOutsideSignalCone
+        moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['photonPtSumOutsideSignalCone'] = moduleNamePhotonPtSumOutsideSignalCone
+
 process.tausForTauIdMVATrainingPrimaryVertexProducer = process.hpsPFTauPrimaryVertexProducer.clone(
     PFTauTag = cms.InputTag("tausForTauIdMVATraining"),
     discriminators = cms.VPSet(),
@@ -189,11 +251,14 @@ tauIdDiscriminatorsToReRun = [
     "hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits",
     "hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits",
     "hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits",
-    "hpsPFTauDiscriminationByIsolationMVAraw",
-    "hpsPFTauDiscriminationByIsolationMVA2raw",
-    "hpsPFTauMVA3IsolationChargedIsoPtSum",
-    "hpsPFTauMVA3IsolationNeutralIsoPtSum",
-    "hpsPFTauMVA3IsolationPUcorrPtSum",
+    #"hpsPFTauDiscriminationByIsolationMVAraw",
+    #"hpsPFTauDiscriminationByIsolationMVA2raw",
+    "hpsPFTauChargedIsoPtSum",
+    "hpsPFTauNeutralIsoPtSum",
+    "hpsPFTauPUcorrPtSum",
+    "hpsPFTauNeutralIsoPtSumWeight",
+    "hpsPFTauFootprintCorrection",
+    "hpsPFTauPhotonPtSumOutsideSignalCone",
     "hpsPFTauDiscriminationByIsolationMVA3oldDMwoLTraw",
     "hpsPFTauDiscriminationByVLooseIsolationMVA3oldDMwoLT",
     "hpsPFTauDiscriminationByLooseIsolationMVA3oldDMwoLT",
@@ -222,11 +287,23 @@ tauIdDiscriminatorsToReRun = [
     "hpsPFTauDiscriminationByTightIsolationMVA3newDMwLT",
     "hpsPFTauDiscriminationByVTightIsolationMVA3newDMwLT",
     "hpsPFTauDiscriminationByVVTightIsolationMVA3newDMwLT",
-    "hpsPFTauDiscriminationByMVA3rawElectronRejection",
-    "hpsPFTauDiscriminationByMVA3LooseElectronRejection",
-    "hpsPFTauDiscriminationByMVA3MediumElectronRejection",
-    "hpsPFTauDiscriminationByMVA3TightElectronRejection",
-    "hpsPFTauDiscriminationByMVA3VTightElectronRejection",
+    "hpsPFTauDiscriminationByLoosePileupWeightedIsolation3Hits",
+    "hpsPFTauDiscriminationByMediumPileupWeightedIsolation3Hits",
+    "hpsPFTauDiscriminationByTightPileupWeightedIsolation3Hits",
+    #"hpsPFTauDiscriminationByMVA3rawElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3LooseElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3MediumElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3TightElectronRejection",
+    #"hpsPFTauDiscriminationByMVA3VTightElectronRejection",
+    "hpsPFTauDiscriminationByLooseElectronRejection",
+    "hpsPFTauDiscriminationByMediumElectronRejection",
+    "hpsPFTauDiscriminationByTightElectronRejection",
+    "hpsPFTauDiscriminationByMVA5rawElectronRejection",
+    "hpsPFTauDiscriminationByMVA5LooseElectronRejection",
+    "hpsPFTauDiscriminationByMVA5MediumElectronRejection",
+    "hpsPFTauDiscriminationByMVA5TightElectronRejection",
+    "hpsPFTauDiscriminationByMVA5VLooseElectronRejection",
+    "hpsPFTauDiscriminationByMVA5VTightElectronRejection",
     "hpsPFTauDiscriminationByDeadECALElectronRejection",
     "hpsPFTauDiscriminationByLooseMuonRejection",
     "hpsPFTauDiscriminationByMediumMuonRejection",
@@ -294,7 +371,7 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         process.tauGenJetsSelectorAllHadrons.filter = cms.bool(True)
         
         process.genTauMatchedPFJets = cms.EDFilter("PFJetAntiOverlapSelector",
-            src = cms.InputTag('ak5PFJets'),
+            src = cms.InputTag('ak4PFJets'),
             srcNotToBeFiltered = cms.VInputTag(
                 'tauGenJetsSelectorAllHadrons'
             ),
@@ -319,7 +396,7 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         process.prePFTauSequence += process.genMuons
         
         process.pfJetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PFJetAntiOverlapSelector",
-            src = cms.InputTag('ak5PFJets'),
+            src = cms.InputTag('ak4PFJets'),
             srcNotToBeFiltered = cms.VInputTag(
                 'genElectrons',
                 'genMuons',
@@ -333,10 +410,10 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         jetCollection = "pfJetsAntiOverlapWithLeptonsVeto"
     if not jetCollection:
         raise ValueError("Invalid Parameter 'jetCollection' = None !!")    
-    process.ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
-    process.ak5PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
-    process.recoTauAK5PFJets08Region.src = cms.InputTag(jetCollection)
-    process.ak5PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
+    process.ak4PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
+    process.ak4PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
+    process.recoTauAK4PFJets08Region.src = cms.InputTag(jetCollection)
+    process.ak4PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
     process.combinatoricRecoTaus.jetSrc = cms.InputTag(jetCollection)
 
 process.produceTauIdMVATrainingNtupleSequence.replace(process.PFTau, process.prePFTauSequence + process.PFTau)
@@ -398,40 +475,57 @@ process.tauIdMVATrainingNtupleProducer = cms.EDProducer("TauIdMVATrainingNtupleP
         byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits'),
         byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits'),
         byTightCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits'),
-        byIsolationMVAraw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVAraw'),
-        byIsolationMVA2raw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVA2raw'),
+        byLoosePileupWeightedIsolation3Hits = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLoosePileupWeightedIsolation3Hits'),
+        byMediumPileupWeightedIsolation3Hits = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumPileupWeightedIsolation3Hits'),
+        byTightPileupWeightedIsolation3Hits = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightPileupWeightedIsolation3Hits'),
+        chargedIsoPtSum = cms.InputTag('tausForTauIdMVATrainingChargedIsoPtSum'),
+        neutralIsoPtSum = cms.InputTag('tausForTauIdMVATrainingNeutralIsoPtSum'),
+        puCorrPtSum = cms.InputTag('tausForTauIdMVATrainingPUcorrPtSum'),
+        neutralIsoPtSumWeight = cms.InputTag('tausForTauIdMVATrainingNeutralIsoPtSumWeight'),
+        footprintCorrection = cms.InputTag('tausForTauIdMVATrainingFootprintCorrection'),
+        photonPtSumOutsideSignalCone = cms.InputTag('tausForTauIdMVATrainingPhotonPtSumOutsideSignalCone'),
+        #byIsolationMVAraw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVAraw'),
+        #byIsolationMVA2raw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVA2raw'),
         byIsolationMVA3oldDMwoLTraw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVA3oldDMwoLTraw'),
         byVLooseIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVLooseIsolationMVA3oldDMwoLT'),
         byLooseIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseIsolationMVA3oldDMwoLT'),
         byMediumIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumIsolationMVA3oldDMwoLT'),
         byTightIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightIsolationMVA3oldDMwoLT'),
         byVTightIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVTightIsolationMVA3oldDMwoLT'),
-        byVVTightIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3oldDMwoLT'),                                                            
+        byVVTightIsolationMVA3oldDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3oldDMwoLT'),                 
         byIsolationMVA3oldDMwLTraw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVA3oldDMwLTraw'),
         byVLooseIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVLooseIsolationMVA3oldDMwLT'),
         byLooseIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseIsolationMVA3oldDMwLT'),
         byMediumIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumIsolationMVA3oldDMwLT'),
         byTightIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightIsolationMVA3oldDMwLT'),
         byVTightIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVTightIsolationMVA3oldDMwLT'),
-        byVVTightIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3oldDMwLT'),                                                            
+        byVVTightIsolationMVA3oldDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3oldDMwLT'),                
         byIsolationMVA3newDMwoLTraw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVA3newDMwoLTraw'),
         byVLooseIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVLooseIsolationMVA3newDMwoLT'),
         byLooseIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseIsolationMVA3newDMwoLT'),
         byMediumIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumIsolationMVA3newDMwoLT'),
         byTightIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightIsolationMVA3newDMwoLT'),
         byVTightIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVTightIsolationMVA3newDMwoLT'),
-        byVVTightIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3newDMwoLT'),                                                            
+        byVVTightIsolationMVA3newDMwoLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3newDMwoLT'),                                   
         byIsolationMVA3newDMwLTraw = cms.InputTag('tausForTauIdMVATrainingDiscriminationByIsolationMVA3newDMwLTraw'),
         byVLooseIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVLooseIsolationMVA3newDMwLT'),
         byLooseIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseIsolationMVA3newDMwLT'),
         byMediumIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumIsolationMVA3newDMwLT'),
         byTightIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightIsolationMVA3newDMwLT'),
         byVTightIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVTightIsolationMVA3newDMwLT'),
-        byVVTightIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3newDMwLT'),                                                            
-        againstElectronLooseMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3LooseElectronRejection'),
-        againstElectronMediumMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3MediumElectronRejection'),
-        againstElectronTightMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3TightElectronRejection'),
-        againstElectronVTightMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3VTightElectronRejection'),
+        byVVTightIsolationMVA3newDMwLT = cms.InputTag('tausForTauIdMVATrainingDiscriminationByVVTightIsolationMVA3newDMwLT'),                                  
+        #againstElectronLooseMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3LooseElectronRejection'),
+        #againstElectronMediumMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3MediumElectronRejection'),
+        #againstElectronTightMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3TightElectronRejection'),
+        #againstElectronVTightMVA3 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA3VTightElectronRejection'),
+        againstElectronLoose = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseElectronRejection'),
+        againstElectronMedium = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumElectronRejection'),
+        againstElectronTight = cms.InputTag('tausForTauIdMVATrainingDiscriminationByTightElectronRejection'),
+        againstElectronLooseMVA5 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA5LooseElectronRejection'),
+        againstElectronMediumMVA5 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA5MediumElectronRejection'),
+        againstElectronTightMVA5 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA5TightElectronRejection'),
+        againstElectronVLooseMVA5 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA5VLooseElectronRejection'),
+        againstElectronVTightMVA5 = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMVA5VTightElectronRejection'),
         againstElectronDeadECAL = cms.InputTag('tausForTauIdMVATrainingDiscriminationByDeadECALElectronRejection'),
         againstMuonLoose = cms.InputTag('tausForTauIdMVATrainingDiscriminationByLooseMuonRejection'),
         againstMuonMedium = cms.InputTag('tausForTauIdMVATrainingDiscriminationByMediumMuonRejection'),
@@ -467,13 +561,19 @@ for dRisoCone in dRisoCones:
         pset = cms.PSet(
             chargedIsoPtSum = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['chargedIsoPtSum']),
             neutralIsoPtSum = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['neutralIsoPtSum']),
-            puCorrPtSum = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['puCorrPtSum']) 
+            puCorrPtSum = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['puCorrPtSum']), 
+            neutralIsoPtSumWeight = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['neutralIsoPtSumWeight']),
+            footprintCorrection = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['footprintCorrection']),
+            photonPtSumOutsideSignalCone = cms.InputTag(moduleNames_tauIsoPtSum[dRisoCone][ptThreshold]['photonPtSumOutsideSignalCone'])
         )
         psetName = "tauIsoDeltaR%02.0fPtThresholds%s" % (dRisoCone*10., ptThreshold)    
         setattr(process.tauIdMVATrainingNtupleProducer.isolationPtSums, psetName, pset)
 process.produceTauIdMVATrainingNtupleSequence += process.tauIdMVATrainingNtupleProducer
 
 process.p = cms.Path(process.produceTauIdMVATrainingNtupleSequence)
+#process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+#process.printFirstEventContentPath = cms.Path(process.printEventContent)
+#process.Schedule = cms.Schedule(process.p, process.printFirstEventContentPath)
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string("tauIdMVATrainingNtuple.root")
