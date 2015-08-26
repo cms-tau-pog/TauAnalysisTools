@@ -5,6 +5,7 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
@@ -111,7 +112,7 @@ TauIdMVATrainingNtupleProducer::TauIdMVATrainingNtupleProducer(const edm::Parame
     if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/) 
       throw cms::Exception("UnclEnCalibrationNtupleProducer") 
 	<< " Failed to find File = " << inputFileName << " !!\n";
-    ifstream inputFile(inputFileName.fullPath().data());
+    std::ifstream inputFile(inputFileName.fullPath().data());
     std::string header_pattern = std::string(
       "\\|\\s*Run:Fill\\s*\\|\\s*LS\\s*\\|\\s*UTCTime\\s*\\|\\s*Beam Status\\s*\\|\\s*E\\(GeV\\)\\s*\\|\\s*Del\\(/nb\\)\\s*\\|\\s*Rec\\(/nb\\)\\s*\\|\\s*avgPU\\s*\\|\\s*");
     TPRegexp header_regexp(header_pattern.data());
@@ -164,6 +165,7 @@ void TauIdMVATrainingNtupleProducer::beginJob()
   addBranchI("run");
   addBranchI("event");
   addBranchI("lumi");
+  addBranchF("genEvtWeight");
 
   addBranch_EnPxPyPz("recTau");
   addBranch_EnPxPyPz("recTauAlternate");
@@ -484,8 +486,8 @@ void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTa
     const reco::Track* leadtrk = recTau->leadPFChargedHadrCand()->bestTrack();
     reco::TransientTrack ttrk = transTrackBuilder->build(&*leadtrk);
     std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk, direction, *(recTauLifetimeInfo.primaryVertex()) );
-    setValueF("recImpactParamZ", ip_z.second.value());
-    setValueF("recImpactParamSignZ", (ip_z.second.error() != 0) ? ip_z.second.value()/ip_z.second.error() : 0.);
+    setValueF("recImpactParamZ", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
+    setValueF("recImpactParamSignZ", (!isnan(ip_z.second.significance())) ? ip_z.second.significance() : -899.);
     std::pair<bool,Measurement1D> dl_tk1 = IPTools::signedDecayLength3D(ttrk, direction, *(recTauLifetimeInfo.primaryVertex()) );
     setValueF("recDecayLengthTk1", dl_tk1.second.value());
     setValueF("recDecayLengthSignTk1", dl_tk1.second.significance());
@@ -503,8 +505,8 @@ void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTa
       reco::TransientTrack ttrk2 = transTrackBuilder->build(&*leadtrk2);
       GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
       std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk2, direction, *(recTauLifetimeInfo.primaryVertex()) );
-      setValueF("recImpactParamZTk2", ip_z.second.value());
-      setValueF("recImpactParamSignZTk2", (ip_z.second.error() != 0) ? ip_z.second.value()/ip_z.second.error() : 0.);
+      setValueF("recImpactParamZTk2", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
+      setValueF("recImpactParamSignZTk2", (!isnan(ip_z.second.significance())) ? ip_z.second.significance() : -899.);
       std::pair<bool,Measurement1D> ip_xy = IPTools::signedTransverseImpactParameter(ttrk2, direction, *(recTauLifetimeInfo.primaryVertex()) );
       setValueF("recImpactParamTk2", ip_xy.second.value());
       setValueF("recImpactParamSignTk2", (ip_xy.second.error() != 0) ? ip_xy.second.value()/ip_xy.second.error() : 0.);
@@ -543,8 +545,8 @@ void TauIdMVATrainingNtupleProducer::setRecTauValues(const reco::PFTauRef& recTa
       reco::TransientTrack ttrk3 = transTrackBuilder->build(&*leadtrk3);
       GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
       std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk3, direction, *(recTauLifetimeInfo.primaryVertex()) );
-      setValueF("recImpactParamZTk3", ip_z.second.value());
-      setValueF("recImpactParamSignZTk3", (ip_z.second.error() != 0) ? ip_z.second.value()/ip_z.second.error() : 0.);
+      setValueF("recImpactParamZTk3", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
+      setValueF("recImpactParamSignZTk3", (!isnan(ip_z.second.significance())) ? ip_z.second.significance() : -899.);
       std::pair<bool,Measurement1D> ip_xy = IPTools::signedTransverseImpactParameter(ttrk3, direction, *(recTauLifetimeInfo.primaryVertex()) );
       setValueF("recImpactParamTk3", ip_xy.second.value());
       setValueF("recImpactParamSignTk3", (ip_xy.second.error() != 0) ? ip_xy.second.value()/ip_xy.second.error() : 0.);
@@ -883,6 +885,17 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
     evtWeight *= (*weight);
   }
 
+  //weight from MC@NLO 
+  double weightevt = 1;
+  try{
+  edm::Handle<GenEventInfoProduct> genEvt;
+  evt.getByLabel("generator",genEvt);
+  weightevt = genEvt->weight();
+  //std::cout<<" mc@nlo weight "<<weightevt<<std::endl;
+  }
+  catch(std::exception &e){ std::cerr << e.what();}
+  
+
   size_t numRecTaus = recTaus->size();
   for ( size_t iRecTau = 0; iRecTau < numRecTaus; ++iRecTau ) {
     reco::PFTauRef recTau(recTaus, iRecTau);
@@ -981,6 +994,7 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
       setNumPileUpValue(evt);
 
       setValueF("evtWeight", evtWeight);
+      setValueF("genEvtWeight", weightevt);
 
 //--- fill all computed quantities into TTree
       assert(ntuple_);
