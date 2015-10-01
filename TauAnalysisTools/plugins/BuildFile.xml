@@ -17,5 +17,11 @@
 <use name="TrackingTools/IPTools"/>
 <use name="RecoBTag/BTagTools"/>
 <use name="RecoBTag/SecondaryVertex"/>
+<use name="CondCore/CondDB"/>
+<use name="CondCore/DBOutputService"/>
+<use name="CondFormats/EgammaObjects"/>
+<use name="boost"/>
+<use name="root"/>
+<use name="roottmva"/>
 </library>
 
