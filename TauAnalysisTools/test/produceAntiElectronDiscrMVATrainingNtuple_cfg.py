@@ -5,15 +5,18 @@ process = cms.Process("produceAntiElectronDiscrMVATrainingNtuple")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-#process.load('Configuration.StandardSequences.Geometry_cff')
-process.load("Configuration.Geometry.GeometryIdeal_cff")
+print "Use GeometryRecoDB and condDBv2"
+process.load("Configuration.Geometry.GeometryRecoDB_cff")
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string("PHYS14_25_V1::All")
+
+globalTag = "MCRUN2_74_V9"
+process.GlobalTag.globaltag = cms.string(globalTag)
+print "GlobalTag:", process.GlobalTag.globaltag
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:///nfs/dust/cms/user/fcolombo/DYJetsToLL_M-50_13TeV-madgraph-pythia8_AODSIM_PU20bx25_PHYS14_25_V1-v1_00CC714A-F86B-E411-B99A-0025904B5FB8.root'
+        'file:///nfs/dust/cms/user/fcolombo/002F7FDD-BA13-E511-AA63-0026189437F5.root'
     )
 )
 
@@ -48,15 +51,6 @@ process.produceAntiElectronDiscrMVATrainingNtupleSequence = cms.Sequence()
 
 process.load("RecoTauTag/Configuration/RecoPFTauTag_cff")
 process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.PFTau
-
-##process.ak5PFJetsRecoTauChargedHadrons.verbosity = cms.int32(1)
-##process.ak5PFJetsRecoTauChargedHadrons.builders[0].verbosity = cms.int32(1)
-
-##process.combinatoricRecoTaus.modifiers[2].verbosity = cms.int32(1)
-
-##process.hpsPFTauProducerSansRefs.verbosity = cms.int32(1)
-
-##process.hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits.verbosity = cms.int32(1)
 
 ##process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
 ##process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.selectPrimaryVertex
@@ -115,16 +109,6 @@ tauIdDiscriminatorsToReRun = [
     "hpsPFTauDiscriminationByLooseElectronRejection",
     "hpsPFTauDiscriminationByMediumElectronRejection",
     "hpsPFTauDiscriminationByTightElectronRejection",
-    #"hpsPFTauDiscriminationByMVA3rawElectronRejection",
-    #"hpsPFTauDiscriminationByMVA3LooseElectronRejection",
-    #"hpsPFTauDiscriminationByMVA3MediumElectronRejection",
-    #"hpsPFTauDiscriminationByMVA3TightElectronRejection",
-    #"hpsPFTauDiscriminationByMVA3VTightElectronRejection",
-    #"hpsPFTauDiscriminationByMVA4rawElectronRejection",
-    #"hpsPFTauDiscriminationByMVA4LooseElectronRejection",
-    #"hpsPFTauDiscriminationByMVA4MediumElectronRejection",
-    #"hpsPFTauDiscriminationByMVA4TightElectronRejection",
-    #"hpsPFTauDiscriminationByMVA4VTightElectronRejection",
     "hpsPFTauDiscriminationByMVA5rawElectronRejection",
     "hpsPFTauDiscriminationByMVA5LooseElectronRejection",
     "hpsPFTauDiscriminationByMVA5MediumElectronRejection",
@@ -210,7 +194,7 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         process.tauGenJetsSelectorAllHadrons.filter = cms.bool(True)
 
         process.genTauMatchedPFJets = cms.EDFilter("PFJetAntiOverlapSelector",
-            src = cms.InputTag('ak5PFJets'),
+            src = cms.InputTag('ak4PFJets'),
             srcNotToBeFiltered = cms.VInputTag(
                 'tauGenJetsSelectorAllHadrons'
             ),
@@ -224,7 +208,7 @@ if type == 'SignalMC' or type == 'BackgroundMC':
         process.genElectrons.filter = cms.bool(True)
         
         process.genElectronMatchedPFJets = cms.EDFilter("PFJetAntiOverlapSelector",
-            src = cms.InputTag('ak5PFJets'),
+            src = cms.InputTag('ak4PFJets'),
             srcNotToBeFiltered = cms.VInputTag(
                 'genElectrons'
             ),
