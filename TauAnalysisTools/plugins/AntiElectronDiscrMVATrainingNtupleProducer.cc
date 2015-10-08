@@ -18,6 +18,7 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
 
+
 AntiElectronDiscrMVATrainingNtupleProducer::AntiElectronDiscrMVATrainingNtupleProducer(const edm::ParameterSet& cfg)
 { 
   srcPFTaus_ = cfg.getParameter<edm::InputTag>("srcPFTaus");
@@ -145,13 +146,18 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Tau_KFTrackEta", &Tau_KFTrackEta_, "Tau_KFTrackEta/F");
   tree_->Branch("Tau_EmFraction", &Tau_EmFraction_, "Tau_EmFraction/F");
   tree_->Branch("Tau_NumChargedCands", &Tau_NumChargedCands_, "Tau_NumChargedCands/I");
-  tree_->Branch("Tau_NumGammaCands", &Tau_NumGammaCands_, "Tau_NumGammaCands/I");
+  tree_->Branch("Tau_NumGammaCandsIn", &Tau_NumGammaCandsIn_, "Tau_NumGammaCandsIn/I");
+  tree_->Branch("Tau_NumGammaCandsOut", &Tau_NumGammaCandsOut_, "Tau_NumGammaCandsOut/I");
   tree_->Branch("Tau_HadrHoP", &Tau_HadrHoP_, "Tau_HadrHoP/F");
   tree_->Branch("Tau_HadrEoP", &Tau_HadrEoP_, "Tau_HadrEoP/F");
   tree_->Branch("Tau_VisMass", &Tau_VisMass_, "Tau_VisMass/F");
-  tree_->Branch("Tau_GammaEtaMom", &Tau_GammaEtaMom_, "Tau_GammaEtaMom/F");
-  tree_->Branch("Tau_GammaPhiMom", &Tau_GammaPhiMom_, "Tau_GammaPhiMom/F");
-  tree_->Branch("Tau_GammaEnFrac", &Tau_GammaEnFrac_, "Tau_GammaEnFrac/F");
+  tree_->Branch("Tau_VisMassIn", &Tau_VisMassIn_, "Tau_VisMassIn/F");
+  tree_->Branch("Tau_GammaEtaMomIn", &Tau_GammaEtaMomIn_, "Tau_GammaEtaMomIn/F");
+  tree_->Branch("Tau_GammaEtaMomOut", &Tau_GammaEtaMomOut_, "Tau_GammaEtaMomOut/F");
+  tree_->Branch("Tau_GammaPhiMomIn", &Tau_GammaPhiMomIn_, "Tau_GammaPhiMomIn/F");
+  tree_->Branch("Tau_GammaPhiMomOut", &Tau_GammaPhiMomOut_, "Tau_GammaPhiMomOut/F");
+  tree_->Branch("Tau_GammaEnFracIn", &Tau_GammaEnFracIn_, "Tau_GammaEnFracIn/F");
+  tree_->Branch("Tau_GammaEnFracOut", &Tau_GammaEnFracOut_, "Tau_GammaEnFracOut/F");
   tree_->Branch("Tau_HadrMvaOut", &Tau_HadrMvaOut_, "Tau_HadrMvaOut/F");
   tree_->Branch("Tau_HadrMvaOutIsolated", &Tau_HadrMvaOutIsolated_, "Tau_HadrMvaOutIsolated/F");
   for ( std::vector<tauIdDiscrEntryType>::iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
@@ -251,13 +257,18 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_KFTrackEta_ = -99;
     Tau_EmFraction_ = -99;
     Tau_NumChargedCands_ = -99;
-    Tau_NumGammaCands_ = -99;
+    Tau_NumGammaCandsIn_ = -99;
+    Tau_NumGammaCandsOut_ = -99;
     Tau_HadrHoP_ = -99;
     Tau_HadrEoP_ = -99;
     Tau_VisMass_ = -99;
-    Tau_GammaEtaMom_ = -99;
-    Tau_GammaPhiMom_ = -99;
-    Tau_GammaEnFrac_ = -99;
+    Tau_VisMassIn_ = -99;
+    Tau_GammaEtaMomIn_ = -99;
+    Tau_GammaEtaMomOut_ = -99;
+    Tau_GammaPhiMomIn_ = -99;
+    Tau_GammaPhiMomOut_ = -99;
+    Tau_GammaEnFracIn_ = -99;
+    Tau_GammaEnFracOut_ = -99;
     Tau_HadrMvaOut_ = -99;
     Tau_HadrMvaOutIsolated_= -99.;
     Tau_MatchElePassVeto_ = -99;
@@ -515,7 +526,6 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_Phi_ = pfTau->phi();
     Tau_EmFraction_ = TMath::Max(pfTau->emFraction(), float(0.));
     Tau_NumChargedCands_ = pfTau->signalPFChargedHadrCands().size();
-    Tau_NumGammaCands_  = pfTau->signalPFGammaCands().size();
 
     if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
       Tau_LeadHadronPt_ = pfTau->leadPFChargedHadrCand()->pt();
@@ -549,21 +559,50 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       Tau_HadrEoP_ = pfTau->leadPFChargedHadrCand()->ecalEnergy()/pfTau->leadPFChargedHadrCand()->p();
     }
 
-    GammasdEta_.clear();
-    GammasdPhi_.clear();
-    GammasPt_.clear();
+    GammasdEtaInSigCone_.clear();
+    GammasdPhiInSigCone_.clear();
+    GammasPtInSigCone_.clear();
+    GammasdEtaOutSigCone_.clear();
+    GammasdPhiOutSigCone_.clear();
+    GammasPtOutSigCone_.clear();
+
+    reco::Candidate::LorentzVector pfGammaSum(0,0,0,0);
+
     const std::vector<reco::PFCandidatePtr>& signalPFGammaCands = pfTau->signalPFGammaCands();
     for ( std::vector<reco::PFCandidatePtr>::const_iterator pfGamma = signalPFGammaCands.begin();
 	  pfGamma != signalPFGammaCands.end(); ++pfGamma ) {
-      if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
-	GammasdEta_.push_back((*pfGamma)->eta() - pfTau->leadPFChargedHadrCand()->eta());
-	GammasdPhi_.push_back((*pfGamma)->phi() - pfTau->leadPFChargedHadrCand()->phi());
-      } else {
-	GammasdEta_.push_back((*pfGamma)->eta() - pfTau->eta());
-	GammasdPhi_.push_back((*pfGamma)->phi() - pfTau->phi());
+
+      float dR = deltaR((*pfGamma)->p4(), pfTau->leadPFChargedHadrCand()->p4());
+
+      // gammas inside the tau signal cone
+      if (dR < std::max(0.05, std::min(0.10, 3.0/pfTau->pt()))) {
+        if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
+	  GammasdEtaInSigCone_.push_back((*pfGamma)->eta() - pfTau->leadPFChargedHadrCand()->eta());
+	  GammasdPhiInSigCone_.push_back((*pfGamma)->phi() - pfTau->leadPFChargedHadrCand()->phi());
+        } 
+        else {
+	  GammasdEtaInSigCone_.push_back((*pfGamma)->eta() - pfTau->eta());
+	  GammasdPhiInSigCone_.push_back((*pfGamma)->phi() - pfTau->phi());
+        }
+        GammasPtInSigCone_.push_back((*pfGamma)->pt());
+        pfGammaSum += (*pfGamma)->p4();
       }
-      GammasPt_.push_back((*pfGamma)->pt());
+      // gammas outside the tau signal cone
+      else {
+        if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
+	  GammasdEtaOutSigCone_.push_back((*pfGamma)->eta() - pfTau->leadPFChargedHadrCand()->eta());
+	  GammasdPhiOutSigCone_.push_back((*pfGamma)->phi() - pfTau->leadPFChargedHadrCand()->phi());
+        } 
+        else {
+	  GammasdEtaOutSigCone_.push_back((*pfGamma)->eta() - pfTau->eta());
+	  GammasdPhiOutSigCone_.push_back((*pfGamma)->phi() - pfTau->phi());
+        }
+        GammasPtOutSigCone_.push_back((*pfGamma)->pt());
+      }
     }
+
+    Tau_NumGammaCandsIn_ = GammasPtInSigCone_.size();
+    Tau_NumGammaCandsOut_ = GammasPtOutSigCone_.size();
 
     float sumPt  = 0.;
     float dEta   = 0.;
@@ -571,15 +610,15 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     float dPhi   = 0.;
     float dPhi2  = 0.;
     float sumPt2 = 0.;
-    size_t numPFGammas = GammasPt_.size();
-    assert(GammasdEta_.size() == numPFGammas);
-    assert(GammasdPhi_.size() == numPFGammas);
+    size_t numPFGammas = GammasPtInSigCone_.size();
+    assert(GammasdEtaInSigCone_.size() == numPFGammas);
+    assert(GammasdPhiInSigCone_.size() == numPFGammas);
     for ( size_t idxPFGamma = 0; idxPFGamma < numPFGammas; ++idxPFGamma ) {
-      float gamma_pt  = GammasPt_[idxPFGamma];
-      float gamma_dPhi = GammasdPhi_[idxPFGamma];
+      float gamma_pt  = GammasPtInSigCone_[idxPFGamma];
+      float gamma_dPhi = GammasdPhiInSigCone_[idxPFGamma];
       if ( gamma_dPhi > TMath::Pi() ) gamma_dPhi -= 2.*TMath::Pi();
       else if ( gamma_dPhi < -TMath::Pi() ) gamma_dPhi += 2.*TMath::Pi();
-      float gamma_dEta = GammasdEta_[idxPFGamma];
+      float gamma_dEta = GammasdEtaInSigCone_[idxPFGamma];
       sumPt  +=  gamma_pt;
       sumPt2 += (gamma_pt*gamma_pt);
       dEta   += (gamma_pt*gamma_dEta);
@@ -597,23 +636,78 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       dPhi2 /= sumPt;
     }
 
-    Tau_GammaEtaMom_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*pfTau->pt();
-    Tau_GammaPhiMom_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
-    Tau_GammaEnFrac_ = gammadPt;
+    Tau_GammaEtaMomIn_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*pfTau->pt();
+    Tau_GammaPhiMomIn_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
+    Tau_GammaEnFracIn_ = gammadPt;
+
+    sumPt  = 0.;
+    dEta   = 0.;
+    dEta2  = 0.;
+    dPhi   = 0.;
+    dPhi2  = 0.;
+    sumPt2 = 0.;
+    numPFGammas = GammasPtOutSigCone_.size();
+    assert(GammasdEtaOutSigCone_.size() == numPFGammas);
+    assert(GammasdPhiOutSigCone_.size() == numPFGammas);
+    for ( size_t idxPFGamma = 0; idxPFGamma < numPFGammas; ++idxPFGamma ) {
+      float gamma_pt  = GammasPtOutSigCone_[idxPFGamma];
+      float gamma_dPhi = GammasdPhiOutSigCone_[idxPFGamma];
+      if ( gamma_dPhi > TMath::Pi() ) gamma_dPhi -= 2.*TMath::Pi();
+      else if ( gamma_dPhi < -TMath::Pi() ) gamma_dPhi += 2.*TMath::Pi();
+      float gamma_dEta = GammasdEtaOutSigCone_[idxPFGamma];
+      sumPt  +=  gamma_pt;
+      sumPt2 += (gamma_pt*gamma_pt);
+      dEta   += (gamma_pt*gamma_dEta);
+      dEta2  += (gamma_pt*gamma_dEta*gamma_dEta);
+      dPhi   += (gamma_pt*gamma_dPhi);
+      dPhi2  += (gamma_pt*gamma_dPhi*gamma_dPhi);  
+    }
+    
+    gammadPt = sumPt/pfTau->pt();
+	    
+    if ( sumPt > 0. ) {
+      dEta  /= sumPt;
+      dPhi  /= sumPt;
+      dEta2 /= sumPt;
+      dPhi2 /= sumPt;
+    }
+
+    Tau_GammaEtaMomOut_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*pfTau->pt();
+    Tau_GammaPhiMomOut_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
+    Tau_GammaEnFracOut_ = gammadPt;
+
+    reco::Candidate::LorentzVector pfChargedSum(0,0,0,0);
+
+    const std::vector<reco::PFCandidatePtr>& signalPFChargedCands = pfTau->signalPFChargedHadrCands();
+    for ( std::vector<reco::PFCandidatePtr>::const_iterator pfCharged = signalPFChargedCands.begin();
+	  pfCharged != signalPFChargedCands.end(); ++pfCharged ) {
+
+      float dR = deltaR((*pfCharged)->p4(), pfTau->leadPFChargedHadrCand()->p4());
+
+      // charged particles inside the tau signal cone
+      if (dR < std::max(0.05, std::min(0.10, 3.0/pfTau->pt()))) {
+        pfChargedSum += (*pfCharged)->p4();
+      }
+    }
+
     Tau_VisMass_ = pfTau->mass();
+    Tau_VisMassIn_ = (pfGammaSum + pfChargedSum).mass();
     Tau_HadrMvaOut_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_e_pi(), float(-1.));
     Tau_HadrMvaOutIsolated_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_Isolated(), float(-1.));
 
     if ( verbosity_ ) {
-      std::cout << "GammaEtaMom: " << Tau_GammaEtaMom_ << std::endl;
-      std::cout << "GammaPhiMom: " << Tau_GammaPhiMom_ << std::endl;
+      std::cout << "GammaEtaMomIn: " << Tau_GammaEtaMomIn_ << std::endl;
+      std::cout << "GammaEtaMomOut: " << Tau_GammaEtaMomOut_ << std::endl;
+      std::cout << "GammaPhiMomIn: " << Tau_GammaPhiMomIn_ << std::endl;
+      std::cout << "GammaPhiMomOut: " << Tau_GammaPhiMomOut_ << std::endl;
       std::cout << "GammaPt: " << sumPt << std::endl;
       std::cout << "TauPt: " << pfTau->pt() << std::endl;
       std::cout << "TauEta: " << pfTau->eta() << std::endl;
       std::cout << "TauEtaAtEcalEntrance: " << Tau_EtaAtEcalEntrance_ << std::endl;
       std::cout << "sumEtaTimesEnergy: " << sumEtaTimesEnergy << std::endl;
       std::cout << "sumEnergy: " << sumEnergy << std::endl;
-      std::cout << "GammaEnFrac: " << Tau_GammaEnFrac_ << std::endl;
+      std::cout << "GammaEnFracIn: " << Tau_GammaEnFracIn_ << std::endl;
+      std::cout << "GammaEnFracOut: " << Tau_GammaEnFracOut_ << std::endl;
       std::cout << std::endl;
     }
 
