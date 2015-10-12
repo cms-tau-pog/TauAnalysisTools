@@ -55,13 +55,13 @@ AntiElectronIDMVA::AntiElectronIDMVA(const edm::ParameterSet& cfg)
   }
 
   Var_NoEleMatch_woGwoGSF_Barrel_ = new Float_t[9];
-  Var_NoEleMatch_wGwoGSF_Barrel_  = new Float_t[13];
+  Var_NoEleMatch_wGwoGSF_Barrel_  = new Float_t[17];
   Var_woGwGSF_Barrel_             = new Float_t[23];
-  Var_wGwGSF_Barrel_              = new Float_t[27];
+  Var_wGwGSF_Barrel_              = new Float_t[31];
   Var_NoEleMatch_woGwoGSF_Endcap_ = new Float_t[8];
-  Var_NoEleMatch_wGwoGSF_Endcap_  = new Float_t[12];
+  Var_NoEleMatch_wGwoGSF_Endcap_  = new Float_t[16];
   Var_woGwGSF_Endcap_             = new Float_t[22];
-  Var_wGwGSF_Endcap_              = new Float_t[26];
+  Var_wGwGSF_Endcap_              = new Float_t[30];
     
   verbosity_ = 0;
 }
@@ -99,13 +99,17 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
                                    Float_t TauEmFraction,
                                    Float_t TauLeadPFChargedHadrHoP,
                                    Float_t TauLeadPFChargedHadrEoP,
-                                   Float_t TauVisMass,
+                                   Float_t TauVisMassIn,
                                    Float_t TaudCrackEta,
                                    Float_t TaudCrackPhi,
-                                   Int_t TauSignalPFGammaCands,
-                                   Float_t TauGammaEtaMom,
-                                   Float_t TauGammaPhiMom,
-                                   Float_t TauGammaEnFrac,
+                                   Int_t TauSignalPFGammaCandsIn,
+                                   Int_t TauSignalPFGammaCandsOut,
+                                   Float_t TauGammaEtaMomIn,
+                                   Float_t TauGammaEtaMomOut,
+                                   Float_t TauGammaPhiMomIn,
+                                   Float_t TauGammaPhiMomOut,
+                                   Float_t TauGammaEnFracIn,
+                                   Float_t TauGammaEnFracOut,
                                    Float_t ElecEtotOverPin,
                                    Float_t ElecChi2NormGSF,
                                    Float_t ElecChi2NormKF,
@@ -132,7 +136,7 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_NoEleMatch_woGwoGSF_Barrel_[3] = TauEmFraction;
     Var_NoEleMatch_woGwoGSF_Barrel_[4] = TauLeadPFChargedHadrHoP;
     Var_NoEleMatch_woGwoGSF_Barrel_[5] = TauLeadPFChargedHadrEoP;
-    Var_NoEleMatch_woGwoGSF_Barrel_[6] = TauVisMass;
+    Var_NoEleMatch_woGwoGSF_Barrel_[6] = TauVisMassIn;
     Var_NoEleMatch_woGwoGSF_Barrel_[7] = TaudCrackEta;
     Var_NoEleMatch_woGwoGSF_Barrel_[8] = TaudCrackPhi;
     mvaValue = mva_NoEleMatch_woGwoGSF_BL_->GetClassifier(Var_NoEleMatch_woGwoGSF_Barrel_);
@@ -143,15 +147,19 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_NoEleMatch_wGwoGSF_Barrel_[1]  = std::min(float(2.), TauLeadChargedPFCandPt/std::max(float(1.), TauPt));
     Var_NoEleMatch_wGwoGSF_Barrel_[2]  = std::log(std::max(float(1.), TauPt));
     Var_NoEleMatch_wGwoGSF_Barrel_[3]  = TauEmFraction;
-    Var_NoEleMatch_wGwoGSF_Barrel_[4]  = TauSignalPFGammaCands;
-    Var_NoEleMatch_wGwoGSF_Barrel_[5]  = TauLeadPFChargedHadrHoP;
-    Var_NoEleMatch_wGwoGSF_Barrel_[6]  = TauLeadPFChargedHadrEoP;
-    Var_NoEleMatch_wGwoGSF_Barrel_[7]  = TauVisMass;
-    Var_NoEleMatch_wGwoGSF_Barrel_[8]  = TauGammaEtaMom;
-    Var_NoEleMatch_wGwoGSF_Barrel_[9]  = TauGammaPhiMom;
-    Var_NoEleMatch_wGwoGSF_Barrel_[10] = TauGammaEnFrac;
-    Var_NoEleMatch_wGwoGSF_Barrel_[11] = TaudCrackEta;
-    Var_NoEleMatch_wGwoGSF_Barrel_[12] = TaudCrackPhi;
+    Var_NoEleMatch_wGwoGSF_Barrel_[4]  = TauSignalPFGammaCandsIn;
+    Var_NoEleMatch_wGwoGSF_Barrel_[5]  = TauSignalPFGammaCandsOut;
+    Var_NoEleMatch_wGwoGSF_Barrel_[6]  = TauLeadPFChargedHadrHoP;
+    Var_NoEleMatch_wGwoGSF_Barrel_[7]  = TauLeadPFChargedHadrEoP;
+    Var_NoEleMatch_wGwoGSF_Barrel_[8]  = TauVisMassIn;
+    Var_NoEleMatch_wGwoGSF_Barrel_[9]  = TauGammaEtaMomIn;
+    Var_NoEleMatch_wGwoGSF_Barrel_[10] = TauGammaEtaMomOut;
+    Var_NoEleMatch_wGwoGSF_Barrel_[11] = TauGammaPhiMomIn;
+    Var_NoEleMatch_wGwoGSF_Barrel_[12] = TauGammaPhiMomOut;
+    Var_NoEleMatch_wGwoGSF_Barrel_[13] = TauGammaEnFracIn;
+    Var_NoEleMatch_wGwoGSF_Barrel_[14] = TauGammaEnFracOut;
+    Var_NoEleMatch_wGwoGSF_Barrel_[15] = TaudCrackEta;
+    Var_NoEleMatch_wGwoGSF_Barrel_[16] = TaudCrackPhi;
     mvaValue = mva_NoEleMatch_wGwoGSF_BL_->GetClassifier(Var_NoEleMatch_wGwoGSF_Barrel_);
   }
 
@@ -176,7 +184,7 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_woGwGSF_Barrel_[17] = TauEmFraction;
     Var_woGwGSF_Barrel_[18] = TauLeadPFChargedHadrHoP;
     Var_woGwGSF_Barrel_[19] = TauLeadPFChargedHadrEoP;
-    Var_woGwGSF_Barrel_[20] = TauVisMass;
+    Var_woGwGSF_Barrel_[20] = TauVisMassIn;
     Var_woGwGSF_Barrel_[21] = TaudCrackEta;
     Var_woGwGSF_Barrel_[22] = TaudCrackPhi;
     mvaValue = mva_woGwGSF_BL_->GetClassifier(Var_woGwGSF_Barrel_);
@@ -201,15 +209,19 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_wGwGSF_Barrel_[15] = std::min(float(2.), TauLeadChargedPFCandPt/std::max(float(1.), TauPt));
     Var_wGwGSF_Barrel_[16] = std::log(std::max(float(1.), TauPt));
     Var_wGwGSF_Barrel_[17] = TauEmFraction;
-    Var_wGwGSF_Barrel_[18] = TauSignalPFGammaCands;
-    Var_wGwGSF_Barrel_[19] = TauLeadPFChargedHadrHoP;
-    Var_wGwGSF_Barrel_[20] = TauLeadPFChargedHadrEoP;
-    Var_wGwGSF_Barrel_[21] = TauVisMass;
-    Var_wGwGSF_Barrel_[22] = TauGammaEtaMom;
-    Var_wGwGSF_Barrel_[23] = TauGammaPhiMom;
-    Var_wGwGSF_Barrel_[24] = TauGammaEnFrac;
-    Var_wGwGSF_Barrel_[25] = TaudCrackEta;
-    Var_wGwGSF_Barrel_[26] = TaudCrackPhi;
+    Var_wGwGSF_Barrel_[18] = TauSignalPFGammaCandsIn;
+    Var_wGwGSF_Barrel_[19] = TauSignalPFGammaCandsOut;
+    Var_wGwGSF_Barrel_[20] = TauLeadPFChargedHadrHoP;
+    Var_wGwGSF_Barrel_[21] = TauLeadPFChargedHadrEoP;
+    Var_wGwGSF_Barrel_[22] = TauVisMassIn;
+    Var_wGwGSF_Barrel_[23] = TauGammaEtaMomIn;
+    Var_wGwGSF_Barrel_[24] = TauGammaEtaMomOut;
+    Var_wGwGSF_Barrel_[25] = TauGammaPhiMomIn;
+    Var_wGwGSF_Barrel_[26] = TauGammaPhiMomOut;
+    Var_wGwGSF_Barrel_[27] = TauGammaEnFracIn;
+    Var_wGwGSF_Barrel_[28] = TauGammaEnFracOut;
+    Var_wGwGSF_Barrel_[29] = TaudCrackEta;
+    Var_wGwGSF_Barrel_[30] = TaudCrackPhi;
     mvaValue = mva_wGwGSF_BL_->GetClassifier(Var_wGwGSF_Barrel_);
   }
 
@@ -220,7 +232,7 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_NoEleMatch_woGwoGSF_Endcap_[3] = TauEmFraction;
     Var_NoEleMatch_woGwoGSF_Endcap_[4] = TauLeadPFChargedHadrHoP;
     Var_NoEleMatch_woGwoGSF_Endcap_[5] = TauLeadPFChargedHadrEoP;
-    Var_NoEleMatch_woGwoGSF_Endcap_[6] = TauVisMass;
+    Var_NoEleMatch_woGwoGSF_Endcap_[6] = TauVisMassIn;
     Var_NoEleMatch_woGwoGSF_Endcap_[7] = TaudCrackEta;
     mvaValue = mva_NoEleMatch_woGwoGSF_EC_->GetClassifier(Var_NoEleMatch_woGwoGSF_Endcap_);
   }
@@ -230,14 +242,18 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_NoEleMatch_wGwoGSF_Endcap_[1]  = std::min(float(2.), TauLeadChargedPFCandPt/std::max(float(1.), TauPt));
     Var_NoEleMatch_wGwoGSF_Endcap_[2]  = std::log(std::max(float(1.), TauPt));
     Var_NoEleMatch_wGwoGSF_Endcap_[3]  = TauEmFraction;
-    Var_NoEleMatch_wGwoGSF_Endcap_[4]  = TauSignalPFGammaCands;
-    Var_NoEleMatch_wGwoGSF_Endcap_[5]  = TauLeadPFChargedHadrHoP;
-    Var_NoEleMatch_wGwoGSF_Endcap_[6]  = TauLeadPFChargedHadrEoP;
-    Var_NoEleMatch_wGwoGSF_Endcap_[7]  = TauVisMass;
-    Var_NoEleMatch_wGwoGSF_Endcap_[8]  = TauGammaEtaMom;
-    Var_NoEleMatch_wGwoGSF_Endcap_[9]  = TauGammaPhiMom;
-    Var_NoEleMatch_wGwoGSF_Endcap_[10] = TauGammaEnFrac;
-    Var_NoEleMatch_wGwoGSF_Endcap_[11] = TaudCrackEta;
+    Var_NoEleMatch_wGwoGSF_Endcap_[4]  = TauSignalPFGammaCandsIn;
+    Var_NoEleMatch_wGwoGSF_Endcap_[5]  = TauSignalPFGammaCandsOut;
+    Var_NoEleMatch_wGwoGSF_Endcap_[6]  = TauLeadPFChargedHadrHoP;
+    Var_NoEleMatch_wGwoGSF_Endcap_[7]  = TauLeadPFChargedHadrEoP;
+    Var_NoEleMatch_wGwoGSF_Endcap_[8]  = TauVisMassIn;
+    Var_NoEleMatch_wGwoGSF_Endcap_[9]  = TauGammaEtaMomIn;
+    Var_NoEleMatch_wGwoGSF_Endcap_[10] = TauGammaEtaMomOut;
+    Var_NoEleMatch_wGwoGSF_Endcap_[11] = TauGammaPhiMomIn;
+    Var_NoEleMatch_wGwoGSF_Endcap_[12] = TauGammaPhiMomOut;
+    Var_NoEleMatch_wGwoGSF_Endcap_[13] = TauGammaEnFracIn;
+    Var_NoEleMatch_wGwoGSF_Endcap_[14] = TauGammaEnFracOut;
+    Var_NoEleMatch_wGwoGSF_Endcap_[15] = TaudCrackEta;
     mvaValue = mva_NoEleMatch_wGwoGSF_EC_->GetClassifier(Var_NoEleMatch_wGwoGSF_Endcap_);
   }
 
@@ -262,7 +278,7 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_woGwGSF_Endcap_[17] = TauEmFraction;
     Var_woGwGSF_Endcap_[18] = TauLeadPFChargedHadrHoP;
     Var_woGwGSF_Endcap_[19] = TauLeadPFChargedHadrEoP;
-    Var_woGwGSF_Endcap_[20] = TauVisMass;
+    Var_woGwGSF_Endcap_[20] = TauVisMassIn;
     Var_woGwGSF_Endcap_[21] = TaudCrackEta;
     mvaValue = mva_woGwGSF_EC_->GetClassifier(Var_woGwGSF_Endcap_);
   }
@@ -286,14 +302,18 @@ double AntiElectronIDMVA::MVAValue(Int_t TauCategory,
     Var_wGwGSF_Endcap_[15] = std::min(float(2.), TauLeadChargedPFCandPt/std::max(float(1.), TauPt));
     Var_wGwGSF_Endcap_[16] = std::log(std::max(float(1.), TauPt));
     Var_wGwGSF_Endcap_[17] = TauEmFraction;
-    Var_wGwGSF_Endcap_[18] = TauSignalPFGammaCands;
-    Var_wGwGSF_Endcap_[19] = TauLeadPFChargedHadrHoP;
-    Var_wGwGSF_Endcap_[20] = TauLeadPFChargedHadrEoP;
-    Var_wGwGSF_Endcap_[21] = TauVisMass;
-    Var_wGwGSF_Endcap_[22] = TauGammaEtaMom;
-    Var_wGwGSF_Endcap_[23] = TauGammaPhiMom;
-    Var_wGwGSF_Endcap_[24] = TauGammaEnFrac;
-    Var_wGwGSF_Endcap_[25] = TaudCrackEta;
+    Var_wGwGSF_Endcap_[18] = TauSignalPFGammaCandsIn;
+    Var_wGwGSF_Endcap_[19] = TauSignalPFGammaCandsOut;
+    Var_wGwGSF_Endcap_[20] = TauLeadPFChargedHadrHoP;
+    Var_wGwGSF_Endcap_[21] = TauLeadPFChargedHadrEoP;
+    Var_wGwGSF_Endcap_[22] = TauVisMassIn;
+    Var_wGwGSF_Endcap_[23] = TauGammaEtaMomIn;
+    Var_wGwGSF_Endcap_[24] = TauGammaEtaMomOut;
+    Var_wGwGSF_Endcap_[25] = TauGammaPhiMomIn;
+    Var_wGwGSF_Endcap_[26] = TauGammaPhiMomOut;
+    Var_wGwGSF_Endcap_[27] = TauGammaEnFracIn;
+    Var_wGwGSF_Endcap_[28] = TauGammaEnFracOut;
+    Var_wGwGSF_Endcap_[29] = TaudCrackEta;
     mvaValue = mva_wGwGSF_EC_->GetClassifier(Var_wGwGSF_Endcap_);
   }
 

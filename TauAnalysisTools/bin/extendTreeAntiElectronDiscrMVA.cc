@@ -232,11 +232,15 @@ int main(int argc, char* argv[])
   branchEntryType* branch_Tau_EmFraction = 0;
   branchEntryType* branch_Tau_HadrHoP = 0;
   branchEntryType* branch_Tau_HadrEoP = 0;
-  branchEntryType* branch_Tau_VisMass = 0;
-  branchEntryType* branch_Tau_NumGammaCands = 0;
-  branchEntryType* branch_Tau_GammaEtaMom = 0;
-  branchEntryType* branch_Tau_GammaPhiMom = 0;
-  branchEntryType* branch_Tau_GammaEnFrac = 0;
+  branchEntryType* branch_Tau_VisMassIn = 0;
+  branchEntryType* branch_Tau_NumGammaCandsIn = 0;
+  branchEntryType* branch_Tau_NumGammaCandsOut = 0;
+  branchEntryType* branch_Tau_GammaEtaMomIn = 0;
+  branchEntryType* branch_Tau_GammaEtaMomOut = 0;
+  branchEntryType* branch_Tau_GammaPhiMomIn = 0;
+  branchEntryType* branch_Tau_GammaPhiMomOut = 0;
+  branchEntryType* branch_Tau_GammaEnFracIn = 0;
+  branchEntryType* branch_Tau_GammaEnFracOut = 0;
   branchEntryType* branch_Elec_EtotOverPin = 0;
   branchEntryType* branch_Elec_Chi2NormGSF = 0;
   branchEntryType* branch_Elec_Chi2NormKF = 0;
@@ -281,11 +285,15 @@ int main(int argc, char* argv[])
     if ( branchName == "Tau_EmFraction" )          branch_Tau_EmFraction          = branch_to_copy;
     if ( branchName == "Tau_HadrHoP" )             branch_Tau_HadrHoP             = branch_to_copy;
     if ( branchName == "Tau_HadrEoP" )             branch_Tau_HadrEoP             = branch_to_copy;
-    if ( branchName == "Tau_VisMass" )             branch_Tau_VisMass             = branch_to_copy;
-    if ( branchName == "Tau_NumGammaCands" )       branch_Tau_NumGammaCands       = branch_to_copy;
-    if ( branchName == "Tau_GammaEtaMom" )         branch_Tau_GammaEtaMom         = branch_to_copy;
-    if ( branchName == "Tau_GammaPhiMom" )         branch_Tau_GammaPhiMom         = branch_to_copy;
-    if ( branchName == "Tau_GammaEnFrac" )         branch_Tau_GammaEnFrac         = branch_to_copy;
+    if ( branchName == "Tau_VisMassIn" )           branch_Tau_VisMassIn           = branch_to_copy;
+    if ( branchName == "Tau_NumGammaCandsIn" )     branch_Tau_NumGammaCandsIn     = branch_to_copy;
+    if ( branchName == "Tau_NumGammaCandsOut" )    branch_Tau_NumGammaCandsOut    = branch_to_copy;
+    if ( branchName == "Tau_GammaEtaMomIn" )       branch_Tau_GammaEtaMomIn       = branch_to_copy;
+    if ( branchName == "Tau_GammaEtaMomOut" )      branch_Tau_GammaEtaMomOut      = branch_to_copy;
+    if ( branchName == "Tau_GammaPhiMomIn" )       branch_Tau_GammaPhiMomIn       = branch_to_copy;
+    if ( branchName == "Tau_GammaPhiMomOut" )      branch_Tau_GammaPhiMomOut      = branch_to_copy;
+    if ( branchName == "Tau_GammaEnFracIn" )       branch_Tau_GammaEnFracIn       = branch_to_copy;
+    if ( branchName == "Tau_GammaEnFracOut" )      branch_Tau_GammaEnFracOut      = branch_to_copy;
     if ( branchName == "Elec_EtotOverPin" )        branch_Elec_EtotOverPin        = branch_to_copy;
     if ( branchName == "Elec_Chi2NormGSF" )        branch_Elec_Chi2NormGSF        = branch_to_copy;
     if ( branchName == "Elec_Chi2NormKF" )         branch_Elec_Chi2NormKF         = branch_to_copy;
@@ -430,13 +438,17 @@ int main(int argc, char* argv[])
                                 branch_Tau_EmFraction->inputValueF_,
                                 branch_Tau_HadrHoP->inputValueF_,
                                 branch_Tau_HadrEoP->inputValueF_,
-                                branch_Tau_VisMass->inputValueF_,
+                                branch_Tau_VisMassIn->inputValueF_,
                                 value_Tau_dCrackEta,
                                 value_Tau_dCrackPhi,
-                                branch_Tau_NumGammaCands->inputValueI_,
-                                branch_Tau_GammaEtaMom->inputValueF_,
-                                branch_Tau_GammaPhiMom->inputValueF_,
-                                branch_Tau_GammaEnFrac->inputValueF_,
+                                branch_Tau_NumGammaCandsIn->inputValueI_,
+                                branch_Tau_NumGammaCandsOut->inputValueI_,
+                                branch_Tau_GammaEtaMomIn->inputValueF_,
+                                branch_Tau_GammaEtaMomOut->inputValueF_,
+                                branch_Tau_GammaPhiMomIn->inputValueF_,
+                                branch_Tau_GammaPhiMomOut->inputValueF_,
+                                branch_Tau_GammaEnFracIn->inputValueF_,
+                                branch_Tau_GammaEnFracOut->inputValueF_,
                                 branch_Elec_EtotOverPin->inputValueF_,
                                 branch_Elec_Chi2NormGSF->inputValueF_,
                                 branch_Elec_Chi2NormKF->inputValueF_,
