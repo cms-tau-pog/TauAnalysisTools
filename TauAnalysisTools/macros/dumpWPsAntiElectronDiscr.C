@@ -119,7 +119,7 @@ void dumpWPsAntiElectronDiscr()
 //--- suppress the output canvas 
   gROOT->SetBatch(true);
 
-  std::string inputFileName = "/nfs/dust/cms/user/fcolombo/HiggsToTauTau/TauPOG/antiElectronDiscrMVATraining/fixTauGSF_scenario3_v2_lessVars_WZJetsSignals/";
+  std::string inputFileName = "/nfs/dust/cms/user/fcolombo/HiggsToTauTau/TauPOG/antiElectronDiscrMVATraining/antiElectronDiscr74X_onlyZWTTjetsHiggsWZprimeSUSY_FullSkim/";
   inputFileName.append("computeWPcutsAntiElectronDiscrMVA_mvaAntiElectronDiscr5.root");
 
   std::string wpTreeName = "wpCutsTree";
@@ -138,11 +138,11 @@ void dumpWPsAntiElectronDiscr()
   categories.push_back(15);
 
   std::vector<double> targetSignalEfficiencies;
-  targetSignalEfficiencies.push_back(0.95);
-  targetSignalEfficiencies.push_back(0.90);
+  targetSignalEfficiencies.push_back(0.99);
+  targetSignalEfficiencies.push_back(0.96);
+  targetSignalEfficiencies.push_back(0.91);
   targetSignalEfficiencies.push_back(0.85);
-  targetSignalEfficiencies.push_back(0.80);
-  targetSignalEfficiencies.push_back(0.75);
+  targetSignalEfficiencies.push_back(0.79);
   
   std::vector<workingPointEntryType> workingPoints = readWorkingPoints(inputFileName, wpTreeName, categories);
   
