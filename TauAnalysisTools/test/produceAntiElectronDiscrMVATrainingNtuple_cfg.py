@@ -16,7 +16,7 @@ print "GlobalTag:", process.GlobalTag.globaltag
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:///nfs/dust/cms/user/fcolombo/002F7FDD-BA13-E511-AA63-0026189437F5.root'
+        'root://xrootd.unl.edu//store/mc/RunIISpring15DR74/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/AODSIM/Asympt25ns_MCRUN2_74_V9-v3/10000/002F7FDD-BA13-E511-AA63-0026189437F5.root'
     )
 )
 
