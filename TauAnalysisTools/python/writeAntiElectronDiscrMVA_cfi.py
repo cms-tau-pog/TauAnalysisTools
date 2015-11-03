@@ -9,56 +9,56 @@ writeAntiElectronDiscrMVAs = cms.EDAnalyzer("GBRForestWriter",
             inputFileType = cms.string("GBRForest"),
             gbrForestName = cms.string("gbr_NoEleMatch_woGwoGSF_BL"),
             outputFileType = cms.string("SQLLite"),                                      
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_BL")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_BL")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),            
             gbrForestName = cms.string("gbr_NoEleMatch_wGwoGSF_BL"),
             outputFileType = cms.string("SQLLite"),                                      
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_BL")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_BL")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),                                       
             gbrForestName = cms.string("gbr_woGwGSF_BL"),
             outputFileType = cms.string("SQLLite"),                                     
-            outputRecord = cms.string("gbr_woGwGSF_BL")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_BL")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),                                       
             gbrForestName = cms.string("gbr_wGwGSF_BL"),
             outputFileType = cms.string("SQLLite"), 
-            outputRecord = cms.string("gbr_wGwGSF_BL")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_BL")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),
             gbrForestName = cms.string("gbr_NoEleMatch_woGwoGSF_EC"),
             outputFileType = cms.string("SQLLite"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_EC")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_EC")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),
             gbrForestName = cms.string("gbr_NoEleMatch_wGwoGSF_EC"),
             outputFileType = cms.string("SQLLite"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_EC")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_EC")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),
             gbrForestName = cms.string("gbr_woGwGSF_EC"),
             outputFileType = cms.string("SQLLite"),
-            outputRecord = cms.string("gbr_woGwGSF_EC")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_EC")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/gbrDiscriminationAgainstElectronMVA6.root'),
             inputFileType = cms.string("GBRForest"),
             gbrForestName = cms.string("gbr_wGwGSF_EC"),
             outputFileType = cms.string("SQLLite"),
-            outputRecord = cms.string("gbr_wGwGSF_EC")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_EC")
         )
     )
 )
@@ -70,202 +70,202 @@ writeAntiElectronDiscrWPs = cms.EDAnalyzer("TGraphWriter",
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat0"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_BL_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_BL_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat0"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_BL_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_BL_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat0"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_BL_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_BL_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat0"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_BL_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_BL_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat0"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_BL_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_BL_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat2"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_BL_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_BL_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat2"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_BL_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_BL_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat2"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_BL_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_BL_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat2"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_BL_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_BL_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat2"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_BL_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_BL_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat5"),
-            outputRecord = cms.string("gbr_woGwGSF_BL_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_BL_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat5"),
-            outputRecord = cms.string("gbr_woGwGSF_BL_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_BL_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat5"),
-            outputRecord = cms.string("gbr_woGwGSF_BL_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_BL_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat5"),
-            outputRecord = cms.string("gbr_woGwGSF_BL_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_BL_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat5"),
-            outputRecord = cms.string("gbr_woGwGSF_BL_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_BL_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat7"),
-            outputRecord = cms.string("gbr_wGwGSF_BL_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_BL_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat7"),
-            outputRecord = cms.string("gbr_wGwGSF_BL_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_BL_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat7"),
-            outputRecord = cms.string("gbr_wGwGSF_BL_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_BL_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat7"),
-            outputRecord = cms.string("gbr_wGwGSF_BL_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_BL_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat7"),
-            outputRecord = cms.string("gbr_wGwGSF_BL_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_BL_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat8"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_EC_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_EC_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat8"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_EC_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_EC_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat8"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_EC_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_EC_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat8"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_EC_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_EC_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat8"),
-            outputRecord = cms.string("gbr_NoEleMatch_woGwoGSF_EC_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_woGwoGSF_EC_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat10"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_EC_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_EC_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat10"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_EC_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_EC_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat10"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_EC_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_EC_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat10"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_EC_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_EC_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat10"),
-            outputRecord = cms.string("gbr_NoEleMatch_wGwoGSF_EC_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_NoEleMatch_wGwoGSF_EC_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat13"),
-            outputRecord = cms.string("gbr_woGwGSF_EC_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_EC_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat13"),
-            outputRecord = cms.string("gbr_woGwGSF_EC_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_EC_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat13"),
-            outputRecord = cms.string("gbr_woGwGSF_EC_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_EC_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat13"),
-            outputRecord = cms.string("gbr_woGwGSF_EC_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_EC_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat13"),
-            outputRecord = cms.string("gbr_woGwGSF_EC_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_woGwGSF_EC_WPEff79")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff99cat15"),
-            outputRecord = cms.string("gbr_wGwGSF_EC_WPEff99")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_EC_WPEff99")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff96cat15"),
-            outputRecord = cms.string("gbr_wGwGSF_EC_WPEff96")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_EC_WPEff96")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff91cat15"),
-            outputRecord = cms.string("gbr_wGwGSF_EC_WPEff91")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_EC_WPEff91")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff85cat15"),
-            outputRecord = cms.string("gbr_wGwGSF_EC_WPEff85")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_EC_WPEff85")
         ),
         cms.PSet(
             inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationAgainstElectronMVA6.root'),
             graphName = cms.string("eff79cat15"),
-            outputRecord = cms.string("gbr_wGwGSF_EC_WPEff79")
+            outputRecord = cms.string("RecoTauTag_antiElectronMVA6v1_gbr_wGwGSF_EC_WPEff79")
         )
     )
 )
