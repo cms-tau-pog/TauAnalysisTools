@@ -272,39 +272,3 @@ writeAntiElectronDiscrWPs = cms.EDAnalyzer("TGraphWriter",
 
 writeAntiElectronDiscrSequence += cms.Sequence(writeAntiElectronDiscrWPs)
 
-#writeAntiElectronDiscrMVAoutputNormalizations = cms.EDAnalyzer("TFormulaWriter",
-       #jobs = cms.VPSet(
-        #cms.PSet(
-            #inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationByIsolationMVA1Run2_isoDBoldDMwLT.root'),
-            #formulaName = cms.string("mvaOutput_normalization_isoDBoldDMwLT"),
-            #outputRecord = cms.string("RecoTauTag_tauIdMVAIsoDBoldDMwLTv1_mvaOutput_normalization")
-        #),
-        #cms.PSet(
-            #inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationByIsolationMVA1Run2_isoDBnewDMwLT.root'),
-            #formulaName = cms.string("mvaOutput_normalization_isoDBnewDMwLT"),
-            #outputRecord = cms.string("RecoTauTag_tauIdMVAIsoDBnewDMwLTv1_mvaOutput_normalization")
-        #),
-        #cms.PSet(
-            #inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationByIsolationMVA1Run2_isoPWoldDMwLT.root'),
-            #formulaName = cms.string("mvaOutput_normalization_isoPWoldDMwLT"),
-            #outputRecord = cms.string("RecoTauTag_tauIdMVAIsoPWoldDMwLTv1_mvaOutput_normalization")
-        #),
-        #cms.PSet(
-            #inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationByIsolationMVA1Run2_isoPWnewDMwLT.root'),
-            #formulaName = cms.string("mvaOutput_normalization_isoPWnewDMwLT"),
-            #outputRecord = cms.string("RecoTauTag_tauIdMVAIsoPWnewDMwLTv1_mvaOutput_normalization")
-        #),
-        #cms.PSet(
-            #inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationByIsolationMVA1Run2_isoDBR03oldDMwLT.root'),
-            #formulaName = cms.string("mvaOutput_normalization_isoDBR03oldDMwLT"),
-            #outputRecord = cms.string("RecoTauTag_tauIdMVAIsoDBR03oldDMwLTv1_mvaOutput_normalization")
-        #),
-        #cms.PSet(
-            #inputFileName = cms.FileInPath('TauAnalysisTools/TauAnalysisTools/data/wpDiscriminationByIsolationMVA1Run2_isoPWR03oldDMwLT.root'),
-            #formulaName = cms.string("mvaOutput_normalization_isoPWR03oldDMwLT"),
-            #outputRecord = cms.string("RecoTauTag_tauIdMVAIsoPWR03oldDMwLTv1_mvaOutput_normalization")
-        #)
-    #)
-#)
-
-#writeAntiElectronDiscrSequence += cms.Sequence(writeAntiElectronDiscrMVAoutputNormalizations)

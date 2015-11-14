@@ -29,35 +29,29 @@ def rocPlotMacro():
 		'color'  : ROOT.kGreen,
 		'text'   : '53X'
 	}
-	oldTraining72X = {
-		'folder' : 'oldTraining_fixTauGSF',
-		'color'  : ROOT.kRed,
-		'text'   : '72X old training'
-	}	
-	newTraining72X_noTauMVA_MvaInput_lessVars = {
-		'folder' : 'fixTauGSF_scenario3_v2_lessVars',
-		'color'  : ROOT.kCyan,
-		'text'   : '72X new train w/ ele MVA input w/o Tau_HadrMVA'
+	reference74X = {
+		'folder' : 'antiElectronDiscr74X_onlyZWTTjetsHiggsWZprimeSUSY_FullSkim',
+		'color'  : ROOT.kMagenta,
+		'text'   : '74X (Complete skim)'
 	}
 
 	inputFilePath = '/nfs/dust/cms/user/fcolombo/HiggsToTauTau/TauPOG/antiElectronDiscrMVATraining'
 
 	trainingList = []
 	trainingList.append(reference53X)
-	trainingList.append(oldTraining72X)
-	trainingList.append(newTraining72X_noTauMVA_MvaInput_lessVars)
+	trainingList.append(reference74X)
 
 	# list of plots to produce
 	roc_linear = {
 		'file' : 'showROCcurvesAntiElectronDiscrMVA_all_linear.root',
-		'name' : 'roc_all_linear',
-		'y_range' : [0.7, 1.],
+		'name' : 'roc_linear',
+		'y_range' : [0.4, 1.],
 		'y_log' : False,
 		'leg_loc' : [0.2, 0.2, 0.8, 0.35]
 	}
 	roc_log = {
 		'file' : 'showROCcurvesAntiElectronDiscrMVA_all_log.root',
-		'name' : 'roc_all_log',
+		'name' : 'roc_log',
 		'y_range' : [0.001, 1.],
 		'y_log' : True,
 		'leg_loc' : [0.2, 0.75, 0.8, 0.9]
@@ -67,45 +61,49 @@ def rocPlotMacro():
 	plotList.append(roc_linear)
 	plotList.append(roc_log)
 
+	pTbinsList = ['','tauPtLt50_','tauPt50to100_','tauPt100to200_','tauPt200to400_','tauPt400to600_','tauPt600to900_','tauPt900to1200_','tauPtGt1200_']
+
 	for iPlot, plotDict in enumerate(plotList):
+		for ptBin in pTbinsList:
 
-		c1 = TCanvas()
-		c1.SetTitle(plotDict['name'])
+			filename = 'showROCcurvesAntiElectronDiscrMVA_all_'+ptBin+('log' if plotDict['y_log'] else 'linear')
 
-		legend = TLegend(plotDict['leg_loc'][0], plotDict['leg_loc'][1], plotDict['leg_loc'][2], plotDict['leg_loc'][3])
-		legend.SetShadowColor(0)
-		legend.SetFillColor(0)
+			c1 = TCanvas()
+			c1.SetTitle(plotDict['name'])
 
-		for iTrain, trainDict in enumerate(trainingList):
+			legend = TLegend(plotDict['leg_loc'][0], plotDict['leg_loc'][1], plotDict['leg_loc'][2], plotDict['leg_loc'][3])
+			legend.SetShadowColor(0)
+			legend.SetFillColor(0)
 
-			file = TFile.Open(os.path.join(inputFilePath, trainDict['folder'], plotDict['file']))
-			canvas = file.Get("canvas")
-			histo = canvas.GetPrimitive("dummyHistogram")
-			graph = canvas.GetPrimitive("mvaAntiElectronDiscr5_TestTree_cloned")
+			for iTrain, trainDict in enumerate(trainingList):
 
-			legend.AddEntry(graph, trainDict['text'], 'l')
-			c1.cd()
-			if (iTrain == 0):
-				histo.GetYaxis().SetRangeUser(plotDict['y_range'][0], plotDict['y_range'][1])
-				histo.GetYaxis().SetTitleOffset(1.6)
-				histo.Draw()
+				file = TFile.Open(os.path.join(inputFilePath, trainDict['folder'], filename+'.root'))
+				canvas = file.Get("canvas")
+				histo = canvas.GetPrimitive("dummyHistogram")
+				graph = canvas.GetPrimitive("mvaAntiElectronDiscr5_TestTree_"+ptBin+"cloned")
 
-			graph.SetMarkerColor(trainDict['color'])
-			graph.SetLineColor(trainDict['color'])
-			graph.SetLineWidth(2)
-			graph.Draw("LP SAME")
+				legend.AddEntry(graph, trainDict['text'], 'l')
+				c1.cd()
+				if (iTrain == 0):
+					histo.GetYaxis().SetRangeUser(plotDict['y_range'][0], plotDict['y_range'][1])
+					histo.GetYaxis().SetTitleOffset(1.6)
+					histo.Draw()
 
-		if (plotDict['y_log'] == True):
-			c1.SetLogy()
+				graph.SetMarkerColor(trainDict['color'])
+				graph.SetLineColor(trainDict['color'])
+				graph.SetLineWidth(2)
+				graph.Draw("LP SAME")
 
-		legend.Draw()
+			if (plotDict['y_log'] == True):
+				c1.SetLogy()
 
-		if 'plots' not in os.listdir(inputFilePath):
-			os.mkdir(os.path.join(inputFilePath, 'plots'))
+			legend.Draw()
 
-		c1.SaveAs(os.path.join(inputFilePath, 'plots', plotDict['name']+'.png'))
+			if 'plots' not in os.listdir(inputFilePath):
+				os.mkdir(os.path.join(inputFilePath, 'plots'))
+
+			c1.SaveAs(os.path.join(inputFilePath, 'plots', plotDict['name']+'_'+(ptBin[:-1] if ptBin != '' else 'all')+'.png'))
 
 
 if __name__ == "__main__":
 	rocPlotMacro()
-

@@ -10,197 +10,137 @@ from datetime import date
 
 samples = {
     'ZplusJets_madgraph_signal' : {
-        'datasetpath'                        : '/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM',
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 2829164,
+        'datasetpath'                        : '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM',
         'type'                               : 'SignalMC'
     },
     'ZplusJets_madgraph_background' : {
-        'datasetpath'                        : '/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM',
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 2829164,
+        'datasetpath'                        : '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM',
         'type'                               : 'BackgroundMC'
     },
     'WplusJets_madgraph_signal' : {
-        'datasetpath'                        : '/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM',
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 10017930,
+        'datasetpath'                        : '/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM',
         'type'                               : 'SignalMC'
     },
     'WplusJets_madgraph_background' : {
-        'datasetpath'                        : '/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM',
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 10017930,
+        'datasetpath'                        : '/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM',
         'type'                               : 'BackgroundMC'
     },
     'TTplusJets_madgraph_signal' : {
-        'datasetpath'                        : '/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM',
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 25446993,
+        'datasetpath'                        : '/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM',
         'type'                               : 'SignalMC'
     },
     'TTplusJets_madgraph_background' : {
-        'datasetpath'                        : '/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM',
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 25446993,
+        'datasetpath'                        : '/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM',
         'type'                               : 'BackgroundMC'
-    }
+    },
+#    'QCDflat_pythia8' : {
+#        'datasetpath'                        : '/QCD_Pt-15to7000_TuneCUETP8M1_Flat_13TeV_pythia8/RunIISpring15DR74-Asympt25nsRaw_MCRUN2_74_V9-v3/AODSIM',
+#        'type'                               : 'BackgroundMC'
+#    }
 }
-smHiggsMassPoints = [ 125 ]
+
+smHiggsMassPoints = [ 120,125,130 ]
 for massPoint in smHiggsMassPoints:
     ggSampleName = "ggHiggs%1.0ftoTauTau" % massPoint
     samples[ggSampleName] = {
-        'datasetpath'                        : '/GluGluToHToTauTau_M-%1.0f_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 456682,
+        'datasetpath'                        : '/GluGluHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
         'type'                               : 'SignalMC'
     }
     vbfSampleName = "vbfHiggs%1.0ftoTauTau" % massPoint
     samples[vbfSampleName] = {
-        'datasetpath'                        : '/VBF_HToTauTau_M-%1.0f_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 466354,
+        'datasetpath'                        : '/VBFHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
         'type'                               : 'SignalMC'
     }
-mssmHiggsMassPoints = [  ]
+    wplushSampleName = "wplusHiggs%1.0ftoTauTau" % massPoint
+    samples[wplushSampleName] = {
+        'datasetpath'                        : '/WplusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
+        'type'                               : 'SignalMC'
+    }
+    wminushSampleName = "wminusHiggs%1.0ftoTauTau" % massPoint
+    samples[wminushSampleName] = {
+        'datasetpath'                        : '/WminusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v3" if massPoint == 120 else "v1"),
+        'type'                               : 'SignalMC'
+    }
+
+mssmHiggsMassPoints = [ 80,90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000,1200,1400,1500,1600,1800,2000,2300,2600,2900,3200 ]
 for massPoint in mssmHiggsMassPoints:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     samples[ggSampleName] = {
-        'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 200000,
+        'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint in [90,600,700,1400] else "v1"),
         'type'                               : 'SignalMC'
     }
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {
-        'datasetpath'                        : '/SUSYBBHToTauTau_M-%1.0f_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 200000,
+        'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint in [100,110,160,600,1600,2000] else "v1"),
         'type'                               : 'SignalMC'
     }
-ZprimeMassPoints = [  ]
+
+ZprimeMassPoints = [ 500,1000,1500,2000,2500,3000,3500,4000,4500,5000 ]
 for massPoint in ZprimeMassPoints:
     sampleName = "Zprime%1.0ftoTauTau" % massPoint
     samples[sampleName] = {
-        'datasetpath'                        : '/ZprimeSSMToTauTau_M-%1.0f_TuneZ2star_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : -1,
+        'datasetpath'                        : '/ZprimeToTauTau_M_%1.0f_TuneCUETP8M1_tauola_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint == 3000 else "v1"),
         'type'                               : 'SignalMC'
     }
-WprimeMassPoints = [  ]
+
+WprimeMassPoints = [ 1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4200,4400,4600,4800,5000,5200,5400,5600,5800 ]
 for massPoint in WprimeMassPoints:
     sampleName = "Wprime%1.0ftoTauNu" % massPoint
     samples[sampleName] = {
-        'datasetpath'                        : '/WprimeToTauNu_M-%1.0f_TuneZ2star_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : -1,
+        'datasetpath'                        : '/WprimeToTauNu_M-%1.0f_TuneCUETP8M1_13TeV-pythia8-tauola/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint in [2600,5600] else "v1"),
         'type'                               : 'SignalMC'
     }
-# CV: add Z' -> ee and W'-> enu background samples
-ZprimeMassPoints = [  ]
+
+ZprimeMassPoints = [ 5000 ]
 for massPoint in ZprimeMassPoints:
     sampleName = "Zprime%1.0ftoElecElec" % massPoint
     samples[sampleName] = {
-        'datasetpath'                        : '/ZprimePSIToEE_M-%1.0f_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : -1,
+        'datasetpath'                        : '/ZprimeToEE_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
         'type'                               : 'BackgroundMC'
     }
-WprimeMassPoints = [  ]
+
+WprimeMassPoints = [ 1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4200,4400,4600,4800,5000,5200,5400,5600,5800 ]
 for massPoint in WprimeMassPoints:
     sampleName = "Wprime%1.0ftoElecNu" % massPoint
     samples[sampleName] = {
-        'datasetpath'                        : '/WprimeToENu_M-%1.0f_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : -1,
+        'datasetpath'                        : '/WprimeToENu_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint in [1000,3200] else "v1"),
         'type'                               : 'BackgroundMC'
     }
-DrellYanMassPoints = [ 50 ]
-for massPoint in DrellYanMassPoints:
-    sampleName = "DY%1.0ftoElecElec" % massPoint
+
+sampleName = "DYtoElecElec"
+samples[sampleName] = {
+    'datasetpath'                    : '/DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM',
+    'type'                           : 'BackgroundMC'
+    }
+
+#QCDMassPoints = [ '5to10','10to15','15to30','30to50','50to80','80to120','120to170','170to300','300to470','470to600','600to800','800to1000','1000to1400','1400to1800','1800to2400','2400to3200','3200toInf' ]
+QCDMassPoints = [  ]
+for massPoint in QCDMassPoints:
+    sampleName = "QCD_Pt%s" % massPoint
     samples[sampleName] = {
-        'datasetpath'                        : '/DYToEE_M-%1.0f_Tune4C_13TeV-pythia8/Phys14DR-PU20bx25_tsg_castor_PHYS14_25_V1-v1/AODSIM' % massPoint,
-        'dbs_url'                            : 'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-        'events_per_job'                     : 50000,
-        'total_number_of_events'             : 3070559,
+        'datasetpath'                        : '/QCD_Pt_%s_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v1" if massPoint in ['80to120','120to170','300to470','1000to1400','1400to1800','1800to2400','2400to3200','3200toInf'] else "v3" if massPoint in ['600to800'] else "v2"),
         'type'                               : 'BackgroundMC'
     }
 
-version = "antiElectronDiscr_v1_2"
+#QCDEMenrichMassPoints = [ '15to20','20to30','30to50','50to80','80to120','120to170','170to300','300toInf' ]
+QCDEMenrichMassPoints = [  ]
+for massPoint in QCDEMenrichMassPoints:
+    sampleName = "QCD_EMEnriched_Pt%s" % massPoint
+    samples[sampleName] = {
+        'datasetpath'                        : '/QCD_Pt-%s_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint in ['300toInf'] else "v3" if massPoint in ['80to120'] else "v1"),
+        'type'                               : 'BackgroundMC'
+    }
 
-submitJobFraction = 1.00
+#QCDMuenrichMassPoints = [ '15to20','20to30','30to50','50to80','80to120','120to170','170to300','300to470','470to600','600to800','800to1000','1000toInf' ]
+QCDMuenrichMassPoints = [  ]
+for massPoint in QCDMuenrichMassPoints:
+    sampleName = "QCD_MuEnriched_Pt%s" % massPoint
+    samples[sampleName] = {
+        'datasetpath'                        : '/QCD_Pt-%s_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-%s/AODSIM' % (massPoint, "v2" if massPoint in ['20to30','120to170','170to300','300to470','470to600','600to800','800to1000','1000toInf'] else "v1"),
+        'type'                               : 'BackgroundMC'
+    }
 
-crab_template_mc = string.Template('''
-[CRAB]
-jobtype = cmssw
-scheduler = remoteGlidein
-use_server = 0
-
-[CMSSW]
-datasetpath = $datasetpath
-dbs_url = $dbs_url
-pset = $pset
-output_file = antiElectronDiscrMVATrainingNtuple.root
-total_number_of_events = $total_number_of_events
-events_per_job = $events_per_job
-
-[USER]
-ui_working_dir = $ui_working_dir
-return_data = 0
-copy_data = 1
-publish_data = 0
-storage_element = T2_CH_CERN
-user_remote_dir = $user_remote_dir
-debug_wrapper = 1
-
-[GRID]
-##SE_white_list = T2_DE_DESY
-SE_black_list = T2_US_Nebraska,T2_KR_KNU,T2_IT_Legnaro,T2_RU_JINR
-''')
-
-crab_template_data = string.Template('''
-[CRAB]
-jobtype = cmssw
-scheduler = remoteGlidein
-use_server = 0
- 
-[CMSSW]
-datasetpath = $datasetpath
-dbs_url = $dbs_url
-pset = $pset
-output_file = $output_file
-lumi_mask = /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt
-total_number_of_lumis = -1
-lumis_per_job = $lumis_per_job
-#runselection = 190450-190790
-
-[USER]
-ui_working_dir = $ui_working_dir
-return_data = 0
-copy_data = 1
-publish_data = 0
-storage_element = T2_CH_CERN
-user_remote_dir = $user_remote_dir
-debug_wrapper = 1
-
-[GRID]
-##SE_white_list = T2_DE_DESY
-SE_black_list = T2_US_Nebraska,T2_KR_KNU,T2_IT_Legnaro,T2_RU_JINR
-''')
+version = "antiElectronDiscr74X"
 
 gc_template = string.Template('''
 [global]
@@ -220,7 +160,7 @@ se output files = antiElectronDiscrMVATrainingNtuple.root
 se output pattern = @NICK@/@NICK@_@MY_JOBID@.root
 
 [grid]
-sites = -samtests -group_admin -monitor -lcgadmin -cern -ucsd -cmsprod -cmsprodhi -brunel
+;sites = -samtests -group_admin -monitor -lcgadmin -cmsprod -cmsprodhi
 
 [CMSSW_Advanced]
 project area = ../../../../../
@@ -243,8 +183,12 @@ currentDirectory    = os.getcwd()
 submissionDirectoryCrab = os.path.join(currentDirectory, "crab")
 submissionDirectoryGc = os.path.join(currentDirectory, "gc")
 
-executable_crab = 'crab'
-#executable_crab = 'crab -GRID.dont_check_proxy 1' # NOTE: requires to execute 'voms-proxy-init -voms cms -valid 72:0' prior to running submitAntiElectronDiscrMVATrainingNtupleProduction_grid.py
+
+from CRABClient.UserUtilities import config
+from CRABAPI.RawCommand import crabCommand
+from CRABClient.ClientExceptions import ClientException
+from httplib import HTTPException
+from multiprocessing import Process
 
 def createFilePath(filePath):
     try:
@@ -253,11 +197,16 @@ def createFilePath(filePath):
         print "filePath = %s does not yet exist, creating it." % filePath
         eos.mkdir(filePath)
 
-crabCommands_create_and_submit = []
-crabCommands_publish           = []
+def submitWithCrab(config):
+    try:
+        crabCommand('submit', config = config)
+    except HTTPException as hte:
+        print "Failed submitting task: %s" % (hte.headers)
+    except ClientException as cle:
+        print "Failed submitting task: %s" % (cle)
 
 gcOptions = {
-	"se_path" : "srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_2_X/antiElectronDiscrMVATraining/ntuples/%s" % date.today()
+	"se_path" : "srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_4_X/antiElectronDiscrMVATraining/ntuples/%s" % date.today()
 }
 
 for sampleName, sampleOption in samples.items():
@@ -279,46 +228,32 @@ for sampleName, sampleOption in samples.items():
 
     output_files = [ "antiElectronDiscrMVATrainingNtuple.root" ]
         
-    # create crab config file
-    crabOptions = None
-    crab_template = None
-    if sampleOption['type'] == "SignalMC" or sampleOption['type'] == "BackgroundMC":
-        total_number_of_events = None
-        if submitJobFraction < 1.0 and sampleOption['total_number_of_events'] != -1:
-            print "submitting fraction = %1.2f of event statistics for sample = %s" % (submitJobFraction, sampleName)
-            total_number_of_events = int(submitJobFraction*sampleOption['total_number_of_events'])
-        else:
-            total_number_of_events = sampleOption['total_number_of_events']
-        crabOptions = {
-            'datasetpath'            : sampleOption['datasetpath'],
-            'dbs_url'                : sampleOption['dbs_url'],
-            'total_number_of_events' : total_number_of_events,
-            'events_per_job'         : sampleOption['events_per_job'],
-            'pset'                   : cfgFileName_modified,
-            'output_file'            : ",".join(output_files),
-            'ui_working_dir'         : os.path.join(submissionDirectoryCrab, "crabdir_%s_%s" % (sampleName, version)),
-            'user_remote_dir'        : "CMSSW_5_3_x/Ntuples/antiElectronDiscrMVATraining/%s/%s" % (version, sampleName)
-        }
-        crab_template = crab_template_mc
-    elif sampleOption['type'] == "Data":
-        crabOptions = {
-            'datasetpath'            : sampleOption['datasetpath'],
-            'dbs_url'                : sampleOption['dbs_url'],
-            'lumis_per_job'          : sampleOption['lumis_per_job'],
-            'pset'                   : cfgFileName_modified,
-            'output_file'            : ",".join(output_files),
-            'ui_working_dir'         : os.path.join(submissionDirectoryCrab, "crabdir_%s_%s" % (sampleName, version)),
-            'user_remote_dir'        : "CMSSW_5_3_x/Ntuples/antiElectronDiscrMVATraining/%s/%s" % (version, sampleName)
-        }
-        crab_template = crab_template_data
-    else:
-        raise ValueError("Invalid sample type = %s !!" % sampleOption['type'])
-    crabFileName = "crab_antiElectronDiscrMVATrainingNtupleProduction_%s_%s.cfg" % (sampleName, version)
-    crabFileName_full = os.path.join(submissionDirectoryCrab, crabFileName)
-    crabFile = open(crabFileName_full, 'w')
-    crabConfig = crab_template.substitute(crabOptions)
-    crabFile.write(crabConfig)
-    crabFile.close()
+    # create config file for Crab
+    crabConfig = config()
+    crabConfig.General.workArea = os.path.join(submissionDirectoryCrab, "crabdir_%s_%s" % (sampleName, version))
+    #check_path(crabConfig.General.workArea)
+    crabConfig.General.transferOutputs = True
+    crabConfig.General.transferLogs = True
+    crabConfig.General.requestName = sampleName
+    crabConfig.User.voGroup = 'dcms'
+
+    crabConfig.JobType.pluginName = 'Analysis'
+    crabConfig.JobType.psetName = cfgFileName_modified
+    crabConfig.JobType.allowUndistributedCMSSW = True
+    crabConfig.JobType.outputFiles = [ "antiElectronDiscrMVATrainingNtuple.root" ]
+
+    crabConfig.Data.inputDBS = 'global'
+    crabConfig.Data.inputDataset = sampleOption['datasetpath']
+    crabConfig.Data.splitting = 'FileBased'
+    crabConfig.Data.unitsPerJob = 1
+    crabConfig.Data.outLFNDirBase = '/store/user/fcolombo/higgs-kit/tauPOG/CMSSW_7_4_X/antiElectronDiscrMVATraining/ntuples/%s_test' % date.today()
+    crabConfig.Data.publication = False
+
+    crabConfig.Site.storageSite = "T2_DE_DESY"
+    p = Process(target=submitWithCrab, args=(crabConfig,))
+    p.start()
+    p.join()
+
 
     # fill gc config options
     gcCfgFileName_modified = os.path.join(submissionDirectoryGc, os.path.basename(cfgFileName_modified))
@@ -327,53 +262,12 @@ for sampleName, sampleOption in samples.items():
     if not os.path.exists(os.path.dirname(gcCfgFileName_modified)): os.makedirs(os.path.dirname(gcCfgFileName_modified))
     os.system("cp " + cfgFileName_modified + " " + gcCfgFileName_modified)
 
-    # create output directory uncommenting the lines below (does not work on the NAF)
-    # (in principle crab will do this, but sometimes fails with 'Permission denied' error, causing all jobs to fail with error code 60307)
-    #createFilePath("/store/user/<user-name>/<path>/%s" % version)
-    #createFilePath("/store/user/<user-name>/<path>/%s/%s" % (version, sampleName))
-
-    # keep track of commands necessary to create, submit and publish crab jobs
-    crabCommands_create_and_submit.append('%s -create -cfg %s' % (executable_crab, crabFileName_full))
-    if 'events_per_job' in sampleOption.keys(): # MC
-        events_total = None
-        if sampleOption['total_number_of_events'] == -1:
-            events_total = 10000000
-        else:
-            events_total = sampleOption['total_number_of_events']
-        if (events_total / sampleOption['events_per_job']) < 450: # CV: add 10% safety margin to avoid jobs not getting submitted at all in case crab decides to create more than 500 jobs
-            crabCommands_create_and_submit.append('%s -submit -c %s' % (executable_crab, crabOptions['ui_working_dir']))
-        else:
-            numJobs = (events_total / sampleOption['events_per_job'])
-            if (events_total % sampleOption['events_per_job']) != 0:
-                numJobs = numJobs + 1
-            numJobs_per_submitCall = 500
-            numSubmitCalls = (numJobs / numJobs_per_submitCall)
-            if (numJobs % numJobs_per_submitCall) != 0:
-                numSubmitCalls = numSubmitCalls + 1
-            for submitIdx in range(numSubmitCalls):
-                jobId_first = submitIdx*500 + 1
-                jobId_last  = (submitIdx + 1)*500
-                if jobId_last > numJobs:
-                    jobId_last = numJobs
-                crabCommands_create_and_submit.append('echo "pausing for 10 seconds before submitting next batch of jobs..."')
-                crabCommands_create_and_submit.append('sleep 10')
-                crabCommands_create_and_submit.append('%s -submit %i-%i -c %s' % (executable_crab, jobId_first, jobId_last, crabOptions['ui_working_dir']))
-    else: # Data
-        crabCommands_create_and_submit.append('%s -submit -c %s' % (executable_crab, crabOptions['ui_working_dir']))
-
 gcFileName = "gc_tauIdMVATrainingNtupleProduction_%s_%s.cfg" % (version, date.today())
 gcFileName_full = os.path.join(submissionDirectoryGc, gcFileName)
 gcFile = open(gcFileName_full, 'w')
 gcConfig = gc_template.substitute(gcOptions)
 gcFile.write(gcConfig)
 gcFile.close()
-   
-shellFileName_create_and_submit = "antiElectronDiscrMVATrainingNtupleProduction_crab_create_and_submit.sh"
-shellFile_create_and_submit = open(shellFileName_create_and_submit, "w")
-for crabCommand in crabCommands_create_and_submit:
-    shellFile_create_and_submit.write("%s\n" % crabCommand)
-shellFile_create_and_submit.close()
 
 print("Finished building config files.")
-print("Execute 'source %s' to create & submit crab jobs." % shellFileName_create_and_submit)
-print("Execute '~/<your-grid-control-dir>/go.py -Gc -m 10 %s' to submit grid-control jobs." % os.path.relpath(gcFileName_full, "."))
+print("Execute '~/<your-grid-control-dir>/go.py -Gc -m 10 %s' to submit grid-control jobs." % os.path.relpath(gcFileName, "."))
