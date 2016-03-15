@@ -59,3 +59,18 @@ Indicatively, a complete training takes approximately 8-9 hours, depending from 
 ### Additional codes and macros
 - [plotAntiElectronDiscrROCs](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/macros/plotAntiElectronDiscrROCs.py): simple pyROOT macro which displays different ROC curves on the same plot. Useful for comparing the performance of different trainings.
 - [dumpWPsAntiElectronDiscr](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/macros/dumpWPsAntiElectronDiscr.C): dumps the output of computeWPcutsAntiElectronDiscrMVA (cut working points as a function of the tau pT for each one of the training categories) in the form of TGraphs.
+
+### Saving the training outputs
+After the complete training step has successfully run, the structure of the newly created boosted decision trees is saved into .xml files (one file for each BDT/category) which are located in a "weights" folder, inside your training output folder.
+
+The working points for each one of the categories, as a function of the tau pT, can be saved in the form of TGraphs using the [dumpWPsAntiElectronDiscr](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/macros/dumpWPsAntiElectronDiscr.C) macro:
+
+	root dumpWPsAntiElectronDiscr.C
+
+The output is saved into *../data/wpDiscriminationAgainstElectronMVA6.root*. The target signal efficiencies of the working points can be modified acting on the macro code (current values: VLoose 99%, Loose 96%, Medium 91%, Tight 85%, VTight 79%).
+
+The .xml files can be converted into a ROOT file containing GBRForest objects using the [writeGBRForests_antiElectronDiscrMVA_cfg](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/test/writeGBRForests_antiElectronDiscrMVA_cfg.py) config file:
+
+	cmsRun writeGBRForests_antiElectronDiscrMVA_cfg.py
+
+The output is saved into *gbrDiscriminationAgainstElectronMVA6.root*, in the current folder (but it can be moved manually to *../data/*). Before running, change all the *inputFileName* in the config to point to the correct location of the .xml files.

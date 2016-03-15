@@ -203,7 +203,8 @@ void dumpWPsAntiElectronDiscr()
     }
   }
 
-  TFile* outputFile = new TFile("wpDiscriminationAgainstElectronMVA6.root", "RECREATE");
+  gSystem->mkdir("../data");
+  TFile* outputFile = new TFile("../data/wpDiscriminationAgainstElectronMVA6.root", "RECREATE");
 
   for ( std::vector<graphWrapperType*>::const_iterator graphWrapper = graphWrappers.begin();
 	graphWrapper != graphWrappers.end(); ++graphWrapper ) {
