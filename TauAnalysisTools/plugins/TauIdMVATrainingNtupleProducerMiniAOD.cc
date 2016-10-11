@@ -5,7 +5,6 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
@@ -103,10 +102,10 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   if ( isMC_ ) {
     srcGenPileUpSummary_ = cfg.getParameter<edm::InputTag>("srcGenPileUpSummary");
     tokenGenPileupSummary_ = consumes<PileupSummaryInfo>(srcGenPileUpSummary_);
-  } else {
-    edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileNameLumiCalc");
-    if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/)
-      throw cms::Exception("UnclEnCalibrationNtupleProducer")
+  } //else { // TODO: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
+    //edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileNameLumiCalc");
+    //if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/)
+    /*  throw cms::Exception("UnclEnCalibrationNtupleProducer")
 	<< " Failed to find File = " << inputFileName << " !!\n";
     std::ifstream inputFile(inputFileName.fullPath().data());
     std::string header_pattern = std::string(
@@ -136,9 +135,11 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
     if ( !foundHeader )
       throw cms::Exception("UnclEnCalibrationNtupleProducer")
 	<< " Failed to find header in File = " << inputFileName.fullPath().data() << " !!\n";
-  }
+  }*/
 
   srcWeights_ = cfg.getParameter<vInputTag>("srcWeights"); // TODO: does this work on MiniAOD?
+
+  tokenGenInfoProduct_ = consumes<GenEventInfoProduct>(edm::InputTag("generator","","SIM"));
 
   verbosity_ = ( cfg.exists("verbosity") ) ?
     cfg.getParameter<int>("verbosity") : 0;
@@ -556,12 +557,12 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   }
   for ( std::vector<tauIsolationEntryType>::const_iterator tauIsolation = tauIsolationEntries_.begin();
 	tauIsolation != tauIsolationEntries_.end(); ++tauIsolation ) {
-    setValueF(tauIsolation->branchNameChargedIsoPtSum_, recTau->tauID("chargedIsoPtSum"));
-    setValueF(tauIsolation->branchNameNeutralIsoPtSum_, recTau->tauID("neutralIsoPtSum"));
-    setValueF(tauIsolation->branchNamePUcorrPtSum_, recTau->tauID("puCorrPtSum"));
-    setValueF(tauIsolation->branchNameNeutralIsoPtSumWeight_, recTau->tauID("neutralIsoPtSumWeight"));
-    setValueF(tauIsolation->branchNameFootprintCorrection_, recTau->tauID("footprintCorrection"));
-    setValueF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_, recTau->tauID("photonPtSumOutsideSignalCone"));
+    setValueF(tauIsolation->branchNameChargedIsoPtSum_, recTau->tauID(tauIsolation->branchNameChargedIsoPtSum_));
+    setValueF(tauIsolation->branchNameNeutralIsoPtSum_, recTau->tauID(tauIsolation->branchNameNeutralIsoPtSum_));
+    setValueF(tauIsolation->branchNamePUcorrPtSum_, recTau->tauID(tauIsolation->branchNamePUcorrPtSum_));
+    setValueF(tauIsolation->branchNameNeutralIsoPtSumWeight_, recTau->tauID(tauIsolation->branchNameNeutralIsoPtSumWeight_));
+    setValueF(tauIsolation->branchNameFootprintCorrection_, recTau->tauID(tauIsolation->branchNameFootprintCorrection_));
+    setValueF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_, recTau->tauID(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_));
   }
   //variables from Yuta for dynamic strip
   int tau_decaymode = recTau->decayMode();
@@ -807,7 +808,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& 
 	numPileUp_mean = genPileUpInfo->getTrueNumInteractions();
       }
     }
-  } else {
+  } /*else { // TODO: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
     edm::RunNumber_t run = evt.id().run();
     edm::LuminosityBlockNumber_t ls = evt.luminosityBlock();
     if ( pileUpByLumiCalc_.find(run) == pileUpByLumiCalc_.end() || pileUpByLumiCalc_[run].find(ls) == pileUpByLumiCalc_[run].end() ) {
@@ -819,7 +820,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& 
       return;
     }
     numPileUp_mean = pileUpByLumiCalc_[run][ls];
-  }
+  }*/
   setValueF("numPileUp", numPileUp_mean);
 }
 
@@ -848,7 +849,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
   double weightevt = 1;
   try{
   edm::Handle<GenEventInfoProduct> genEvt;
-  evt.getByLabel("generator",genEvt);
+  evt.getByToken(tokenGenInfoProduct_,genEvt);
   weightevt = genEvt->weight();
   //std::cout<<" mc@nlo weight "<<weightevt<<std::endl;
   }

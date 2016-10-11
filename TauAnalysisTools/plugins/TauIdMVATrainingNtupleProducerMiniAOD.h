@@ -30,6 +30,7 @@
 
 #include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include <TTree.h>
 #include <TMatrixD.h>
@@ -162,6 +163,8 @@ private:
 
 	typedef std::vector<edm::InputTag> vInputTag;
 	vInputTag srcWeights_;
+
+	edm::EDGetTokenT<GenEventInfoProduct> tokenGenInfoProduct_;
 
 	struct branchEntryType
 	{
