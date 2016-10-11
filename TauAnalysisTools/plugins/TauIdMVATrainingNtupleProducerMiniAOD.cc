@@ -15,7 +15,6 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
-#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
@@ -103,6 +102,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   isMC_ = cfg.getParameter<bool>("isMC");
   if ( isMC_ ) {
     srcGenPileUpSummary_ = cfg.getParameter<edm::InputTag>("srcGenPileUpSummary");
+    tokenGenPileupSummary_ = consumes<PileupSummaryInfo>(srcGenPileUpSummary_);
   } else {
     edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileNameLumiCalc");
     if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/)
@@ -795,10 +795,9 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& 
 {
   double numPileUp_mean = -1.;
   if ( isMC_ ) {
-	// TODO: pileup info not available in MiniAOD
-    /*typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
+    typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
     edm::Handle<PileupSummaryInfoCollection> genPileUpInfos;
-    evt.getByLabel(srcGenPileUpSummary_, genPileUpInfos);
+    evt.getByToken(tokenGenPileupSummary_, genPileUpInfos);
     for ( PileupSummaryInfoCollection::const_iterator genPileUpInfo = genPileUpInfos->begin();
 	  genPileUpInfo != genPileUpInfos->end(); ++genPileUpInfo ) {
       // CV: in-time PU is stored in getBunchCrossing = 0,
@@ -807,7 +806,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& 
       if ( bx == 0 ) {
 	numPileUp_mean = genPileUpInfo->getTrueNumInteractions();
       }
-    }*/
+    }
   } else {
     edm::RunNumber_t run = evt.id().run();
     edm::LuminosityBlockNumber_t ls = evt.luminosityBlock();

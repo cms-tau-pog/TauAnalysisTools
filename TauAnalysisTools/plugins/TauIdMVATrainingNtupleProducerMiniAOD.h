@@ -29,6 +29,7 @@
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include <TTree.h>
 #include <TMatrixD.h>
@@ -154,6 +155,7 @@ private:
 
 	bool isMC_;
 	edm::InputTag srcGenPileUpSummary_;
+	edm::EDGetTokenT<PileupSummaryInfo> tokenGenPileupSummary_;
 	std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, float> > pileUpByLumiCalc_; // key = run, lumi-section
 	std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, int> > numWarnings_;
 	int maxWarnings_;
