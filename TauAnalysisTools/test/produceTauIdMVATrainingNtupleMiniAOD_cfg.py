@@ -199,7 +199,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     verbosity = cms.int32(0)
 )
 
-dRisoCone = 0.4
+#dRisoCone = 0.4
 
 #pset = cms.PSet(
 #    chargedIsoPtSum = cms.string("chargedIsoPtSum"),

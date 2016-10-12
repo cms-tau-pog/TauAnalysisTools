@@ -32,7 +32,7 @@
 TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(const edm::ParameterSet& cfg)
   : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
     maxChargedHadrons_(3),
-    maxPiZeros_(2),
+    maxPiZeros_(1), // only 1 piZero can be reconstructed from signalGammaCands in MiniAOD
     loosePFJetIdAlgo_(0),
     maxWarnings_(3),
     ntuple_(0)
@@ -112,7 +112,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   if ( isMC_ ) {
     srcGenPileUpSummary_ = cfg.getParameter<edm::InputTag>("srcGenPileUpSummary");
     tokenGenPileupSummary_ = consumes<std::vector<PileupSummaryInfo> >(srcGenPileUpSummary_);
-  } //else { // TODO: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
+  } //else { // FIXME: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
     //edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileNameLumiCalc");
     //if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/)
     /*  throw cms::Exception("UnclEnCalibrationNtupleProducer")
@@ -147,7 +147,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 	<< " Failed to find header in File = " << inputFileName.fullPath().data() << " !!\n";
   }*/
 
-  srcWeights_ = cfg.getParameter<vInputTag>("srcWeights"); // TODO: does this work on MiniAOD?
+  srcWeights_ = cfg.getParameter<vInputTag>("srcWeights");
 
   tokenGenInfoProduct_ = consumes<GenEventInfoProduct>(edm::InputTag("generator","","SIM"));
 
@@ -415,9 +415,9 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   setValue_EnPxPyPz("recTauAlternate", recTau->alternatLorentzVect());
   setValueI("recTauDecayMode", recTau->decayMode());
   setValueF("recTauVtxZ", recTau->vertex().z());
-  //setValue_EnPxPyPz("recJet", recTau->jetRef()->p4()); // TODO: does not exist in MiniAOD
+  //setValue_EnPxPyPz("recJet", recTau->jetRef()->p4()); // does not exist in MiniAOD
   setValue_EnPxPyPz("recJet", reco::Candidate::LorentzVector(0.,0.,0.,0.));
-  //int recJetLooseId = ( (*loosePFJetIdAlgo_)(*recTau->jetRef()) ) ? 1 : 0; // TODO: does not exist in MiniAOD
+  //int recJetLooseId = ( (*loosePFJetIdAlgo_)(*recTau->jetRef()) ) ? 1 : 0; // does not exist in MiniAOD
   //setValueI("recJetLooseId", recJetLooseId);
   setValueI("recJetLooseId", 1);
   if ( recTau->leadCand().isNonnull() ) setValue_EnPxPyPz("leadPFCand", recTau->leadCand()->p4());
@@ -431,7 +431,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   }
   for ( unsigned idx = 0; idx < maxPiZeros_; ++idx ) {
     std::string branchName = Form("piZero%i", idx + 1);
-    if ( recTau->signalGammaCands().size() > idx ) setValue_piZero(branchName, recTau->signalGammaCands()); // TODO: only 1 piZero can be reconstructed on MiniAOD
+    if ( recTau->signalGammaCands().size() > idx ) setValue_piZero(branchName, recTau->signalGammaCands()); // only 1 piZero can be reconstructed on MiniAOD
   }
   setValue_XYZ("recImpactParamPCA", recTau->dxy_PCA());
   setValueF("recImpactParam", recTau->dxy());
@@ -441,20 +441,21 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   setValueF("recImpactParam3D", recTau->ip3d());
   setValueF("recImpactParamSign3D", recTau->ip3d_Sig());
   setValueI("hasRecDecayVertex", recTau->hasSecondaryVertex());
-  setValue_XYZ("recDecayVertex", recTau->secondaryVertexPos());
-  setValue_Cov("recDecayVertexCov", recTau->secondaryVertexCov());
-  const reco::VertexRef secVertex = recTau->secondaryVertex();
+  setValue_XYZ("recDecayVertex", recTau->secondaryVertexPos()); // not filled in PATTauProducer.cc !!!
+  setValue_Cov("recDecayVertexCov", recTau->secondaryVertexCov()); // not filled in PATTauProducer.cc !!!
+  const reco::VertexRef secVertex = recTau->secondaryVertex(); // not filled in PATTauProducer.cc !!!
   if(secVertex.isNonnull())setValueF("recDecayVertexChi2", recTau->secondaryVertex()->normalizedChi2());
   else setValueF("recDecayVertexChi2",  999.);
   setValue_XYZ("recDecayDist", recTau->flightLength());
-  setValue_Cov("recDecayDistCov", recTau->flightLengthCov());
+  setValue_Cov("recDecayDistCov", recTau->flightLengthCov()); // since neither primaryVertexCov nor secondaryVertexCov are filled by PATTauProducer.cc this is always 0 !!!
   setValueF("recDecayDistSign", recTau->flightLengthSig());
-  setValue_XYZ("recEvtVertex", recTau->primaryVertexPos()); // TODO: primaryVertexPos is not filled in PATTauProducer.cc !!!
-  setValue_Cov("recEvtVertexCov", recTau->primaryVertexCov()); // TODO: primaryVertexCov is not filled in PATTauProducer.cc !!!
+  setValue_XYZ("recEvtVertex", recTau->primaryVertexPos()); // not filled in PATTauProducer.cc !!!
+  setValue_Cov("recEvtVertexCov", recTau->primaryVertexCov()); // not filled in PATTauProducer.cc !!!
   //1d IP & Variables from Francesco
   GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
   if(recTau->hasSecondaryVertex()){
-    /*float recDecayDist2D_ = reco::SecondaryVertex::computeDist2d(*(recTau->primaryVertex()), *secVertex, direction, true).value(); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
+	// primaryVertex is not filled in PATTauProducer.cc !!!
+    /*float recDecayDist2D_ = reco::SecondaryVertex::computeDist2d(*(recTau->primaryVertex()), *secVertex, direction, true).value();
     float recDecayDistSign2D_ = reco::SecondaryVertex::computeDist2d(*(recTau->primaryVertex()), *secVertex, direction, true).significance();
     setValueF("recDecayDist2D", recDecayDist2D_);
     setValueF("recDecayDistSign2D", recDecayDistSign2D_);*/
@@ -469,7 +470,8 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   edm::ESHandle<TransientTrackBuilder> transTrackBuilder;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder",transTrackBuilder);
   if ( recTau->leadChargedHadrCand().isNonnull() && recTau->leadChargedHadrCand()->bestTrack() != 0){
-    /*const reco::Track* leadtrk = recTau->leadChargedHadrCand()->bestTrack(); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
+	// primaryVertex is not filled in PATTauProducer.cc !!!
+    /*const reco::Track* leadtrk = recTau->leadChargedHadrCand()->bestTrack();
     reco::TransientTrack ttrk = transTrackBuilder->build(&*leadtrk);
     std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk, direction, *(recTau->primaryVertex()) );
     setValueF("recImpactParamZ", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
@@ -492,7 +494,8 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
     const reco::CandidatePtrVector SigChCands = recTau->signalChargedHadrCands();
     const reco::Track* leadtrk2 = SigChCands[1]->bestTrack();
     if(leadtrk2){
-      /*reco::TransientTrack ttrk2 = transTrackBuilder->build(&*leadtrk2); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
+      // primaryVertex is not filled in PATTauProducer.cc !!!
+      /*reco::TransientTrack ttrk2 = transTrackBuilder->build(&*leadtrk2);
       GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
       std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk2, direction, *(recTau->primaryVertex()) );
       setValueF("recImpactParamZTk2", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
@@ -540,7 +543,8 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
     const reco::CandidatePtrVector SigChCands = recTau->signalChargedHadrCands();
     const reco::Track* leadtrk3= SigChCands[2]->bestTrack();
     if(leadtrk3){
-      /*reco::TransientTrack ttrk3 = transTrackBuilder->build(&*leadtrk3); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
+      // primaryVertex is not filled in PATTauProducer.cc !!!
+      /*reco::TransientTrack ttrk3 = transTrackBuilder->build(&*leadtrk3);
       GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
       std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk3, direction, *(recTau->primaryVertex()) );
       setValueF("recImpactParamZTk3", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
@@ -615,7 +619,8 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   edm::Handle<reco::VertexCollection> vertices;
   evt.getByToken(vertexToken_, vertices);
   if ( vertices->size() >= 1 ) {
-    //float recChi2DiffEvtVertex_ = (vertices->front().normalizedChi2() - recTau->primaryVertex()->normalizedChi2()); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
+	// primaryVertex is not filled in PATTauProducer.cc !!!
+    //float recChi2DiffEvtVertex_ = (vertices->front().normalizedChi2() - recTau->primaryVertex()->normalizedChi2());
     //setValueF("recChi2DiffEvtVertex", recChi2DiffEvtVertex_);
     setValueF("recChi2DiffEvtVertex", -999.);
   }
@@ -1044,7 +1049,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& 
 	numPileUp_mean = genPileUpInfo->getTrueNumInteractions();
       }
     }
-  } /*else { // TODO: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
+  } /*else { // FIXME: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
     edm::RunNumber_t run = evt.id().run();
     edm::LuminosityBlockNumber_t ls = evt.luminosityBlock();
     if ( pileUpByLumiCalc_.find(run) == pileUpByLumiCalc_.end() || pileUpByLumiCalc_[run].find(ls) == pileUpByLumiCalc_[run].end() ) {
@@ -1177,6 +1182,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
       setValueI("event", (evt.eventAuxiliary()).event());
       setValueI("lumi", evt.luminosityBlock());
 
+      // TODO: why is selectedOfflinePrimaryVertices empty?
       int iVtx = 0;
       for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
 	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection, iVtx++ ) {

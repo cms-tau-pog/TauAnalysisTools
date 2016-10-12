@@ -53,8 +53,6 @@ public:
 
 private:
 
-	// TODO: check which functions are actually necessary when using PAT objects
-
 	void setRecTauValues(const pat::TauRef&, const edm::Event&, const edm::EventSetup&);
 	void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const reco::GenParticle*, const reco::Candidate::LorentzVector&, int);
 	void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const pat::PackedGenParticle*, const reco::Candidate::LorentzVector&, int);
