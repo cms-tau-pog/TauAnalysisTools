@@ -99,7 +99,8 @@ srcWeights = []
 
 process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATrainingNtupleProducerMiniAOD",
     srcRecTaus = cms.InputTag('slimmedTaus'),
-    srcGenParticles = cms.InputTag('packedGenParticles'),        
+    srcPrunedGenParticles = cms.InputTag('prunedGenParticles'),
+    srcPackedGenParticles = cms.InputTag('packedGenParticles'),        
     minGenVisPt = cms.double(10.),                                          
     dRmatch = cms.double(0.3),
     tauIdDiscriminators = cms.PSet(

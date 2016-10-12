@@ -40,8 +40,10 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   srcRecTaus_ = cfg.getParameter<edm::InputTag>("srcRecTaus");
   tokenRecTaus_ = consumes<pat::TauCollection>(edm::InputTag(srcRecTaus_));
 
-  srcGenParticles_ = cfg.getParameter<edm::InputTag>("srcGenParticles");
-  tokenGenParticles_ = consumes<pat::PackedGenParticleCollection>(edm::InputTag(srcGenParticles_));
+  srcPrunedGenParticles_ = cfg.getParameter<edm::InputTag>("srcPrunedGenParticles");
+  tokenPrunedGenParticles_ = consumes<reco::GenParticleCollection>(srcPrunedGenParticles_);
+  srcPackedGenParticles_ = cfg.getParameter<edm::InputTag>("srcPackedGenParticles");
+  tokenPackedGenParticles_ = consumes<pat::PackedGenParticleCollection>(srcPackedGenParticles_);
 
   minGenVisPt_ = cfg.getParameter<double>("minGenVisPt");
   dRmatch_ = cfg.getParameter<double>("dRmatch");
@@ -638,7 +640,42 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setGenTauMatchValues(
   }
 }
 
+void TauIdMVATrainingNtupleProducerMiniAOD::setGenTauMatchValues(
+       const reco::Candidate::LorentzVector& recTauP4, const reco::GenParticle* genTau, const reco::Candidate::LorentzVector& genVisTauP4, int genTauDecayMode)
+{
+  if ( genTau ) {
+    setValue_EnPxPyPz("genTau", genTau->p4());
+    setValueF("genTauDeltaR", deltaR(genTau->p4(), recTauP4));
+    setValue_EnPxPyPz("genVisTau", genVisTauP4);
+    setValueF("genVisTauDeltaR", deltaR(genVisTauP4, recTauP4));
+    setValueI("genTauDecayMode", genTauDecayMode);
+    setValueI("genTauMatch", 1);
+  } else {
+    setValue_EnPxPyPz("genTau", reco::Candidate::LorentzVector(0.,0.,0.,0.));
+    setValueF("genTauDeltaR", 1.e+3);
+    setValue_EnPxPyPz("genVisTau", reco::Candidate::LorentzVector(0.,0.,0.,0.));
+    setValueF("genVisTauDeltaR", 1.e+3);
+    setValueI("genTauDecayMode", -1);
+    setValueI("genTauMatch", 0);
+  }
+}
+
 void TauIdMVATrainingNtupleProducerMiniAOD::setGenParticleMatchValues(const std::string& branchName, const reco::Candidate::LorentzVector& recTauP4, const pat::PackedGenParticle* genParticle)
+{
+  if ( genParticle ) {
+    setValue_EnPxPyPz(branchName, genParticle->p4());
+    setValueI(std::string(branchName).append("Match"), 1);
+    setValueF(std::string(branchName).append("DeltaR"), deltaR(genParticle->p4(), recTauP4));
+    setValueI(std::string(branchName).append("PdgId"), genParticle->pdgId());
+  } else {
+    setValue_EnPxPyPz(branchName, reco::Candidate::LorentzVector(0.,0.,0.,0.));
+    setValueI(std::string(branchName).append("Match"), 0);
+    setValueF(std::string(branchName).append("DeltaR"), 1.e+3);
+    setValueI(std::string(branchName).append("PdgId"), 0);
+  }
+}
+
+void TauIdMVATrainingNtupleProducerMiniAOD::setGenParticleMatchValues(const std::string& branchName, const reco::Candidate::LorentzVector& recTauP4, const reco::GenParticle* genParticle)
 {
   if ( genParticle ) {
     setValue_EnPxPyPz(branchName, genParticle->p4());
@@ -665,7 +702,22 @@ namespace
     }
   }
 
+  void findDaughters(const reco::GenParticle* mother, std::vector<const reco::GenParticle*>& daughters, int status)
+  {
+    unsigned numDaughters = mother->numberOfDaughters();
+    for ( unsigned iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+      const reco::GenParticle* daughter = mother->daughterRef(iDaughter).get();
+      if ( status == -1 || daughter->status() == status ) daughters.push_back(daughter);
+      findDaughters(daughter, daughters, status);
+    }
+  }
+
   bool isNeutrino(const pat::PackedGenParticle* daughter)
+  {
+    return ( TMath::Abs(daughter->pdgId()) == 12 || TMath::Abs(daughter->pdgId()) == 14 || TMath::Abs(daughter->pdgId()) == 16 );
+  }
+
+  bool isNeutrino(const reco::GenParticle* daughter)
   {
     return ( TMath::Abs(daughter->pdgId()) == 12 || TMath::Abs(daughter->pdgId()) == 14 || TMath::Abs(daughter->pdgId()) == 16 );
   }
@@ -682,9 +734,29 @@ namespace
     return p4Vis;
   }
 
+  reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenParticle*>& daughters, int status)
+  {
+    reco::Candidate::LorentzVector p4Vis(0,0,0,0);
+    for ( std::vector<const reco::GenParticle*>::const_iterator daughter = daughters.begin();
+	  daughter != daughters.end(); ++daughter ) {
+      if ( (status == -1 || (*daughter)->status() == status) && !isNeutrino(*daughter) ) {
+	p4Vis += (*daughter)->p4();
+      }
+    }
+    return p4Vis;
+  }
+
   reco::Candidate::LorentzVector getVisMomentum(const pat::PackedGenParticle* genTau)
   {
     std::vector<const pat::PackedGenParticle*> stableDaughters;
+    findDaughters(genTau, stableDaughters, 1);
+    reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(stableDaughters, 1);
+    return genVisTauP4;
+  }
+
+  reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle* genTau)
+  {
+    std::vector<const reco::GenParticle*> stableDaughters;
     findDaughters(genTau, stableDaughters, 1);
     reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(stableDaughters, 1);
     return genVisTauP4;
@@ -725,7 +797,95 @@ namespace
     }
   }
 
+  void countDecayProducts(const reco::GenParticle* genParticle,
+			  int& numElectrons, int& numElecNeutrinos, int& numMuons, int& numMuNeutrinos,
+			  int& numChargedHadrons, int& numPi0s, int& numOtherNeutralHadrons, int& numPhotons)
+  {
+    int absPdgId = TMath::Abs(genParticle->pdgId());
+    int status   = genParticle->status();
+    int charge   = genParticle->charge();
+
+    if      ( absPdgId == 111 ) ++numPi0s;
+    else if ( status   ==   1 ) {
+      if      ( absPdgId == 11 ) ++numElectrons;
+      else if ( absPdgId == 12 ) ++numElecNeutrinos;
+      else if ( absPdgId == 13 ) ++numMuons;
+      else if ( absPdgId == 14 ) ++numMuNeutrinos;
+      else if ( absPdgId == 15 ) {
+	edm::LogError ("countDecayProducts")
+	  << "Found tau lepton with status code 1 !!";
+	return;
+      }
+      else if ( absPdgId == 16 ) return; // no need to count tau neutrinos
+      else if ( absPdgId == 22 ) ++numPhotons;
+      else if ( charge   !=  0 ) ++numChargedHadrons;
+      else                       ++numOtherNeutralHadrons;
+    } else {
+      unsigned numDaughters = genParticle->numberOfDaughters();
+      for ( unsigned iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+	const reco::GenParticle* daughter = genParticle->daughterRef(iDaughter).get();
+
+	countDecayProducts(daughter,
+			   numElectrons, numElecNeutrinos, numMuons, numMuNeutrinos,
+			   numChargedHadrons, numPi0s, numOtherNeutralHadrons, numPhotons);
+      }
+    }
+  }
+
   std::string getGenTauDecayMode(const pat::PackedGenParticle* genTau)
+  {
+//--- determine generator level tau decay mode
+//
+//    NOTE:
+//        (1) function implements logic defined in PhysicsTools/JetMCUtils/src/JetMCTag::genTauDecayMode
+//            for different type of argument
+//        (2) this implementation should be more robust to handle cases of tau --> tau + gamma radiation
+//
+    int numElectrons           = 0;
+    int numElecNeutrinos       = 0;
+    int numMuons               = 0;
+    int numMuNeutrinos         = 0;
+    int numChargedHadrons      = 0;
+    int numPi0s                = 0;
+    int numOtherNeutralHadrons = 0;
+    int numPhotons             = 0;
+
+    countDecayProducts(genTau,
+		       numElectrons, numElecNeutrinos, numMuons, numMuNeutrinos,
+		       numChargedHadrons, numPi0s, numOtherNeutralHadrons, numPhotons);
+
+    if      ( numElectrons == 1 && numElecNeutrinos == 1 ) return std::string("electron");
+    else if ( numMuons     == 1 && numMuNeutrinos   == 1 ) return std::string("muon");
+
+    switch ( numChargedHadrons ) {
+    case 1 :
+      if ( numOtherNeutralHadrons != 0 ) return std::string("oneProngOther");
+      switch ( numPi0s ) {
+      case 0:
+	return std::string("oneProng0Pi0");
+      case 1:
+	return std::string("oneProng1Pi0");
+      case 2:
+	return std::string("oneProng2Pi0");
+      default:
+	return std::string("oneProngOther");
+      }
+    case 3 :
+      if ( numOtherNeutralHadrons != 0 ) return std::string("threeProngOther");
+      switch ( numPi0s ) {
+      case 0:
+	return std::string("threeProng0Pi0");
+      case 1:
+	return std::string("threeProng1Pi0");
+      default:
+	return std::string("threeProngOther");
+      }
+    default:
+      return std::string("rare");
+    }
+  }
+
+  std::string getGenTauDecayMode(const reco::GenParticle* genTau)
   {
 //--- determine generator level tau decay mode
 //
@@ -794,12 +954,55 @@ namespace
     return genLeadChargedDecayProduct;
   }
 
+  const reco::GenParticle* getGenLeadChargedDecayProduct(const reco::GenParticle* genTau)
+  {
+    std::vector<const reco::GenParticle*> genTauDecayProducts;
+    findDaughters(genTau, genTauDecayProducts, 1);
+    const reco::GenParticle* genLeadChargedDecayProduct = 0;
+    double genLeadChargedDecayProductPt = -1.;
+    for ( std::vector<const reco::GenParticle*>::const_iterator genTauDecayProduct = genTauDecayProducts.begin();
+	  genTauDecayProduct != genTauDecayProducts.end(); ++genTauDecayProduct ) {
+      if ( TMath::Abs((*genTauDecayProduct)->charge()) > 0.5 && (*genTauDecayProduct)->pt() > genLeadChargedDecayProductPt ) {
+	genLeadChargedDecayProduct = (*genTauDecayProduct);
+	genLeadChargedDecayProductPt = (*genTauDecayProduct)->pt();
+      }
+    }
+    return genLeadChargedDecayProduct;
+  }
+
   const pat::PackedGenParticle* findMatchingGenParticle(const reco::Candidate::LorentzVector& recTauP4,
 						   const pat::PackedGenParticleCollection& genParticles, double minGenVisPt, const std::vector<int>& pdgIds, double dRmatch)
   {
     const pat::PackedGenParticle* genParticle_matched = 0;
     double dRmin = dRmatch;
     for ( pat::PackedGenParticleCollection::const_iterator genParticle = genParticles.begin();
+	  genParticle != genParticles.end(); ++genParticle ) {
+      if ( !(genParticle->pt() > minGenVisPt) ) continue;
+      double dR = deltaR(genParticle->p4(), recTauP4);
+      if ( dR < dRmin ) {
+	bool matchedPdgId = false;
+	for ( std::vector<int>::const_iterator pdgId = pdgIds.begin();
+	      pdgId != pdgIds.end(); ++pdgId ) {
+	  if ( genParticle->pdgId() == (*pdgId) ) {
+	    matchedPdgId = true;
+	    break;
+	  }
+	}
+	if ( matchedPdgId ) {
+	  genParticle_matched = &(*genParticle);
+	  dRmin = dR;
+	}
+      }
+    }
+    return genParticle_matched;
+  }
+
+  const reco::GenParticle* findMatchingGenParticle(const reco::Candidate::LorentzVector& recTauP4,
+						   const reco::GenParticleCollection& genParticles, double minGenVisPt, const std::vector<int>& pdgIds, double dRmatch)
+  {
+    const reco::GenParticle* genParticle_matched = 0;
+    double dRmin = dRmatch;
+    for ( reco::GenParticleCollection::const_iterator genParticle = genParticles.begin();
 	  genParticle != genParticles.end(); ++genParticle ) {
       if ( !(genParticle->pt() > minGenVisPt) ) continue;
       double dR = deltaR(genParticle->p4(), recTauP4);
@@ -861,9 +1064,11 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
   edm::Handle<pat::TauCollection> recTaus;
   evt.getByToken(tokenRecTaus_, recTaus);
 
-  edm::Handle<pat::PackedGenParticleCollection> genParticles;
+  edm::Handle<reco::GenParticleCollection> prunedGenParticles;
+  edm::Handle<pat::PackedGenParticleCollection> packedGenParticles;
   if ( isMC_ ) {
-    evt.getByToken(tokenGenParticles_, genParticles);
+	evt.getByToken(tokenPrunedGenParticles_, prunedGenParticles);
+    evt.getByToken(tokenPackedGenParticles_, packedGenParticles);
   }
 
   double evtWeight = 1.0;
@@ -891,13 +1096,13 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
     pat::TauRef recTau(recTaus, iRecTau);
     setRecTauValues(recTau, evt, es);
 
-    const pat::PackedGenParticle* genTau_matched = 0;
+    const reco::GenParticle* genTau_matched = 0;
     reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);
     int genTauDecayMode_matched = -1;
     if ( isMC_ ) {
       double dRmin = dRmatch_;
-      for ( pat::PackedGenParticleCollection::const_iterator genParticle = genParticles->begin();
-	    genParticle != genParticles->end(); ++genParticle ) {
+      for ( reco::GenParticleCollection::const_iterator genParticle = prunedGenParticles->begin();
+	    genParticle != prunedGenParticles->end(); ++genParticle ) {
 	if ( !(genParticle->status() == 2) ) continue;
 	bool matchedPdgId = false;
 	for ( std::vector<int>::const_iterator pdgId = pdgIdsGenTau_.begin();
@@ -932,7 +1137,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 
       if ( genTau_matched ) {
 	reco::Candidate::Point genEvtVertex = genTau_matched->vertex();
-	const pat::PackedGenParticle* genLeadChargedHadron = getGenLeadChargedDecayProduct(genTau_matched);
+	const reco::GenParticle* genLeadChargedHadron = getGenLeadChargedDecayProduct(genTau_matched);
 	assert(genLeadChargedHadron);
 	reco::Candidate::Point genDecayVertex = genLeadChargedHadron->vertex();
 	double flightPathPx = genDecayVertex.x() - genEvtVertex.x();
@@ -947,13 +1152,13 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 	setValue_XYZ("genEvtVertex", reco::Candidate::Point(0.,0.,0.));
       }
 
-      const pat::PackedGenParticle* genElectron_matched = findMatchingGenParticle(recTau->p4(), *genParticles, minGenVisPt_, pdgIdsGenElectron_, dRmatch_);
+      const pat::PackedGenParticle* genElectron_matched = findMatchingGenParticle(recTau->p4(), *packedGenParticles, minGenVisPt_, pdgIdsGenElectron_, dRmatch_);
       setGenParticleMatchValues("genElectron", recTau->p4(), genElectron_matched);
 
-      const pat::PackedGenParticle* genMuon_matched = findMatchingGenParticle(recTau->p4(), *genParticles, minGenVisPt_, pdgIdsGenMuon_, dRmatch_);
+      const pat::PackedGenParticle* genMuon_matched = findMatchingGenParticle(recTau->p4(), *packedGenParticles, minGenVisPt_, pdgIdsGenMuon_, dRmatch_);
       setGenParticleMatchValues("genMuon", recTau->p4(), genMuon_matched);
 
-      const pat::PackedGenParticle* genQuarkOrGluon_matched = findMatchingGenParticle(recTau->p4(), *genParticles, minGenVisPt_, pdgIdsGenQuarkOrGluon_, dRmatch_);
+      const reco::GenParticle* genQuarkOrGluon_matched = findMatchingGenParticle(recTau->p4(), *prunedGenParticles, minGenVisPt_, pdgIdsGenQuarkOrGluon_, dRmatch_);
       setGenParticleMatchValues("genQuarkOrGluon", recTau->p4(), genQuarkOrGluon_matched);
 
       int numHypotheses = 0;

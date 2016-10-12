@@ -56,7 +56,9 @@ private:
 	// TODO: check which functions are actually necessary when using PAT objects
 
 	void setRecTauValues(const pat::TauRef&, const edm::Event&, const edm::EventSetup&);
+	void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const reco::GenParticle*, const reco::Candidate::LorentzVector&, int);
 	void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const pat::PackedGenParticle*, const reco::Candidate::LorentzVector&, int);
+	void setGenParticleMatchValues(const std::string&, const reco::Candidate::LorentzVector&, const reco::GenParticle*);
 	void setGenParticleMatchValues(const std::string&, const reco::Candidate::LorentzVector&, const pat::PackedGenParticle*);
 	void setNumPileUpValue(const edm::Event&);
 
@@ -86,8 +88,10 @@ private:
 	edm::InputTag srcRecTaus_;
 	edm::EDGetTokenT<pat::TauCollection> tokenRecTaus_;
 
-	edm::InputTag srcGenParticles_;
-	edm::EDGetTokenT<pat::PackedGenParticleCollection> tokenGenParticles_;
+	edm::InputTag srcPrunedGenParticles_;
+	edm::EDGetTokenT<reco::GenParticleCollection> tokenPrunedGenParticles_;
+	edm::InputTag srcPackedGenParticles_;
+	edm::EDGetTokenT<pat::PackedGenParticleCollection> tokenPackedGenParticles_;
 
 	double minGenVisPt_;
 	double dRmatch_;
