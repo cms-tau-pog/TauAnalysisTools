@@ -93,6 +93,13 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
     vertexCollectionEntries_.push_back(vertexCollectionEntryType(*name, src));
   }
 
+  vertexToken_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices","","RECO"));
+
+  for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
+  	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection ) {
+	  verticesToken_.push_back(consumes<reco::VertexCollection>(vertexCollection->src_));
+  }
+
   edm::ParameterSet cfgPFJetIdAlgo;
   cfgPFJetIdAlgo.addParameter<std::string>("version", "FIRSTDATA");
   cfgPFJetIdAlgo.addParameter<std::string>("quality", "LOOSE");
@@ -101,7 +108,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   isMC_ = cfg.getParameter<bool>("isMC");
   if ( isMC_ ) {
     srcGenPileUpSummary_ = cfg.getParameter<edm::InputTag>("srcGenPileUpSummary");
-    tokenGenPileupSummary_ = consumes<PileupSummaryInfo>(srcGenPileUpSummary_);
+    tokenGenPileupSummary_ = consumes<std::vector<PileupSummaryInfo> >(srcGenPileUpSummary_);
   } //else { // TODO: this does not work since the TauAnalysis/RecoTools does not exist (anymore?)
     //edm::FileInPath inputFileName = cfg.getParameter<edm::FileInPath>("inputFileNameLumiCalc");
     //if ( inputFileName.location() != edm::FileInPath::Local /*!inputFileName.isLocal()*/)
@@ -269,6 +276,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
   addBranchF("genQuarkOrGluonDeltaR");
   addBranchI("genQuarkOrGluonPdgId");
   addBranchF("evtWeight");
+
 }
 
 namespace
@@ -437,15 +445,17 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   setValue_XYZ("recDecayDist", recTau->flightLength());
   setValue_Cov("recDecayDistCov", recTau->flightLengthCov());
   setValueF("recDecayDistSign", recTau->flightLengthSig());
-  setValue_XYZ("recEvtVertex", recTau->primaryVertexPos());
-  setValue_Cov("recEvtVertexCov", recTau->primaryVertexCov());
+  setValue_XYZ("recEvtVertex", recTau->primaryVertexPos()); // TODO: primaryVertexPos is not filled in PATTauProducer.cc !!!
+  setValue_Cov("recEvtVertexCov", recTau->primaryVertexCov()); // TODO: primaryVertexCov is not filled in PATTauProducer.cc !!!
   //1d IP & Variables from Francesco
   GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
   if(recTau->hasSecondaryVertex()){
-    float recDecayDist2D_ = reco::SecondaryVertex::computeDist2d(*(recTau->primaryVertex()), *secVertex, direction, true).value();
+    /*float recDecayDist2D_ = reco::SecondaryVertex::computeDist2d(*(recTau->primaryVertex()), *secVertex, direction, true).value(); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
     float recDecayDistSign2D_ = reco::SecondaryVertex::computeDist2d(*(recTau->primaryVertex()), *secVertex, direction, true).significance();
     setValueF("recDecayDist2D", recDecayDist2D_);
-    setValueF("recDecayDistSign2D", recDecayDistSign2D_);
+    setValueF("recDecayDistSign2D", recDecayDistSign2D_);*/
+	setValueF("recDecayDist2D", -999.);
+	setValueF("recDecayDistSign2D", -999.);
   }
   else{
     setValueF("recDecayDist2D", -999.);
@@ -455,14 +465,18 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   edm::ESHandle<TransientTrackBuilder> transTrackBuilder;
   es.get<TransientTrackRecord>().get("TransientTrackBuilder",transTrackBuilder);
   if ( recTau->leadChargedHadrCand().isNonnull() && recTau->leadChargedHadrCand()->bestTrack() != 0){
-    const reco::Track* leadtrk = recTau->leadChargedHadrCand()->bestTrack();
+    /*const reco::Track* leadtrk = recTau->leadChargedHadrCand()->bestTrack(); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
     reco::TransientTrack ttrk = transTrackBuilder->build(&*leadtrk);
     std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk, direction, *(recTau->primaryVertex()) );
     setValueF("recImpactParamZ", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
     setValueF("recImpactParamSignZ", (!isnan(ip_z.second.significance())) ? ip_z.second.significance() : -899.);
     std::pair<bool,Measurement1D> dl_tk1 = IPTools::signedDecayLength3D(ttrk, direction, *(recTau->primaryVertex()) );
     setValueF("recDecayLengthTk1", dl_tk1.second.value());
-    setValueF("recDecayLengthSignTk1", dl_tk1.second.significance());
+    setValueF("recDecayLengthSignTk1", dl_tk1.second.significance());*/
+    setValueF("recImpactParamZ", -999.);
+    setValueF("recImpactParamSignZ", -999.);
+    setValueF("recDecayLengthTk1", -999.);
+    setValueF("recDecayLengthSignTk1", -999.);
   }
   else{
     setValueF("recImpactParamZ", -999.);
@@ -474,7 +488,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
     const reco::CandidatePtrVector SigChCands = recTau->signalChargedHadrCands();
     const reco::Track* leadtrk2 = SigChCands[1]->bestTrack();
     if(leadtrk2){
-      reco::TransientTrack ttrk2 = transTrackBuilder->build(&*leadtrk2);
+      /*reco::TransientTrack ttrk2 = transTrackBuilder->build(&*leadtrk2); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
       GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
       std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk2, direction, *(recTau->primaryVertex()) );
       setValueF("recImpactParamZTk2", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
@@ -487,7 +501,15 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
       setValueF("recImpactParamSign3DTk2", (ip_3d.second.error() != 0) ? ip_3d.second.value()/ip_3d.second.error() : 0.);
       std::pair<bool,Measurement1D> dl_tk2 = IPTools::signedDecayLength3D(ttrk2, direction, *(recTau->primaryVertex()) );
       setValueF("recDecayLengthTk2", dl_tk2.second.value());
-      setValueF("recDecayLengthSignTk2", dl_tk2.second.significance());
+      setValueF("recDecayLengthSignTk2", dl_tk2.second.significance());*/
+      setValueF("recImpactParamTk2", -999.);
+      setValueF("recImpactParamSignTk2", -999.);
+      setValueF("recImpactParam3DTk2", -999.);
+      setValueF("recImpactParamSign3DTk2", -999.);
+      setValueF("recImpactParamZTk2", -999.);
+      setValueF("recImpactParamSignZTk2", -999.);
+      setValueF("recDecayLengthTk2", -999.);
+      setValueF("recDecayLengthSignTk2", -999.);
     }
     else{
       setValueF("recImpactParamTk2", -999.);
@@ -514,7 +536,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
     const reco::CandidatePtrVector SigChCands = recTau->signalChargedHadrCands();
     const reco::Track* leadtrk3= SigChCands[2]->bestTrack();
     if(leadtrk3){
-      reco::TransientTrack ttrk3 = transTrackBuilder->build(&*leadtrk3);
+      /*reco::TransientTrack ttrk3 = transTrackBuilder->build(&*leadtrk3); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
       GlobalVector direction(recTau->p4().px(), recTau->p4().py(), recTau->p4().pz());
       std::pair<bool,Measurement1D> ip_z = STIP->zImpactParameter ( ttrk3, direction, *(recTau->primaryVertex()) );
       setValueF("recImpactParamZTk3", (!isnan(ip_z.second.value())) ? ip_z.second.value() : -899.);
@@ -527,7 +549,15 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
       setValueF("recImpactParamSign3DTk3", (ip_3d.second.error() != 0) ? ip_3d.second.value()/ip_3d.second.error() : 0.);
       std::pair<bool,Measurement1D> dl_tk3 = IPTools::signedDecayLength3D(ttrk3, direction, *(recTau->primaryVertex()) );
       setValueF("recDecayLengthTk3", dl_tk3.second.value());
-      setValueF("recDecayLengthSignTk3", dl_tk3.second.significance());
+      setValueF("recDecayLengthSignTk3", dl_tk3.second.significance());*/
+      setValueF("recImpactParamTk3", -999.);
+      setValueF("recImpactParamSignTk3", -999.);
+      setValueF("recImpactParam3DTk3", -999.);
+      setValueF("recImpactParamSign3DTk3", -999.);
+      setValueF("recImpactParamZTk3", -999.);
+      setValueF("recImpactParamSignZTk3", -999.);
+      setValueF("recDecayLengthTk3", -999.);
+      setValueF("recDecayLengthSignTk3", -999.);
     }
     else{
       setValueF("recImpactParamTk3", -999.);
@@ -578,11 +608,11 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   setValueI("recTauNphotonTotal", recTau->signalGammaCands().size()+recTau->isolationGammaCands().size());
 
   edm::Handle<reco::VertexCollection> vertices;
-  edm::EDGetTokenT<reco::VertexCollection> vertexToken_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices","","RECO"));
   evt.getByToken(vertexToken_, vertices);
   if ( vertices->size() >= 1 ) {
-    float recChi2DiffEvtVertex_ = (vertices->front().normalizedChi2() - recTau->primaryVertex()->normalizedChi2());
-    setValueF("recChi2DiffEvtVertex", recChi2DiffEvtVertex_);
+    //float recChi2DiffEvtVertex_ = (vertices->front().normalizedChi2() - recTau->primaryVertex()->normalizedChi2()); // TODO: primaryVertex is not filled in PATTauProducer.cc !!!
+    //setValueF("recChi2DiffEvtVertex", recChi2DiffEvtVertex_);
+    setValueF("recChi2DiffEvtVertex", -999.);
   }
   else{ setValueF("recChi2DiffEvtVertex", -999.); }
 
@@ -939,11 +969,11 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
       setValueI("event", (evt.eventAuxiliary()).event());
       setValueI("lumi", evt.luminosityBlock());
 
+      int iVtx = 0;
       for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
-	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection ) {
+	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection, iVtx++ ) {
 	edm::Handle<reco::VertexCollection> vertices;
-	edm::EDGetTokenT<reco::VertexCollection> verticesToken_ = consumes<reco::VertexCollection>(vertexCollection->src_);
-	evt.getByToken(verticesToken_, vertices);
+	evt.getByToken(verticesToken_.at(iVtx), vertices);
 	setValueI(vertexCollection->branchName_multiplicity_, vertices->size());
 	if ( vertices->size() >= 1 ) {
 	  setValue_XYZ(vertexCollection->branchName_position_, vertices->front().position()); // CV: first entry is vertex with highest sum(trackPt), take as "the" event vertex

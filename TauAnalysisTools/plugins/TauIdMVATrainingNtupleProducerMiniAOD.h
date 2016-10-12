@@ -112,12 +112,12 @@ private:
 	{
 		tauIsolationEntryType(const std::string& name)
 		{
-		      branchNameChargedIsoPtSum_ = Form("%sChargedIsoPtSum", name.data());
-		      branchNameNeutralIsoPtSum_ = Form("%sNeutralIsoPtSum", name.data());
-		      branchNamePUcorrPtSum_     = Form("%sPUcorrPtSum", name.data());
-		      branchNameNeutralIsoPtSumWeight_ = Form("%sNeutralIsoPtSumWeight", name.data());
-		      branchNameFootprintCorrection_   = Form("%sFootprintCorrection", name.data());
-		      branchNamePhotonPtSumOutsideSignalCone_ = Form("%sPhotonPtSumOutsideSignalCone", name.data());
+		      branchNameChargedIsoPtSum_ = name.data();//Form("%sChargedIsoPtSum", name.data());
+		      branchNameNeutralIsoPtSum_ = name.data();//Form("%sNeutralIsoPtSum", name.data());
+		      branchNamePUcorrPtSum_     = name.data();//Form("%sPUcorrPtSum", name.data());
+		      branchNameNeutralIsoPtSumWeight_ = name.data();//Form("%sNeutralIsoPtSumWeight", name.data());
+		      branchNameFootprintCorrection_   = name.data();//Form("%sFootprintCorrection", name.data());
+		      branchNamePhotonPtSumOutsideSignalCone_ = name.data();//Form("%sPhotonPtSumOutsideSignalCone", name.data());
 		}
 		~tauIsolationEntryType() {}
 		std::string branchNameChargedIsoPtSum_;
@@ -147,6 +147,9 @@ private:
 	};
 	std::vector<vertexCollectionEntryType> vertexCollectionEntries_;
 
+	edm::EDGetTokenT<reco::VertexCollection> vertexToken_;
+	std::vector<edm::EDGetTokenT<reco::VertexCollection> > verticesToken_;
+
 	std::vector<int> pdgIdsGenTau_;
 	std::vector<int> pdgIdsGenElectron_;
 	std::vector<int> pdgIdsGenMuon_;
@@ -156,9 +159,9 @@ private:
 
 	bool isMC_;
 	edm::InputTag srcGenPileUpSummary_;
-	edm::EDGetTokenT<PileupSummaryInfo> tokenGenPileupSummary_;
-	std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, float> > pileUpByLumiCalc_; // key = run, lumi-section
-	std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, int> > numWarnings_;
+	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > tokenGenPileupSummary_;
+	//std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, float> > pileUpByLumiCalc_; // key = run, lumi-section
+	//std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, int> > numWarnings_;
 	int maxWarnings_;
 
 	typedef std::vector<edm::InputTag> vInputTag;

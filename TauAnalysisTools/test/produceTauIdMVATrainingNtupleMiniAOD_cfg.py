@@ -176,10 +176,17 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
         #againstMuonMediumMVA = cms.string('tausForTauIdMVATrainingDiscriminationByMVAMediumMuonRejection'),
         #againstMuonTightMVA = cms.string('tausForTauIdMVATrainingDiscriminationByMVATightMuonRejection')                                         
     ),
-    isolationPtSums = cms.PSet(),
+    isolationPtSums = cms.PSet(
+        chargedIsoPtSum = cms.string("chargedIsoPtSum"),
+        neutralIsoPtSum = cms.string("neutralIsoPtSum"),
+        puCorrPtSum = cms.string("puCorrPtSum"), 
+        neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
+        footprintCorrection = cms.string("footprintCorrection"),
+        photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone")
+    ),
     vertexCollections = cms.PSet(
         offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-        selectedOfflinePrimaryVertices = cms.InputTag('slimmedSecondaryVertices')
+        selectedOfflinePrimaryVertices = cms.InputTag('selectedOfflinePrimaryVertices')
     ),
     #--------------------------------------------------------
     # CV: pile-up information for Monte Carlo and data                                                               
@@ -193,16 +200,16 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
 
 dRisoCone = 0.4
 
-pset = cms.PSet(
-    chargedIsoPtSum = cms.string("chargedIsoPtSum"),
-    neutralIsoPtSum = cms.string("neutralIsoPtSum"),
-    puCorrPtSum = cms.string("puCorrPtSum"), 
-    neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
-    footprintCorrection = cms.string("footprintCorrection"),
-    photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone")
-)
-psetName = "tauIsoDeltaR%02.0f" % (dRisoCone*10.)    
-setattr(process.tauIdMVATrainingNtupleProducerMiniAOD.isolationPtSums, psetName, pset)
+#pset = cms.PSet(
+#    chargedIsoPtSum = cms.string("chargedIsoPtSum"),
+#    neutralIsoPtSum = cms.string("neutralIsoPtSum"),
+#    puCorrPtSum = cms.string("puCorrPtSum"), 
+#    neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
+#    footprintCorrection = cms.string("footprintCorrection"),
+#    photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone")
+#)
+#psetName = "tauIsoDeltaR%02.0f" % (dRisoCone*10.)    
+#setattr(process.tauIdMVATrainingNtupleProducerMiniAOD.isolationPtSums, psetName, pset)
 process.produceTauIdMVATrainingNtupleMiniAODSequence += process.tauIdMVATrainingNtupleProducerMiniAOD
 
 process.p = cms.Path(process.produceTauIdMVATrainingNtupleMiniAODSequence)
