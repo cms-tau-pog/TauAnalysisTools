@@ -73,7 +73,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 
   edm::ParameterSet tauIdDiscriminators = cfg.getParameter<edm::ParameterSet>("tauIdDiscriminators");
   typedef std::vector<std::string> vstring;
-  vstring tauIdDiscriminatorNames = tauIdDiscriminators.getParameterNamesForType<edm::InputTag>();
+  vstring tauIdDiscriminatorNames = tauIdDiscriminators.getParameterNamesForType<std::string>();
   for ( vstring::const_iterator name = tauIdDiscriminatorNames.begin();
 	name != tauIdDiscriminatorNames.end(); ++name ) {
     std::string src = tauIdDiscriminators.getParameter<std::string>(*name);
@@ -81,10 +81,11 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   }
 
   edm::ParameterSet isolationPtSums = cfg.getParameter<edm::ParameterSet>("isolationPtSums");
-  vstring isolationPtSumNames = isolationPtSums.getParameterNamesForType<edm::ParameterSet>();
+  vstring isolationPtSumNames = isolationPtSums.getParameterNamesForType<std::string>();
   for ( vstring::const_iterator name = isolationPtSumNames.begin();
 	name != isolationPtSumNames.end(); ++name ) {
-    tauIsolationEntries_.push_back(tauIsolationEntryType(*name));
+	std::string src = isolationPtSums.getParameter<std::string>(*name);
+    tauIsolationEntries_.push_back(tauIsolationEntryType(*name, src));
   }
 
   edm::ParameterSet vertexCollections = cfg.getParameter<edm::ParameterSet>("vertexCollections");
@@ -193,12 +194,13 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
   }
   for ( std::vector<tauIsolationEntryType>::const_iterator tauIsolation = tauIsolationEntries_.begin();
 	tauIsolation != tauIsolationEntries_.end(); ++tauIsolation ) {
-    addBranchF(tauIsolation->branchNameChargedIsoPtSum_);
+    /*addBranchF(tauIsolation->branchNameChargedIsoPtSum_);
     addBranchF(tauIsolation->branchNameNeutralIsoPtSum_);
     addBranchF(tauIsolation->branchNamePUcorrPtSum_);
     addBranchF(tauIsolation->branchNameNeutralIsoPtSumWeight_);
     addBranchF(tauIsolation->branchNameFootprintCorrection_);
-    addBranchF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_);
+    addBranchF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_);*/
+	addBranchF(tauIsolation->branchName_);
   }
   addBranch_XYZ("recImpactParamPCA");
   addBranchF("recImpactParam");
@@ -589,12 +591,13 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
   }
   for ( std::vector<tauIsolationEntryType>::const_iterator tauIsolation = tauIsolationEntries_.begin();
 	tauIsolation != tauIsolationEntries_.end(); ++tauIsolation ) {
-    setValueF(tauIsolation->branchNameChargedIsoPtSum_, recTau->tauID(tauIsolation->branchNameChargedIsoPtSum_));
+    /*setValueF(tauIsolation->branchNameChargedIsoPtSum_, recTau->tauID(tauIsolation->branchNameChargedIsoPtSum_));
     setValueF(tauIsolation->branchNameNeutralIsoPtSum_, recTau->tauID(tauIsolation->branchNameNeutralIsoPtSum_));
     setValueF(tauIsolation->branchNamePUcorrPtSum_, recTau->tauID(tauIsolation->branchNamePUcorrPtSum_));
     setValueF(tauIsolation->branchNameNeutralIsoPtSumWeight_, recTau->tauID(tauIsolation->branchNameNeutralIsoPtSumWeight_));
     setValueF(tauIsolation->branchNameFootprintCorrection_, recTau->tauID(tauIsolation->branchNameFootprintCorrection_));
-    setValueF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_, recTau->tauID(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_));
+    setValueF(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_, recTau->tauID(tauIsolation->branchNamePhotonPtSumOutsideSignalCone_));*/
+	setValueF(tauIsolation->branchName_, recTau->tauID(tauIsolation->src_));
   }
   //variables from Yuta for dynamic strip
   int tau_decaymode = recTau->decayMode();
@@ -1343,7 +1346,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setValue_Cov(const std::string& name
 
 void TauIdMVATrainingNtupleProducerMiniAOD::setValue_chargedHadron(const std::string& name, const reco::CandidatePtr chargedHadron)
 {
-  if ( chargedHadron.isNull() ) {
+  if ( chargedHadron.isNonnull() ) {
     setValue_EnPxPyPz(name, chargedHadron->p4());
     //setValueI(std::string(name).append("Algo"), chargedHadron->algo()); // not available in MiniAOD
     setValueI(std::string(name).append("Algo"), -1);

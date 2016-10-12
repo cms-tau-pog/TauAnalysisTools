@@ -114,22 +114,26 @@ private:
 
 	struct tauIsolationEntryType
 	{
-		tauIsolationEntryType(const std::string& name)
+		tauIsolationEntryType(const std::string& name, const std::string& src)
 		{
-		      branchNameChargedIsoPtSum_ = name.data();//Form("%sChargedIsoPtSum", name.data());
+		      /*branchNameChargedIsoPtSum_ = name.data();//Form("%sChargedIsoPtSum", name.data());
 		      branchNameNeutralIsoPtSum_ = name.data();//Form("%sNeutralIsoPtSum", name.data());
 		      branchNamePUcorrPtSum_     = name.data();//Form("%sPUcorrPtSum", name.data());
 		      branchNameNeutralIsoPtSumWeight_ = name.data();//Form("%sNeutralIsoPtSumWeight", name.data());
 		      branchNameFootprintCorrection_   = name.data();//Form("%sFootprintCorrection", name.data());
-		      branchNamePhotonPtSumOutsideSignalCone_ = name.data();//Form("%sPhotonPtSumOutsideSignalCone", name.data());
+		      branchNamePhotonPtSumOutsideSignalCone_ = name.data();//Form("%sPhotonPtSumOutsideSignalCone", name.data());*/
+			src_ = src;
+			branchName_ = name;
 		}
 		~tauIsolationEntryType() {}
-		std::string branchNameChargedIsoPtSum_;
+		/*std::string branchNameChargedIsoPtSum_;
 		std::string branchNameNeutralIsoPtSum_;
 		std::string branchNamePUcorrPtSum_;
 		std::string branchNameNeutralIsoPtSumWeight_;
 		std::string branchNameFootprintCorrection_;
-		std::string branchNamePhotonPtSumOutsideSignalCone_;
+		std::string branchNamePhotonPtSumOutsideSignalCone_;*/
+		std::string src_;
+		std::string branchName_;
 	};
 	std::vector<tauIsolationEntryType> tauIsolationEntries_;
 
