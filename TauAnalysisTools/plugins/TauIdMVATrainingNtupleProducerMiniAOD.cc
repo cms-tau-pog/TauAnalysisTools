@@ -93,15 +93,11 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
   for ( vstring::const_iterator name = vertexCollectionNames.begin();
 	name != vertexCollectionNames.end(); ++name ) {
     edm::InputTag src = vertexCollections.getParameter<edm::InputTag>(*name);
-    vertexCollectionEntries_.push_back(vertexCollectionEntryType(*name, src));
+    edm::EDGetTokenT<reco::VertexCollection> token = consumes<reco::VertexCollection>(src);
+    vertexCollectionEntries_.push_back(vertexCollectionEntryType(*name, token));
   }
 
   vertexToken_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices","","RECO"));
-
-  for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
-  	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection ) {
-	  verticesToken_.push_back(consumes<reco::VertexCollection>(vertexCollection->src_));
-  }
 
   edm::ParameterSet cfgPFJetIdAlgo;
   cfgPFJetIdAlgo.addParameter<std::string>("version", "FIRSTDATA");
@@ -1090,11 +1086,10 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
       setValueI("event", (evt.eventAuxiliary()).event());
       setValueI("lumi", evt.luminosityBlock());
 
-      int iVtx = 0;
       for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
-	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection, iVtx++ ) {
+	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection) {
 	edm::Handle<reco::VertexCollection> vertices;
-	evt.getByToken(verticesToken_.at(iVtx), vertices);
+	evt.getByToken(vertexCollection->token_, vertices);
 	setValueI(vertexCollection->branchName_multiplicity_, vertices->size());
 	if ( vertices->size() >= 1 ) {
 	  setValue_XYZ(vertexCollection->branchName_position_, vertices->front().position()); // CV: first entry is vertex with highest sum(trackPt), take as "the" event vertex

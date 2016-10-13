@@ -137,9 +137,9 @@ private:
 
 	struct vertexCollectionEntryType
 	{
-		vertexCollectionEntryType(const std::string& name, const edm::InputTag& src)
-		: src_(src)
+		vertexCollectionEntryType(const std::string& name, const edm::EDGetTokenT<reco::VertexCollection>& token)
 		{
+			token_ = token;
 			assert(name.length() > 0);
 			std::string name_capitalized = name;
 			name_capitalized[0] = toupper(name_capitalized[0]);
@@ -147,14 +147,13 @@ private:
 			branchName_position_ = TString(name.data()).ReplaceAll("Vertices", "Vertex").Data();
 		}
 		~vertexCollectionEntryType() {}
-		edm::InputTag src_;
+		edm::EDGetTokenT<reco::VertexCollection> token_;
 		std::string branchName_multiplicity_;
 		std::string branchName_position_;
 	};
 	std::vector<vertexCollectionEntryType> vertexCollectionEntries_;
 
 	edm::EDGetTokenT<reco::VertexCollection> vertexToken_;
-	std::vector<edm::EDGetTokenT<reco::VertexCollection> > verticesToken_;
 
 	std::vector<int> pdgIdsGenTau_;
 	std::vector<int> pdgIdsGenElectron_;
