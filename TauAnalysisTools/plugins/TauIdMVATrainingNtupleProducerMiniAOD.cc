@@ -720,26 +720,9 @@ namespace
     }
   }
 
-  bool isNeutrino(const pat::PackedGenParticle* daughter)
-  {
-    return ( TMath::Abs(daughter->pdgId()) == 12 || TMath::Abs(daughter->pdgId()) == 14 || TMath::Abs(daughter->pdgId()) == 16 );
-  }
-
   bool isNeutrino(const reco::GenParticle* daughter)
   {
     return ( TMath::Abs(daughter->pdgId()) == 12 || TMath::Abs(daughter->pdgId()) == 14 || TMath::Abs(daughter->pdgId()) == 16 );
-  }
-
-  reco::Candidate::LorentzVector getVisMomentum(const std::vector<const pat::PackedGenParticle*>& daughters, int status)
-  {
-    reco::Candidate::LorentzVector p4Vis(0,0,0,0);
-    for ( std::vector<const pat::PackedGenParticle*>::const_iterator daughter = daughters.begin();
-	  daughter != daughters.end(); ++daughter ) {
-      if ( (status == -1 || (*daughter)->status() == status) && !isNeutrino(*daughter) ) {
-	p4Vis += (*daughter)->p4();
-      }
-    }
-    return p4Vis;
   }
 
   reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenParticle*>& daughters, int status)
@@ -752,14 +735,6 @@ namespace
       }
     }
     return p4Vis;
-  }
-
-  reco::Candidate::LorentzVector getVisMomentum(const pat::PackedGenParticle* genTau)
-  {
-    std::vector<const pat::PackedGenParticle*> stableDaughters;
-    findDaughters(genTau, stableDaughters, 1);
-    reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(stableDaughters, 1);
-    return genVisTauP4;
   }
 
   reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle* genTau)
@@ -840,59 +815,6 @@ namespace
     }
   }
 
-  std::string getGenTauDecayMode(const pat::PackedGenParticle* genTau)
-  {
-//--- determine generator level tau decay mode
-//
-//    NOTE:
-//        (1) function implements logic defined in PhysicsTools/JetMCUtils/src/JetMCTag::genTauDecayMode
-//            for different type of argument
-//        (2) this implementation should be more robust to handle cases of tau --> tau + gamma radiation
-//
-    int numElectrons           = 0;
-    int numElecNeutrinos       = 0;
-    int numMuons               = 0;
-    int numMuNeutrinos         = 0;
-    int numChargedHadrons      = 0;
-    int numPi0s                = 0;
-    int numOtherNeutralHadrons = 0;
-    int numPhotons             = 0;
-
-    countDecayProducts(genTau,
-		       numElectrons, numElecNeutrinos, numMuons, numMuNeutrinos,
-		       numChargedHadrons, numPi0s, numOtherNeutralHadrons, numPhotons);
-
-    if      ( numElectrons == 1 && numElecNeutrinos == 1 ) return std::string("electron");
-    else if ( numMuons     == 1 && numMuNeutrinos   == 1 ) return std::string("muon");
-
-    switch ( numChargedHadrons ) {
-    case 1 :
-      if ( numOtherNeutralHadrons != 0 ) return std::string("oneProngOther");
-      switch ( numPi0s ) {
-      case 0:
-	return std::string("oneProng0Pi0");
-      case 1:
-	return std::string("oneProng1Pi0");
-      case 2:
-	return std::string("oneProng2Pi0");
-      default:
-	return std::string("oneProngOther");
-      }
-    case 3 :
-      if ( numOtherNeutralHadrons != 0 ) return std::string("threeProngOther");
-      switch ( numPi0s ) {
-      case 0:
-	return std::string("threeProng0Pi0");
-      case 1:
-	return std::string("threeProng1Pi0");
-      default:
-	return std::string("threeProngOther");
-      }
-    default:
-      return std::string("rare");
-    }
-  }
-
   std::string getGenTauDecayMode(const reco::GenParticle* genTau)
   {
 //--- determine generator level tau decay mode
@@ -944,22 +866,6 @@ namespace
     default:
       return std::string("rare");
     }
-  }
-
-  const pat::PackedGenParticle* getGenLeadChargedDecayProduct(const pat::PackedGenParticle* genTau)
-  {
-    std::vector<const pat::PackedGenParticle*> genTauDecayProducts;
-    findDaughters(genTau, genTauDecayProducts, 1);
-    const pat::PackedGenParticle* genLeadChargedDecayProduct = 0;
-    double genLeadChargedDecayProductPt = -1.;
-    for ( std::vector<const pat::PackedGenParticle*>::const_iterator genTauDecayProduct = genTauDecayProducts.begin();
-	  genTauDecayProduct != genTauDecayProducts.end(); ++genTauDecayProduct ) {
-      if ( TMath::Abs((*genTauDecayProduct)->charge()) > 0.5 && (*genTauDecayProduct)->pt() > genLeadChargedDecayProductPt ) {
-	genLeadChargedDecayProduct = (*genTauDecayProduct);
-	genLeadChargedDecayProductPt = (*genTauDecayProduct)->pt();
-      }
-    }
-    return genLeadChargedDecayProduct;
   }
 
   const reco::GenParticle* getGenLeadChargedDecayProduct(const reco::GenParticle* genTau)
@@ -1141,6 +1047,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 	  genTauDecayMode_matched = genTauDecayMode;
 	}
       }
+      // TODO: check why some gen taus are filled with dummy/default values
       setGenTauMatchValues(recTau->p4(), genTau_matched, genVisTauP4_matched, genTauDecayMode_matched);
 
       if ( genTau_matched ) {
@@ -1166,6 +1073,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
       const pat::PackedGenParticle* genMuon_matched = findMatchingGenParticle(recTau->p4(), *packedGenParticles, minGenVisPt_, pdgIdsGenMuon_, dRmatch_);
       setGenParticleMatchValues("genMuon", recTau->p4(), genMuon_matched);
 
+      // TODO: check why some matched gen quarks/gluons are filled with dummy/default values
       const reco::GenParticle* genQuarkOrGluon_matched = findMatchingGenParticle(recTau->p4(), *prunedGenParticles, minGenVisPt_, pdgIdsGenQuarkOrGluon_, dRmatch_);
       setGenParticleMatchValues("genQuarkOrGluon", recTau->p4(), genQuarkOrGluon_matched);
 
@@ -1182,7 +1090,6 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
       setValueI("event", (evt.eventAuxiliary()).event());
       setValueI("lumi", evt.luminosityBlock());
 
-      // TODO: why is selectedOfflinePrimaryVertices empty?
       int iVtx = 0;
       for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
 	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection, iVtx++ ) {
