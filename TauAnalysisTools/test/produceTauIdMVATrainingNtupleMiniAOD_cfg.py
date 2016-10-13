@@ -71,7 +71,8 @@ process.produceTauIdMVATrainingNtupleMiniAODSequence = cms.Sequence()
 #
 process.selectedOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
     src = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2."),
+    #cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2."),
+    cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & abs(z) < 24 & abs(position.Rho) < 2."), # tracksSize & nTracks are set to 0 in MiniAOD
     filter = cms.bool(False)                                          
 )
 process.produceTauIdMVATrainingNtupleMiniAODSequence += process.selectedOfflinePrimaryVertices
