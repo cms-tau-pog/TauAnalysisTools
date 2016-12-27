@@ -301,7 +301,7 @@ mssmHiggsMassPoints2 = [160, 200, 250, 350, 500, 600, 900, 1000, 1200, 1500, 200
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {
-        'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM' % massPoint,
+        'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
         'files_per_job'                      : 1,
         'total_files'                        : -1, 
         'type'                               : 'SignalMC'
@@ -326,7 +326,7 @@ for massPoint in WprimeMassPoints:
         'type'                               : 'SignalMC'
     }
 
-version = "tauId_v2"
+version = "tauId_v1"
 
 submitJobFraction = 1.00
 
@@ -336,7 +336,10 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = '$ui_working_dir'
-config.General.workArea = 'TauIDMVATraining_v2'
+config.General.workArea = 'TauIDMVATraining_v1'
+
+config.section_("User")
+config.User.voGroup = 'dcms'
 
 config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
@@ -348,7 +351,7 @@ config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = $files_per_job
 config.Data.totalUnits = $total_files
-config.Data.outLFNDirBase = '/store/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/'
+config.Data.outLFNDirBase = '/store/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/'
 config.Data.publication = False
 
 config.section_("Site")
@@ -361,7 +364,7 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = '$ui_working_dir'
-config.General.workArea = 'TauIDMVATraining_v2'
+config.General.workArea = 'TauIDMVATraining_v1'
 
 config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
@@ -375,7 +378,7 @@ config.Data.unitsPerJob = $lumis_per_job
 config.Data.totalUnits = $total_lumis
 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
 #config.Data.runRange = '193093-193999' # '193093-194075'
-config.Data.outLFNDirBase = '/store/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/'
+config.Data.outLFNDirBase = '/store/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/'
 config.Data.publication = False                                                                                                                                                  
 
 config.section_("Site")
