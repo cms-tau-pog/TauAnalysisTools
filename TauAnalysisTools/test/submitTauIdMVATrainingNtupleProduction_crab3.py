@@ -213,12 +213,6 @@ samples = {
     #    'total_files'                        : -1,
     #    'type'                               : 'BackgroundMC'
     #},
-    #'QCDEmEnrichedPt120to170' : {
-    #    'datasetpath'                        : '/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM',
-    #    'files_per_job'                      : 1,
-    #    'total_files'                        : -1,
-    #    'type'                               : 'BackgroundMC'
-    #},
     'QCDEmEnrichedPt170to300' : {
         'datasetpath'                        : '/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
         'files_per_job'                      : 1,
@@ -257,22 +251,6 @@ for massPoint in smHiggsMassPoints:
     #    'total_files'                        : -1,
     #    'type'                               : 'SignalMC'
     #}
-    #wPlusHSampleName = "WplusHHiggs%1.0ftoTauTau" % massPoint
-    #samples[wPlusHSampleName] = {
-    #    'datasetpath'                        : '/WplusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
-    #    'files_per_job'                      : 1,
-    #    'total_files'                        : -1,
-    #    'type'                               : 'SignalMC'
-    #}
-    wMinusHSampleName = "WminusHHiggs%1.0ftoTauTau" % massPoint
-    samples[wMinusHSampleName] = {
-        'datasetpath'                        : '/WminusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
-        'files_per_job'                      : 1,
-        'total_files'                        : -1,
-        'type'                               : 'SignalMC'
-    }
-smHiggsMassPoints5 = [ 120, 125 ]
-for massPoint in smHiggsMassPoints5:
     wPlusHSampleName = "WplusHHiggs%1.0ftoTauTau" % massPoint
     samples[wPlusHSampleName] = {
         'datasetpath'                        : '/WplusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
@@ -280,8 +258,13 @@ for massPoint in smHiggsMassPoints5:
         'total_files'                        : -1,
         'type'                               : 'SignalMC'
     }
-smHiggsMassPoints5 = [ 120, 130 ]
-for massPoint in smHiggsMassPoints5:
+    wMinusHSampleName = "WminusHHiggs%1.0ftoTauTau" % massPoint
+    samples[wMinusHSampleName] = {
+        'datasetpath'                        : '/WminusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
+        'files_per_job'                      : 1,
+        'total_files'                        : -1,
+        'type'                               : 'SignalMC'
+    }
     zHSampleName = "ZHHiggs%1.0ftoTauTau" % massPoint
     samples[zHSampleName] = {
         'datasetpath'                        : '/ZHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
@@ -289,6 +272,8 @@ for massPoint in smHiggsMassPoints5:
         'total_files'                        : -1,
         'type'                               : 'SignalMC'
     }
+smHiggsMassPoints5 = [ 120, 130 ]
+for massPoint in smHiggsMassPoints5:
     tthSampleName = "tthHiggs%1.0ftoTauTau" % massPoint
     samples[tthSampleName] = {
         'datasetpath'                        : '/ttHJetToTT_M%1.0f_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
@@ -296,18 +281,15 @@ for massPoint in smHiggsMassPoints5:
         'total_files'                        : -1,
         'type'                               : 'SignalMC'
     }
-#mssmHiggsMassPoints1 = [ 80, 100, 110, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 800, 900, 1000, 1200, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200]
-#for massPoint in mssmHiggsMassPoints1:
-#    ggSampleName = "ggA%1.0ftoTauTau" % massPoint
-#    samples[ggSampleName] = {
-#        'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
-#        'files_per_job'                      : 1,
-#        'total_files'                        : -1, 
-#        'type'                               : 'SignalMC'
-#    }
-#mssmHiggsMassPoints2 = [ 90, 600, 700, 1400 ]
-mssmHiggsMassPoints2 = [ 500, 1000, 1500, 2000 ]
-for massPoint in mssmHiggsMassPoints2:
+ggSampleName = "ggHiggs125toTauTau"
+samples[ggSampleName] = {
+    'datasetpath'                        : '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+    'files_per_job'                      : 1,
+    'total_files'                        : -1,
+    'type'                               : 'SignalMC'
+}
+mssmHiggsMassPoints1 = [ 90, 120, 130, 250, 450, 500, 1000, 1500, 2000, 2300, 2600, 2900, 3200 ]
+for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     samples[ggSampleName] = {
         'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
@@ -315,18 +297,8 @@ for massPoint in mssmHiggsMassPoints2:
         'total_files'                        : -1, 
         'type'                               : 'SignalMC'
     }
-#mssmHiggsMassPoints3 = [ 80, 90, 120, 130, 140, 180, 200, 250, 300, 350, 400, 450, 500, 700, 800, 900, 1000, 1200, 1400, 1500, 1800, 2300, 2600, 2900, 3200]
-#for massPoint in mssmHiggsMassPoints3:
-#    bbSampleName = "bbA%1.0ftoTauTau" % massPoint
-#    samples[bbSampleName] = {
-#        'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
-#        'files_per_job'                      : 1,
-#        'total_files'                        : -1, 
-#        'type'                               : 'SignalMC'
-#    }
-#mssmHiggsMassPoints4 = [100, 110, 160, 600, 1600, 2000 ]
-mssmHiggsMassPoints4 = [160, 500, 1000, 2000 ]
-for massPoint in mssmHiggsMassPoints4:
+mssmHiggsMassPoints2 = [160, 200, 250, 350, 500, 600, 900, 1000, 1200, 1500, 2000, 2300, 2600, 2900, 3200 ]
+for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {
         'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM' % massPoint,
@@ -335,45 +307,17 @@ for massPoint in mssmHiggsMassPoints4:
         'type'                               : 'SignalMC'
     }
 
-#ZprimeMassPoints = [ 500, 1000, 1500, 2000, 2500, 3500, 4000, 4500, 5000 ]
-#for massPoint in ZprimeMassPoints:
-#    sampleName = "Zprime%1.0ftoTauTau" % massPoint
-#    samples[sampleName] = {
-#        'datasetpath'                        : '/ZprimeToTauTau_M_%1.0f_TuneCUETP8M1_tauola_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
-#        'files_per_job'                      : 1,
-#        'total_files'                        : -1,
-#        'type'                               : 'SignalMC'
-#    }
-#ZprimeMassPoints2 = [ 3000 ]
-#for massPoint in ZprimeMassPoints2:
-#    sampleName = "Zprime%1.0ftoTauTau" % massPoint
-#    samples[sampleName] = {
-#        'datasetpath'                        : '/ZprimeToTauTau_M_%1.0f_TuneCUETP8M1_tauola_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM' % massPoint,
-#        'files_per_job'                      : 1,
-#        'total_files'                        : -1,
-#        'type'                               : 'SignalMC'
-#    }
-    
-#WprimeMassPoints = [ 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2800, 3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5800 ]
-#for massPoint in WprimeMassPoints:
-#    sampleName = "Wprime%1.0ftoTauNu" % massPoint
-#    samples[sampleName] = {
-#        'datasetpath'                        : '/WprimeToTauNu_M-%1.0f_TuneCUETP8M1_13TeV-pythia8-tauola/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM' % massPoint,
-#        'files_per_job'                      : 1,
-#        'total_files'                        : -1,
-#        'type'                               : 'SignalMC'
-#    }
-#WprimeMassPoints2 = [ 2600, 5600 ]
-#for massPoint in WprimeMassPoints2:
-#    sampleName = "Wprime%1.0ftoTauNu" % massPoint
-#    samples[sampleName] = {
-#        'datasetpath'                        : '/WprimeToTauNu_M-%1.0f_TuneCUETP8M1_13TeV-pythia8-tauola/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM' % massPoint,
-#        'files_per_job'                      : 1,
-#        'total_files'                        : -1,
-#        'type'                               : 'SignalMC'
-#    }
-WprimeMassPoints2 = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4200, 4400, 4600, 4800, 5000, 5200, 5600, 5800 ]
-for massPoint in WprimeMassPoints2:
+ZprimeMassPoints = [ 1250, 1500, 2000, 3000, 3500 ]
+for massPoint in ZprimeMassPoints:
+    sampleName = "Zprime%1.0ftoTauTau" % massPoint
+    samples[sampleName] = {
+        'datasetpath'                        : '/ZprimeToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8-tauola/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
+        'files_per_job'                      : 1,
+        'total_files'                        : -1,
+        'type'                               : 'SignalMC'
+    }
+WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4200, 4400, 4600, 4800, 5000, 5200, 5600, 5800 ]
+for massPoint in WprimeMassPoints:
     sampleName = "Wprime%1.0ftoTauNu" % massPoint
     samples[sampleName] = {
         'datasetpath'                        : '/WprimeToTauNu_M-%1.0f_TuneCUETP8M1_13TeV-pythia8-tauola/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
