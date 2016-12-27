@@ -97,7 +97,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
     vertexCollectionEntries_.push_back(vertexCollectionEntryType(*name, token));
   }
 
-  vertexToken_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices","","RECO"));
+  vertexToken_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices"));
 
   edm::ParameterSet cfgPFJetIdAlgo;
   cfgPFJetIdAlgo.addParameter<std::string>("version", "FIRSTDATA");
