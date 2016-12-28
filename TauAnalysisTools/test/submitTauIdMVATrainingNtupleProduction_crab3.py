@@ -288,7 +288,8 @@ samples[ggSampleName] = {
     'total_files'                        : -1,
     'type'                               : 'SignalMC'
 }
-mssmHiggsMassPoints1 = [ 90, 120, 130, 250, 450, 500, 1000, 1500, 2000, 2300, 2600, 2900, 3200 ]
+# currently 15 mass points available
+mssmHiggsMassPoints1 = [ 90, 120, 130, 250, 300, 450, 500, 600, 1000, 1500, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     samples[ggSampleName] = {
@@ -297,7 +298,9 @@ for massPoint in mssmHiggsMassPoints1:
         'total_files'                        : -1, 
         'type'                               : 'SignalMC'
     }
-mssmHiggsMassPoints2 = [160, 200, 250, 350, 500, 600, 900, 1000, 1200, 1500, 2000, 2300, 2600, 2900, 3200 ]
+
+# currently 23 mass points available
+mssmHiggsMassPoints2 = [ 90, 100, 120, 140, 160, 200, 250, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {
@@ -307,7 +310,8 @@ for massPoint in mssmHiggsMassPoints2:
         'type'                               : 'SignalMC'
     }
 
-ZprimeMassPoints = [ 1250, 1500, 2000, 3000, 3500 ]
+# currently 6 mass points available
+ZprimeMassPoints = [ 750, 1250, 1500, 2000, 3000, 3500 ]
 for massPoint in ZprimeMassPoints:
     sampleName = "Zprime%1.0ftoTauTau" % massPoint
     samples[sampleName] = {
@@ -316,7 +320,9 @@ for massPoint in ZprimeMassPoints:
         'total_files'                        : -1,
         'type'                               : 'SignalMC'
     }
-WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4200, 4400, 4600, 4800, 5000, 5200, 5600, 5800 ]
+
+# currently 24 mass points available
+WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5600, 5800 ]
 for massPoint in WprimeMassPoints:
     sampleName = "Wprime%1.0ftoTauNu" % massPoint
     samples[sampleName] = {
