@@ -300,7 +300,7 @@ for massPoint in mssmHiggsMassPoints1:
     }
 
 # currently 23 mass points available
-mssmHiggsMassPoints2 = [ 90, 100, 120, 140, 160, 200, 250, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 2300, 2600, 2900, 3200 ]
+mssmHiggsMassPoints2 = [ 90, 100, 120, 140, 160, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {
