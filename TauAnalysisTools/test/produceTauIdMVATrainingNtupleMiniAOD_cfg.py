@@ -6,7 +6,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.load('Configuration.StandardSequences.Geometry_cff')
 #process.load('Configuration.Geometry.GeometryIdeal_cff')
@@ -108,6 +108,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     tauIdDiscriminators = cms.PSet(
         decayModeFindingNewDMs = cms.string('decayModeFindingNewDMs'),
         decayModeFindingOldDMs = cms.string('decayModeFinding'),
+        byCombinedIsolationDeltaBetaCorrRaw3Hits = cms.string('byCombinedIsolationDeltaBetaCorrRaw3Hits'),
         byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.string('byLooseCombinedIsolationDeltaBetaCorr3Hits'),
         byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.string('byMediumCombinedIsolationDeltaBetaCorr3Hits'),
         byTightCombinedIsolationDeltaBetaCorr3Hits = cms.string('byTightCombinedIsolationDeltaBetaCorr3Hits'),
@@ -125,6 +126,13 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
         byTightIsolationMVArun2v1DBnewDMwLT = cms.string("byTightIsolationMVArun2v1DBnewDMwLT"),
         byVTightIsolationMVArun2v1DBnewDMwLT = cms.string("byVTightIsolationMVArun2v1DBnewDMwLT"),
         byVVTightIsolationMVArun2v1DBnewDMwLT = cms.string("byVVTightIsolationMVArun2v1DBnewDMwLT"),
+        byIsolationMVArun2v1DBdR03oldDMwLTraw = cms.string("byIsolationMVArun2v1DBdR03oldDMwLTraw"),
+        byVLooseIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byVLooseIsolationMVArun2v1DBdR03oldDMwLT"),
+        byLooseIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byLooseIsolationMVArun2v1DBdR03oldDMwLT"),
+        byMediumIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byMediumIsolationMVArun2v1DBdR03oldDMwLT"),
+        byTightIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byTightIsolationMVArun2v1DBdR03oldDMwLT"),
+        byVTightIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byVTightIsolationMVArun2v1DBdR03oldDMwLT"),
+        byVVTightIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byVVTightIsolationMVArun2v1DBdR03oldDMwLT"),
         againstMuonLoose3 = cms.string('againstMuonLoose3'),
         againstMuonTight3 = cms.string('againstMuonTight3')
     ),
@@ -134,7 +142,12 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
         puCorrPtSum = cms.string("puCorrPtSum"), 
         neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
         footprintCorrection = cms.string("footprintCorrection"),
-        photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone")
+        photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone"),
+        chargedIsoPtSumdR03 = cms.string('chargedIsoPtSumdR03'),
+        neutralIsoPtSumdR03 = cms.string('neutralIsoPtSumdR03'),
+        neutralIsoPtSumWeightdR03 = cms.string('neutralIsoPtSumWeightdR03'),
+        footprintCorrectiondR03 = cms.string('footprintCorrectiondR03'),
+        photonPtSumOutsideSignalConedR03 = cms.string('photonPtSumOutsideSignalConedR03')
     ),
     vertexCollections = cms.PSet(
         offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
