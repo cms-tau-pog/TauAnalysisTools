@@ -5,7 +5,7 @@ import os
 version = 'tauId_v3_0'
 train_option = 'optbDBAll'
 
-inputFilePath  = "/pnfs/desy.de/cms/tier2/store/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1"
+inputFilePath  = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/ntuples/"
 
 outputFilePath = "/nfs/dust/cms/user/anehrkor/CMS/TauIDMVATraining2016/Summer16_25ns_V1/%s/trainfilesfinal_v1/" % version
 
@@ -19,153 +19,7 @@ preselection_newDMs = \
   + ' && leadPFChargedHadrCandPt > 1. && chargedIsoPtSum < 10.'  
 
 mvaDiscriminators = {
-    'mvaIsolation3HitsDeltaR05opt2bDB' : {
-        'preselection'        : preselection_newDMs,
-        'applyPtReweighting'  : True,
-        'applyEtaReweighting' : True,
-        'reweight'            : 'min:KILL',
-        'applyEventPruning'   : 1,
-        'mvaTrainingOptions'  : "!H:!V:NTrees=500:BoostType=Grad:Shrinkage=0.30:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=3",
-        'inputVariables'      : [
-            'TMath::Log(TMath::Max(1., recTauPt))/F',
-            'TMath::Abs(recTauEta)/F',
-            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone))/F',
-            'recTauDecayMode/I'
-        ],
-        'spectatorVariables'  : [            
-            'TMath::Min(30., recTauNphoton)/F',
-            'TMath::Min(0.5, recTauPtWeightedDetaStrip)/F',
-            'TMath::Min(0.5, recTauPtWeightedDphiStrip)/F',
-            'TMath::Min(0.5, recTauPtWeightedDrSignal)/F',
-            'TMath::Min(0.5, recTauPtWeightedDrIsolation)/F',
-            'TMath::Min(100., recTauLeadingTrackChi2)/F',
-            'TMath::Min(1., recTauEratio)/F',
-            'TMath::Sign(+1., recImpactParam)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
-            'TMath::Sign(+1., recImpactParam3D)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
-            'hasRecDecayVertex/I',
-            'TMath::Sqrt(recDecayDistMag)/F',
-            'TMath::Min(10., recDecayDistSign)/F',
-            'TMath::Min(100., recDecayVertexChi2)/F',
-            ##'TMath::Sign(+1., recImpactParamZ)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZ))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZ))/F',
-            'TMath::Sign(+1., recImpactParamTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk2))/F',
-            'TMath::Sign(+1., recImpactParam3DTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk2))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk2))/F',
-            'TMath::Sign(+1., recImpactParamTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk3))/F',
-            'TMath::Sign(+1., recImpactParam3DTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk3))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk1))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk1))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk2))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayDist2D))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayDistSign2D))/F',
-            'TMath::Min(10., recChi2DiffEvtVertex)/F',
-            ##'recTauPt/F',
-            'leadPFChargedHadrCandPt/F',
-            'numOfflinePrimaryVertices/I',
-            'genVisTauPt/F',
-            'genTauPt/F'
-        ],
-        'legendEntry'         : "MVA opt2bDB",
-        'color'               : 1
-    },    
-    'mvaIsolation3HitsDeltaR05opt3bDB' : {
-        'preselection'        : preselection_newDMs,
-        'applyPtReweighting'  : True,
-        'applyEtaReweighting' : True,
-        'reweight'            : 'min:KILL',
-        'applyEventPruning'   : 1,
-        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
-        'inputVariables'      : [
-            'TMath::Log(TMath::Max(1., recTauPt))/F',
-            'TMath::Abs(recTauEta)/F',
-            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone))/F',
-            'recTauDecayMode/I',
-            'TMath::Min(30., recTauNphoton)/F',
-            'TMath::Min(0.5, recTauPtWeightedDetaStrip)/F',
-            'TMath::Min(0.5, recTauPtWeightedDphiStrip)/F',
-            'TMath::Min(0.5, recTauPtWeightedDrSignal)/F',
-            'TMath::Min(0.5, recTauPtWeightedDrIsolation)/F',
-            'TMath::Min(100., recTauLeadingTrackChi2)/F',
-            'TMath::Min(1., recTauEratio)/F'
-        ],
-        'spectatorVariables'  : [
-            'TMath::Sign(+1., recImpactParam)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
-            'TMath::Sign(+1., recImpactParam3D)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
-            'hasRecDecayVertex/I',
-            'TMath::Sqrt(recDecayDistMag)/F',
-            'TMath::Min(10., recDecayDistSign)/F',
-            'TMath::Min(100., recDecayVertexChi2)/F',
-            ##'TMath::Sign(+1., recImpactParamZ)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZ))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZ))/F',
-            'TMath::Sign(+1., recImpactParamTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk2))/F',
-            'TMath::Sign(+1., recImpactParam3DTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk2))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk2))/F',
-            'TMath::Sign(+1., recImpactParamTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk3))/F',
-            'TMath::Sign(+1., recImpactParam3DTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk3))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk1))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk1))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk2))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayDist2D))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayDistSign2D))/F',
-            'TMath::Min(10., recChi2DiffEvtVertex)/F',
-            ##'recTauPt/F',
-            'leadPFChargedHadrCandPt/F',
-            'numOfflinePrimaryVertices/I',
-            'genVisTauPt/F',
-            'genTauPt/F'
-        ],
-        'legendEntry'         : "MVA opt3bDB",
-        'color'               : 2
-    },
-    'mvaIsolation3HitsDeltaR05opt4bLTDB' : {
+    'mvaIsolation3HitsDeltaR05opt1bLTDB' : {
         'preselection'        : preselection_newDMs,
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
@@ -198,60 +52,28 @@ mvaDiscriminators = {
             'TMath::Min(10., recDecayDistSign)/F'
         ],
         'spectatorVariables'  : [
-            'TMath::Min(100., recDecayVertexChi2)/F',
-            ##'TMath::Sign(+1., recImpactParamZ)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZ))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZ))/F',
-            'TMath::Sign(+1., recImpactParamTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk2))/F',
-            'TMath::Sign(+1., recImpactParam3DTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk2))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk2))/F',
-            'TMath::Sign(+1., recImpactParamTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk3))/F',
-            'TMath::Sign(+1., recImpactParam3DTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk3))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk1))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk1))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk2))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayDist2D))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayDistSign2D))/F',
-            'TMath::Min(10., recChi2DiffEvtVertex)/F',
             ##'recTauPt/F',
             'leadPFChargedHadrCandPt/F',
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
             'genTauPt/F'
         ],
-        'legendEntry'         : "MVA opt4bLTDB",
-        'color'               : 4
+        'legendEntry'         : "MVA opt1bLTDB",
+        'color'               : 1
     },
-    'mvaIsolation3HitsDeltaR05opt5bLTDB' : {
+    'mvaIsolation3HitsDeltaR05opt2bLTDB' : {
         'preselection'        : preselection_newDMs,
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
         'applyEventPruning'   : 1,
-        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
             'TMath::Log(TMath::Max(1., recTauPt))/F',
             'TMath::Abs(recTauEta)/F',
             'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
             'TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum))/F',
             'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
-            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone))/F',
             'recTauDecayMode/I',
             'TMath::Min(30., recTauNphoton)/F',
             'TMath::Min(0.5, recTauPtWeightedDetaStrip)/F',
@@ -268,38 +90,7 @@ mvaDiscriminators = {
             'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
             'hasRecDecayVertex/I',
             'TMath::Sqrt(recDecayDistMag)/F',
-            'TMath::Min(10., recDecayDistSign)/F',
-            'TMath::Min(100., recDecayVertexChi2)/F',
-            ##'TMath::Sign(+1., recImpactParamZ)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZ))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZ))/F',
-            'TMath::Sign(+1., recImpactParamTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk2))/F',
-            'TMath::Sign(+1., recImpactParam3DTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk2))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk2)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk2))/F',
-            'TMath::Sign(+1., recImpactParamTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignTk3))/F',
-            'TMath::Sign(+1., recImpactParam3DTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3DTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSign3DTk3))/F',
-            ##'TMath::Sign(+1., recImpactParamZTk3)/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParamZTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recImpactParamSignZTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk1))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk1))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk2))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk2))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayLengthTk3))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayLengthSignTk3))/F',
-            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recDecayDist2D))))/F',
-            'TMath::Min(10., TMath::Abs(recDecayDistSign2D))/F',
-            'TMath::Min(10., recChi2DiffEvtVertex)/F'
+            'TMath::Min(10., recDecayDistSign)/F'
         ],
         'spectatorVariables'  : [
             ##'recTauPt/F',
@@ -308,9 +99,9 @@ mvaDiscriminators = {
             'genVisTauPt/F',
             'genTauPt/F'
         ],
-        'legendEntry'         : "MVA opt5bLTDB",
-        'color'               : 6
-    },    
+        'legendEntry'         : "MVA opt2bLTDB",
+        'color'               : 2
+    }
 }
 
 cutDiscriminators = {
@@ -350,10 +141,8 @@ cutDiscriminators = {
 plots = {
 'mvaIsolation_optDeltaR05BDeltaBeta' : {
         'graphs' : [
-            'mvaIsolation3HitsDeltaR05opt2bDB',
-            'mvaIsolation3HitsDeltaR05opt3bDB',
-            'mvaIsolation3HitsDeltaR05opt4bLTDB',
-            'mvaIsolation3HitsDeltaR05opt5bLTDB',
+            'mvaIsolation3HitsDeltaR05opt1bLTDB',
+            'mvaIsolation3HitsDeltaR05opt2bLTDB',
             'hpsCombinedIsolation3HitsLooseNewDMs',
             'hpsCombinedIsolation3HitsMediumNewDMs',
             'hpsCombinedIsolation3HitsTightNewDMs'
@@ -721,7 +510,7 @@ for discriminator in cutDiscriminators.keys():
     cfg_modified += "\n"
     cfg_modified += "process.makeROCcurveTauIdMVA.signalSamples = cms.vstring(%s)\n" % signalSamples
     cfg_modified += "process.makeROCcurveTauIdMVA.backgroundSamples = cms.vstring(%s)\n" % backgroundSamples
-    cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('tauIdMVATrainingNtupleProducer/tauIdMVATrainingNtuple')\n"
+    cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD')\n"
     cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('%s')\n" % cutDiscriminators[discriminator]['preselection']
     cfg_modified += "process.makeROCcurveTauIdMVA.branchNameLogTauPt = cms.string('')\n"
     cfg_modified += "process.makeROCcurveTauIdMVA.branchNameTauPt = cms.string('recTauPt')\n"
