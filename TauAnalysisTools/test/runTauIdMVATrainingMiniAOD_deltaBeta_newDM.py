@@ -7,7 +7,7 @@ train_option = 'optbDBAll'
 
 inputFilePath  = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/ntuples/"
 
-outputFilePath = "/nfs/dust/cms/user/anehrkor/CMS/TauIDMVATraining2016/Summer16_25ns_V1/%s/trainfilesfinal_v1/" % version
+outputFilePath = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/%s/trainfilesfinal_v1/" % version
 
 preselection_oldDMs = \
     'decayModeFindingOldDMs > 0.5' \
