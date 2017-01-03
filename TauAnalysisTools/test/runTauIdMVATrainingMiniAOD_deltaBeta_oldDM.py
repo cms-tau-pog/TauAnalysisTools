@@ -104,6 +104,79 @@ mvaDiscriminators = {
     }
 }
 
+oldMvaDiscriminators = {
+    'rawMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byIsolationMVArun2v1DBoldDMwLTraw',
+        'numBins'             : 2020,
+        'min'                 : -1.01,
+        'max'                 : +1.01,
+        'legendEntry'         : "2015 MVA raw",
+        'color'               : 3,
+        'markerStyle'         : 20
+    },
+    'wpVLooseMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byVLooseIsolationMVArun2v1DBoldDMwLT',
+        'numBins'             : 2,
+        'min'                 : -0.5,
+        'max'                 : +1.5,
+        'legendEntry'         : "2015 MVA very loose",
+        'color'               : 4,
+        'markerStyle'         : 20
+    },
+    'wpLooseMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byLooseIsolationMVArun2v1DBoldDMwLT',
+        'numBins'             : 2,
+        'min'                 : -0.5,
+        'max'                 : +1.5,
+        'legendEntry'         : "2015 MVA loose",
+        'color'               : 5,
+        'markerStyle'         : 20
+    },
+    'wpMediumMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byMediumIsolationMVArun2v1DBoldDMwLT',
+        'numBins'             : 2,
+        'min'                 : -0.5,
+        'max'                 : +1.5,
+        'legendEntry'         : "2015 MVA medium",
+        'color'               : 6,
+        'markerStyle'         : 20
+    },
+    'wpTightMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byTightIsolationMVArun2v1DBoldDMwLT',
+        'numBins'             : 2,
+        'min'                 : -0.5,
+        'max'                 : +1.5,
+        'legendEntry'         : "2015 MVA tight",
+        'color'               : 7,
+        'markerStyle'         : 20
+    },
+    'wpVTightMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byVTightIsolationMVArun2v1DBoldDMwLT',
+        'numBins'             : 2,
+        'min'                 : -0.5,
+        'max'                 : +1.5,
+        'legendEntry'         : "2015 MVA very tight",
+        'color'               : 8,
+        'markerStyle'         : 20
+    },
+    'wpVVTightMVAoldDMwLT' : {
+        'preselection'        : preselection_oldDMs,
+        'discriminator'       : 'byVVTightIsolationMVArun2v1DBoldDMwLT',
+        'numBins'             : 2,
+        'min'                 : -0.5,
+        'max'                 : +1.5,
+        'legendEntry'         : "2015 MVA very very tight",
+        'color'               : 9,
+        'markerStyle'         : 20
+    }
+}
+
 cutDiscriminators = {
     'hpsCombinedIsolation3HitsLooseOldDMs' : {
         'preselection'        : preselection_oldDMs,
@@ -112,7 +185,7 @@ cutDiscriminators = {
         'min'                 : -0.5,
         'max'                 : +1.5,
         'legendEntry'         : "HPS 3hit: #DeltaR = 0.5, #Delta#beta = 0.45",
-        'color'               : 8,
+        'color'               : 10,
         'markerStyle'         : 20
     },
     'hpsCombinedIsolation3HitsMediumOldDMs' : {
@@ -122,7 +195,7 @@ cutDiscriminators = {
         'min'                 : -0.5,
         'max'                 : +1.5,
         'legendEntry'         : "",
-        'color'               : 8,
+        'color'               : 11,
         'markerStyle'         : 21
     },
     'hpsCombinedIsolation3HitsTightOldDMs' : {
@@ -132,7 +205,7 @@ cutDiscriminators = {
         'min'                 : -0.5,
         'max'                 : +1.5,
         'legendEntry'         : "",
-        'color'               : 8,
+        'color'               : 12,
         'markerStyle'         : 33,
         'markerSize'          : 2
     }
@@ -143,6 +216,13 @@ plots = {
         'graphs' : [
             'mvaIsolation3HitsDeltaR05opt1aLTDB',
             'mvaIsolation3HitsDeltaR05opt2aLTDB',
+            'rawMVAoldDMwLT',
+            'wpVLooseMVAoldDMwLT',
+            'wpLooseMVAoldDMwLT',
+            'wpMediumMVAoldDMwLT',
+            'wpTightMVAoldDMwLT',
+            'wpVTightMVAoldDMwLT',
+            'wpVVTightMVAoldDMwLT',
             'hpsCombinedIsolation3HitsLooseOldDMs',
             'hpsCombinedIsolation3HitsMediumOldDMs',
             'hpsCombinedIsolation3HitsTightOldDMs'
@@ -152,6 +232,7 @@ plots = {
 
 allDiscriminators = {}
 allDiscriminators.update(mvaDiscriminators)
+allDiscriminators.update(oldMvaDiscriminators)
 allDiscriminators.update(cutDiscriminators)
 
 signalSamples = [
