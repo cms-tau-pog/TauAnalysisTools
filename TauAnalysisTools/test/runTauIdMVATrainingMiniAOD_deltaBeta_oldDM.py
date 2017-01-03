@@ -249,19 +249,21 @@ for massPoint in smHiggsMassPoints5:
     signalSamples.append(tthSampleName)
 ggSampleName = "ggHiggs125toTauTau"
 signalSamples.append(ggSampleName)
-mssmHiggsMassPoints1 = [ 90, 120, 130, 250, 300, 450, 500, 600, 1000, 1500, 2000, 2300, 2600, 2900, 3200 ]
+vbfSampleName = "vbfHiggs125toTauTau"
+signalSamples.append(vbfSampleName)
+mssmHiggsMassPoints1 = [ 80, 90, 100, 120, 130, 250, 300, 400, 450, 500, 600, 700, 1000, 1500, 1600, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     signalSamples.append(ggSampleName)
-mssmHiggsMassPoints2 = [ 90, 100, 120, 140, 160, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000, 2300, 2600, 2900, 3200 ]
+mssmHiggsMassPoints2 = [ 90, 100, 110, 120, 140, 160, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     signalSamples.append(bbSampleName)
-ZprimeMassPoints = [ 750, 1250, 1500, 2000, 3000, 3500 ]
+ZprimeMassPoints = [ 500, 750, 1000, 1250, 1500, 2000, 2500, 3000, 3500, 4000 ]
 for massPoint in ZprimeMassPoints:
     sampleName = "Zprime%1.0ftoTauTau" % massPoint
     signalSamples.append(sampleName)
-WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5600, 5800 ]
+WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800 ]
 for massPoint in WprimeMassPoints:
     sampleName = "Wprime%1.0ftoTauNu" % massPoint
     signalSamples.append(sampleName)
