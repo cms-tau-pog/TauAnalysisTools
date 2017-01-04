@@ -113,102 +113,102 @@ cutDiscriminators = {
         'max'                 : +1.01,
         'legendEntry'         : "2015 MVA",
         'color'               : 2
-    },
-    'wpVLooseMVAoldDMwLT' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byVLooseIsolationMVArun2v1DBoldDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA WPs",
-        'color'               : 4,
-        'markerStyle'         : 20
-    },
-    'wpLooseMVAoldDMwLT' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byLooseIsolationMVArun2v1DBoldDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 21
-    },
-    'wpMediumMVAoldDMwLT' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byMediumIsolationMVArun2v1DBoldDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 33,
-        'markerSize'          : 2
-    },
-    'wpTightMVAoldDMwLT' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byTightIsolationMVArun2v1DBoldDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 22,
-        'markerSize'          : 2
-    },
-    'wpVTightMVAoldDMwLT' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byVTightIsolationMVArun2v1DBoldDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 23,
-        'markerSize'          : 2
-    },
-    'wpVVTightMVAoldDMwLT' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byVVTightIsolationMVArun2v1DBoldDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 34,
-        'markerSize'          : 2
-    },
-    'hpsCombinedIsolation3HitsLooseOldDMs' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "HPS 3hit WPs",
-        'color'               : 8,
-        'markerStyle'         : 20
-    },
-    'hpsCombinedIsolation3HitsMediumOldDMs' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byMediumCombinedIsolationDeltaBetaCorr3Hits',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 8,
-        'markerStyle'         : 21
-    },
-    'hpsCombinedIsolation3HitsTightOldDMs' : {
-        'preselection'        : preselection_oldDMs,
-        'discriminator'       : 'byTightCombinedIsolationDeltaBetaCorr3Hits',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 8,
-        'markerStyle'         : 33,
-        'markerSize'          : 2
-    }
+    }#,
+#    'wpVLooseMVAoldDMwLT' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byVLooseIsolationMVArun2v1DBoldDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "2015 MVA WPs",
+#        'color'               : 4,
+#        'markerStyle'         : 20
+#    },
+#    'wpLooseMVAoldDMwLT' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byLooseIsolationMVArun2v1DBoldDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 21
+#    },
+#    'wpMediumMVAoldDMwLT' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byMediumIsolationMVArun2v1DBoldDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 33,
+#        'markerSize'          : 2
+#    },
+#    'wpTightMVAoldDMwLT' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byTightIsolationMVArun2v1DBoldDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 22,
+#        'markerSize'          : 2
+#    },
+#    'wpVTightMVAoldDMwLT' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byVTightIsolationMVArun2v1DBoldDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 23,
+#        'markerSize'          : 2
+#    },
+#    'wpVVTightMVAoldDMwLT' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byVVTightIsolationMVArun2v1DBoldDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 34,
+#        'markerSize'          : 2
+#    },
+#    'hpsCombinedIsolation3HitsLooseOldDMs' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "HPS 3hit WPs",
+#        'color'               : 8,
+#        'markerStyle'         : 20
+#    },
+#    'hpsCombinedIsolation3HitsMediumOldDMs' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 8,
+#        'markerStyle'         : 21
+#    },
+#    'hpsCombinedIsolation3HitsTightOldDMs' : {
+#        'preselection'        : preselection_oldDMs,
+#        'discriminator'       : 'byTightCombinedIsolationDeltaBetaCorr3Hits',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 8,
+#        'markerStyle'         : 33,
+#        'markerSize'          : 2
+#    }
 }
 
 plots = {
@@ -216,16 +216,16 @@ plots = {
         'graphs' : [
             'mvaIsolation3HitsDeltaR05opt1aLTDB',
             'mvaIsolation3HitsDeltaR05opt2aLTDB',
-            'rawMVAoldDMwLT',
-            'wpVLooseMVAoldDMwLT',
-            'wpLooseMVAoldDMwLT',
-            'wpMediumMVAoldDMwLT',
-            'wpTightMVAoldDMwLT',
-            'wpVTightMVAoldDMwLT',
-            'wpVVTightMVAoldDMwLT',
-            'hpsCombinedIsolation3HitsLooseOldDMs',
-            'hpsCombinedIsolation3HitsMediumOldDMs',
-            'hpsCombinedIsolation3HitsTightOldDMs'
+            'rawMVAoldDMwLT'#,
+#            'wpVLooseMVAoldDMwLT',
+#            'wpLooseMVAoldDMwLT',
+#            'wpMediumMVAoldDMwLT',
+#            'wpTightMVAoldDMwLT',
+#            'wpVTightMVAoldDMwLT',
+#            'wpVVTightMVAoldDMwLT',
+#            'hpsCombinedIsolation3HitsLooseOldDMs',
+#            'hpsCombinedIsolation3HitsMediumOldDMs',
+#            'hpsCombinedIsolation3HitsTightOldDMs'
         ]
     }
 }

@@ -113,102 +113,102 @@ cutDiscriminators = {
         'max'                 : +1.01,
         'legendEntry'         : "2015 MVA",
         'color'               : 2
-    },
-    'wpVLooseMVAnewDMwLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byVLooseIsolationMVArun2v1DBnewDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA WPs",
-        'color'               : 4,
-        'markerStyle'         : 20
-    },
-    'wpLooseMVAnewDMwLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byLooseIsolationMVArun2v1DBnewDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 21
-    },
-    'wpMediumMVAnewDMwLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byMediumIsolationMVArun2v1DBnewDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 33,
-        'markerSize'          : 2
-    },
-    'wpTightMVAnewDMwLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byTightIsolationMVArun2v1DBnewDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 22,
-        'markerSize'          : 2
-    },
-    'wpVTightMVAnewDMwLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byVTightIsolationMVArun2v1DBnewDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 23,
-        'markerSize'          : 2
-    },
-    'wpVVTightMVAnewDMwLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byVVTightIsolationMVArun2v1DBnewDMwLT',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 4,
-        'markerStyle'         : 34,
-        'markerSize'          : 2
-    },
-    'hpsCombinedIsolation3HitsLooseNewDMs' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "HPS 3hit WPs",
-        'color'               : 8,
-        'markerStyle'         : 20
-    },
-    'hpsCombinedIsolation3HitsMediumNewDMs' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byMediumCombinedIsolationDeltaBetaCorr3Hits',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 8,
-        'markerStyle'         : 21
-    },
-    'hpsCombinedIsolation3HitsTightNewDMs' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byTightCombinedIsolationDeltaBetaCorr3Hits',
-        'numBins'             : 2,
-        'min'                 : -0.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "",
-        'color'               : 8,
-        'markerStyle'         : 33,
-        'markerSize'          : 2
-    }
+    }#,
+#    'wpVLooseMVAnewDMwLT' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byVLooseIsolationMVArun2v1DBnewDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "2015 MVA WPs",
+#        'color'               : 4,
+#        'markerStyle'         : 20
+#    },
+#    'wpLooseMVAnewDMwLT' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byLooseIsolationMVArun2v1DBnewDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 21
+#    },
+#    'wpMediumMVAnewDMwLT' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byMediumIsolationMVArun2v1DBnewDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 33,
+#        'markerSize'          : 2
+#    },
+#    'wpTightMVAnewDMwLT' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byTightIsolationMVArun2v1DBnewDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 22,
+#        'markerSize'          : 2
+#    },
+#    'wpVTightMVAnewDMwLT' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byVTightIsolationMVArun2v1DBnewDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 23,
+#        'markerSize'          : 2
+#    },
+#    'wpVVTightMVAnewDMwLT' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byVVTightIsolationMVArun2v1DBnewDMwLT',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 4,
+#        'markerStyle'         : 34,
+#        'markerSize'          : 2
+#    },
+#    'hpsCombinedIsolation3HitsLooseNewDMs' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "HPS 3hit WPs",
+#        'color'               : 8,
+#        'markerStyle'         : 20
+#    },
+#    'hpsCombinedIsolation3HitsMediumNewDMs' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 8,
+#        'markerStyle'         : 21
+#    },
+#    'hpsCombinedIsolation3HitsTightNewDMs' : {
+#        'preselection'        : preselection_newDMs,
+#        'discriminator'       : 'byTightCombinedIsolationDeltaBetaCorr3Hits',
+#        'numBins'             : 2,
+#        'min'                 : -0.5,
+#        'max'                 : +1.5,
+#        'legendEntry'         : "",
+#        'color'               : 8,
+#        'markerStyle'         : 33,
+#        'markerSize'          : 2
+#    }
 }
 
 plots = {
@@ -216,16 +216,16 @@ plots = {
         'graphs' : [
             'mvaIsolation3HitsDeltaR05opt1bLTDB',
             'mvaIsolation3HitsDeltaR05opt2bLTDB',
-            'rawMVAnewDMwLT',
-            'wpVLooseMVAnewDMwLT',
-            'wpLooseMVAnewDMwLT',
-            'wpMediumMVAnewDMwLT',
-            'wpTightMVAnewDMwLT',
-            'wpVTightMVAnewDMwLT',
-            'wpVVTightMVAnewDMwLT',
-            'hpsCombinedIsolation3HitsLooseNewDMs',
-            'hpsCombinedIsolation3HitsMediumNewDMs',
-            'hpsCombinedIsolation3HitsTightNewDMs'
+            'rawMVAnewDMwLT'#,
+#            'wpVLooseMVAnewDMwLT',
+#            'wpLooseMVAnewDMwLT',
+#            'wpMediumMVAnewDMwLT',
+#            'wpTightMVAnewDMwLT',
+#            'wpVTightMVAnewDMwLT',
+#            'wpVVTightMVAnewDMwLT',
+#            'hpsCombinedIsolation3HitsLooseNewDMs',
+#            'hpsCombinedIsolation3HitsMediumNewDMs',
+#            'hpsCombinedIsolation3HitsTightNewDMs'
         ]
     }
 }
