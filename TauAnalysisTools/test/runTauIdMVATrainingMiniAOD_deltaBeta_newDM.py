@@ -111,8 +111,8 @@ cutDiscriminators = {
         'numBins'             : 2020,
         'min'                 : -1.01,
         'max'                 : +1.01,
-        'legendEntry'         : "2015 MVA raw",
-        'color'               : 3
+        'legendEntry'         : "2015 MVA",
+        'color'               : 2
     },
     'wpVLooseMVAnewDMwLT' : {
         'preselection'        : preselection_newDMs,
@@ -120,8 +120,8 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA very loose",
-        'color'               : 3,
+        'legendEntry'         : "2015 MVA WPs",
+        'color'               : 4,
         'markerStyle'         : 20
     },
     'wpLooseMVAnewDMwLT' : {
@@ -130,8 +130,8 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA loose",
-        'color'               : 3,
+        'legendEntry'         : "",
+        'color'               : 4,
         'markerStyle'         : 21
     },
     'wpMediumMVAnewDMwLT' : {
@@ -140,8 +140,8 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA medium",
-        'color'               : 3,
+        'legendEntry'         : "",
+        'color'               : 4,
         'markerStyle'         : 33,
         'markerSize'          : 2
     },
@@ -151,9 +151,10 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA tight",
-        'color'               : 3,
-        'markerStyle'         : 22
+        'legendEntry'         : "",
+        'color'               : 4,
+        'markerStyle'         : 22,
+        'markerSize'          : 2
     },
     'wpVTightMVAnewDMwLT' : {
         'preselection'        : preselection_newDMs,
@@ -161,9 +162,10 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA very tight",
-        'color'               : 3,
-        'markerStyle'         : 23
+        'legendEntry'         : "",
+        'color'               : 4,
+        'markerStyle'         : 23,
+        'markerSize'          : 2
     },
     'wpVVTightMVAnewDMwLT' : {
         'preselection'        : preselection_newDMs,
@@ -171,8 +173,8 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA very very tight",
-        'color'               : 3,
+        'legendEntry'         : "",
+        'color'               : 4,
         'markerStyle'         : 34,
         'markerSize'          : 2
     },
@@ -182,7 +184,7 @@ cutDiscriminators = {
         'numBins'             : 2,
         'min'                 : -0.5,
         'max'                 : +1.5,
-        'legendEntry'         : "HPS 3hit: #DeltaR = 0.5, #Delta#beta = 0.45",
+        'legendEntry'         : "HPS 3hit WPs",
         'color'               : 8,
         'markerStyle'         : 20
     },
