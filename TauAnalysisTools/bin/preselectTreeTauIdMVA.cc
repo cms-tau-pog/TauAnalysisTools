@@ -73,6 +73,8 @@ int main(int argc, char* argv[])
 
   vstring spectatorVariables = cfgPreselectTreeTauIdMVA.getParameter<vstring>("spectatorVariables");
 
+  vstring otherVariables = cfgPreselectTreeTauIdMVA.getParameter<vstring>("otherVariables");
+
   std::string branchNameEvtWeight = cfgPreselectTreeTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
 
   bool keepAllBranches = cfgPreselectTreeTauIdMVA.getParameter<bool>("keepAllBranches");
@@ -118,6 +120,7 @@ int main(int argc, char* argv[])
   branchesToKeep_expressions.push_back(branchNameEta);
   if ( branchNameNumMatches != "" ) branchesToKeep_expressions.push_back(branchNameNumMatches);
   branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), spectatorVariables.begin(), spectatorVariables.end());
+  branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), otherVariables.begin(), otherVariables.end());
 
   if ( keepAllBranches ) {
     TObjArray* branches = inputTree->GetListOfBranches();

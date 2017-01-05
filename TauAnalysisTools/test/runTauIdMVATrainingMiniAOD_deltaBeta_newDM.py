@@ -58,6 +58,12 @@ mvaDiscriminators = {
             'genVisTauPt/F',
             'genTauPt/F'
         ],
+        'otherVariables' : [
+            'byIsolationMVArun2v1DBnewDMwLTraw',
+            'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            'byTightCombinedIsolationDeltaBetaCorr3Hits'
+        ],
         'legendEntry'         : "MVA opt1bLTDB",
         'color'               : 1
     },
@@ -98,6 +104,12 @@ mvaDiscriminators = {
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
             'genTauPt/F'
+        ],
+        'otherVariables' : [
+            'byIsolationMVArun2v1DBnewDMwLTraw',
+            'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            'byTightCombinedIsolationDeltaBetaCorr3Hits'
         ],
         'legendEntry'         : "MVA opt2bLTDB",
         'color'               : 2
@@ -415,6 +427,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "process.preselectTreeTauIdMVA.applyEventPruning = cms.int32(%i)\n" % eventPruningLevel
         cfg_modified += "process.preselectTreeTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.otherVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['otherVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
         cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_%s_cfg.py" % (discriminator, sample)))
         print " cfgFileName_modified = '%s'" % cfgFileName_modified

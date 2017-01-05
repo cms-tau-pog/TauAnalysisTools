@@ -116,6 +116,8 @@ process.preselectTreeTauIdMVA = cms.PSet(
         'leadPFChargedHadrCandPt/F',
         'numOfflinePrimaryVertices/I'
     ),
+    otherVariables = cms.vstring(
+    ),
 
     outputFileName = cms.string('preselectTreeTauIdMVA.root')
 )
