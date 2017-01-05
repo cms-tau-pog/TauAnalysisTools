@@ -73,14 +73,15 @@ struct branchEntryType
 bool isPrunedEventByPt(double pt, int eventPruningLevel)
 {
   static TRandom3 rnd;
+  if ( eventPruningLevel == 0 ) return false;
   double u = rnd.Rndm();
   double pPrune;
-  //if      ( pt < 200. ) pPrune = 0.800 - pt*0.120/200.;                   // CV: probability for event to be kept = 20% @   0 GeV and linearly increasing to  32% @ 200 GeV
-  //else if ( pt < 400. ) pPrune = 0.680 - (pt - 200.)*0.480/(400. - 200.); // CV: probability for event to be kept = 32% @ 200 GeV and linearly increasing to  80% @ 400 GeV
-  //else if ( pt < 800. ) pPrune = 0.200 - (pt - 400.)*0.200/(800. - 400.); // CV: probability for event to be kept = 80% @ 400 GeV and linearly increasing to 100% @ 800 GeV
-  //else                  pPrune = 0.;                                      // CV: keep all events with Pt > 800 GeV
-  pPrune = 1.0;
-  if ( pPrune > (1.0 - 1./eventPruningLevel) ) pPrune = (1.0 - 1./eventPruningLevel);
+  if      ( pt < 200. ) pPrune = 0.800 - pt*0.120/200.;                   // CV: probability for event to be kept = 20% @   0 GeV and linearly increasing to  32% @ 200 GeV
+  else if ( pt < 400. ) pPrune = 0.680 - (pt - 200.)*0.480/(400. - 200.); // CV: probability for event to be kept = 32% @ 200 GeV and linearly increasing to  80% @ 400 GeV
+  else if ( pt < 800. ) pPrune = 0.200 - (pt - 400.)*0.200/(800. - 400.); // CV: probability for event to be kept = 80% @ 400 GeV and linearly increasing to 100% @ 800 GeV
+  else                  pPrune = 0.;                                      // CV: keep all events with Pt > 800 GeV
+  //pPrune = 1.0;
+  //if ( pPrune > (1.0 - 1./eventPruningLevel) ) pPrune = (1.0 - 1./eventPruningLevel);
   if ( u < pPrune ) return true;
   return false;
 }
@@ -227,8 +228,11 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
     Int_t numMatches = ( branchEntryNumMatches ) ? branchEntryNumMatches->valueI_ : 0;
 
     if ( applyEventPruning >= 1 ) {
-      if ( branchNameNumMatches != "" && isPrunedEventByNumMatches(numMatches, applyEventPruning) ) continue;
-      else if ( isPrunedEventByPt(pt, applyEventPruning) ) continue;
+      //if ( branchNameNumMatches != "" && isPrunedEventByNumMatches(numMatches, applyEventPruning) ) continue;
+      //else if ( isPrunedEventByPt(pt, applyEventPruning) ) continue;
+      if ( isPrunedEventByPt(pt, applyEventPruning) ) continue;
+      // If applyEventPruning is greater than 1, drop additional 1/applyEventPruning events
+      if ( applyEventPruning >= 2 && branchNameNumMatches != "" && isPrunedEventByNumMatches(numMatches, applyEventPruning) ) continue;
     }
 
     if ( inputTreePreselection ) {
