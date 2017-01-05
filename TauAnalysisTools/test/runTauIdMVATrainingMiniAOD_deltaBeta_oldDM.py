@@ -24,7 +24,8 @@ mvaDiscriminators = {
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
-        'applyEventPruning'   : 1,
+        'applyEventPruningSignal'   : 1, # do pt-dependent pruning
+        'applyEventPruningBackground' : 4, # pt-dependent pruning + keep only 1/4 of the remaining events
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
             'TMath::Log(TMath::Max(1., recTauPt))/F',
@@ -72,7 +73,8 @@ mvaDiscriminators = {
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
-        'applyEventPruning'   : 1,
+        'applyEventPruningSignal'   : 1, # do pt-dependent pruning
+        'applyEventPruningBackground' : 4, # pt-dependent pruning + keep only 1/4 of the remaining events
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
             'TMath::Log(TMath::Max(1., recTauPt))/F',
@@ -418,10 +420,10 @@ for discriminator in mvaDiscriminators.keys():
         eventPruningLevel = None
         if sample == 'signal':
             cfg_modified += "process.preselectTreeTauIdMVA.samples = cms.vstring(%s)\n" % signalSamples
-            eventPruningLevel = 0
+            eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruningSignal']
         else:
             cfg_modified += "process.preselectTreeTauIdMVA.samples = cms.vstring(%s)\n" % backgroundSamples
-            eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruning']
+            eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruningBackground']
         cfg_modified += "process.preselectTreeTauIdMVA.inputTreeName = cms.string('%s')\n" % "tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD"
         cfg_modified += "process.preselectTreeTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
         cfg_modified += "process.preselectTreeTauIdMVA.applyEventPruning = cms.int32(%i)\n" % eventPruningLevel
