@@ -97,6 +97,17 @@ bool isPrunedEventByNumMatches(int numMatches, int eventPruningLevel)
   return false;
 }
 
+bool isPrunedEventByLevel(int eventPruningLevel)
+{
+  static TRandom3 rnd;
+  if ( eventPruningLevel == 0 ) return false;
+  double u = rnd.Rndm();
+  double pPrune = 1.0;
+  if ( pPrune > (1.0 - 1./eventPruningLevel) ) pPrune = (1.0 - 1./eventPruningLevel);
+  if ( u < pPrune ) return true;
+  return false;
+}
+
 TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName, 
 		     const std::string& preselection, const std::vector<std::string>& branchesToKeep_expressions,
 		     int applyEventPruning, const std::string& branchNamePt, const std::string& branchNameEta, const std::string& branchNameNumMatches, 
@@ -225,14 +236,14 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
 
     Float_t pt       = ( branchEntryPt         ) ? branchEntryPt->valueF_         : 0.;
     Float_t eta      = ( branchEntryEta        ) ? branchEntryEta->valueF_        : 0.;
-    Int_t numMatches = ( branchEntryNumMatches ) ? branchEntryNumMatches->valueI_ : 0;
+    //Int_t numMatches = ( branchEntryNumMatches ) ? branchEntryNumMatches->valueI_ : 0;
 
     if ( applyEventPruning >= 1 ) {
       //if ( branchNameNumMatches != "" && isPrunedEventByNumMatches(numMatches, applyEventPruning) ) continue;
       //else if ( isPrunedEventByPt(pt, applyEventPruning) ) continue;
       if ( isPrunedEventByPt(pt, applyEventPruning) ) continue;
-      // If applyEventPruning is greater than 1, drop additional 1/applyEventPruning events
-      if ( applyEventPruning >= 2 && branchNameNumMatches != "" && isPrunedEventByNumMatches(numMatches, applyEventPruning) ) continue;
+      // If applyEventPruning is greater than 1, drop additional 1-1/applyEventPruning events
+      if ( applyEventPruning >= 2 && isPrunedEventByLevel(applyEventPruning) ) continue;
     }
 
     if ( inputTreePreselection ) {
