@@ -195,12 +195,12 @@ samples = {
         'total_files'                        : -1,
         'type'                               : 'BackgroundMC'
     },
-    #'QCDEmEnrichedPt50to80' : {
-    #    'datasetpath'                        : '/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM',
-    #    'files_per_job'                      : 1,
-    #    'total_files'                        : -1,
-    #    'type'                               : 'BackgroundMC'
-    #},
+    'QCDEmEnrichedPt50to80' : {
+        'datasetpath'                        : '/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        'files_per_job'                      : 1,
+        'total_files'                        : -1,
+        'type'                               : 'BackgroundMC'
+    },
     #'QCDEmEnrichedPt80to120' : {
     #    'datasetpath'                        : '/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM',
     #    'files_per_job'                      : 1,
@@ -295,8 +295,8 @@ samples[vbfSampleName] = {
     'total_files'                        : -1,
     'type'                               : 'SignalMC'
 }
-# currently 20 mass points available
-mssmHiggsMassPoints1 = [ 80, 90, 100, 120, 130, 250, 300, 400, 450, 500, 600, 700, 1000, 1500, 1600, 2000, 2300, 2600, 2900, 3200 ]
+# currently 25 mass points available
+mssmHiggsMassPoints1 = [ 80, 90, 100, 110, 120, 130, 160, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1500, 1600, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     samples[ggSampleName] = {
@@ -306,8 +306,8 @@ for massPoint in mssmHiggsMassPoints1:
         'type'                               : 'SignalMC'
     }
 
-# currently 26 mass points available
-mssmHiggsMassPoints2 = [ 90, 100, 110, 120, 140, 160, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
+# currently 30 mass points available
+mssmHiggsMassPoints2 = [ 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {

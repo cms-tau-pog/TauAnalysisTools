@@ -25,7 +25,7 @@ mvaDiscriminators = {
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
         'applyEventPruningSignal'   : 1, # do pt-dependent pruning
-        'applyEventPruningBackground' : 7, # pt-dependent pruning + keep only 1/7 of the remaining events
+        'applyEventPruningBackground' : 1, # pt-dependent pruning
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
             'TMath::Log(TMath::Max(1., recTauPt))/F',
@@ -74,7 +74,7 @@ mvaDiscriminators = {
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
         'applyEventPruningSignal'   : 1, # do pt-dependent pruning
-        'applyEventPruningBackground' : 7, # pt-dependent pruning + keep only 1/7 of the remaining events
+        'applyEventPruningBackground' : 1, # pt-dependent pruning
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
             'TMath::Log(TMath::Max(1., recTauPt))/F',
@@ -267,11 +267,11 @@ ggSampleName = "ggHiggs125toTauTau"
 signalSamples.append(ggSampleName)
 vbfSampleName = "vbfHiggs125toTauTau"
 signalSamples.append(vbfSampleName)
-mssmHiggsMassPoints1 = [ 80, 90, 100, 120, 130, 250, 300, 400, 450, 500, 600, 700, 1000, 1500, 1600, 2000, 2300, 2600, 2900, 3200 ]
+mssmHiggsMassPoints1 = [ 80, 90, 100, 110, 120, 130, 160, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1500, 1600, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     signalSamples.append(ggSampleName)
-mssmHiggsMassPoints2 = [ 90, 100, 110, 120, 140, 160, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
+mssmHiggsMassPoints2 = [ 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     signalSamples.append(bbSampleName)
@@ -315,6 +315,7 @@ backgroundSamples = [
     "QCDjetsPtGt3200",
     "QCDEmEnrichedPt20to30",
     "QCDEmEnrichedPt30to50",
+    "QCDEmEnrichedPt50to80",
     "QCDEmEnrichedPt170to300",
     "QCDEmEnrichedPtGt300"
 ]
