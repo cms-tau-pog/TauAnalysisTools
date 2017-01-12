@@ -201,7 +201,7 @@ for massPoint in WprimeMassPoints:
 for sampleName, sampleOption in samples.items():
     
     folderToBeCreated = outputPath + sampleName
-    os.mkdir(folderToBeCreated)
+    os.makedirs(folderToBeCreated)
     
     filesToCopy = inputPath + sampleOption['datasetpath'] + "/*/*/*/*.root"
     copyCommand = "cp " + filesToCopy + " " + folderToBeCreated + "/"
