@@ -945,7 +945,7 @@ namespace
 		double dRmin = dRmatch;
 		for ( reco::GenParticleCollection::const_iterator genParticle = genParticles.begin();
 							genParticle != genParticles.end(); ++genParticle ) {
-			if ( !(genParticle->status() == 2) ) continue;
+			if ( !genParticle->isPromptDecayed() ) continue;
 			bool matchedPdgId = false;
 			for ( std::vector<int>::const_iterator pdgId = pdgIds.begin();
 				pdgId != pdgIds.end(); ++pdgId ) {
@@ -1077,7 +1077,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 			reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);
 			int genTauDecayMode_matched = -1;
 
-			findMatchingGenTauJet(recTau->p4(), *prunedGenParticles, minGenVisPt_, pdgIdsGenTau_, dRmatch_, genTau_matched, genVisTauP4_matched, genTauDecayMode_matched);
+			findMatchingGenTauJet(recTau->p4(), *prunedGenParticles, minGenVisPt_, pdgIdsGenTau_, dRmatch_, genTau_matched, genVisTauP4_matched, genTauDecayMode_matched, matchGenTauVis_);
 			setGenTauMatchValues(recTau->p4(), genTau_matched, genVisTauP4_matched, genTauDecayMode_matched);
 
 			if ( genTau_matched ) {
