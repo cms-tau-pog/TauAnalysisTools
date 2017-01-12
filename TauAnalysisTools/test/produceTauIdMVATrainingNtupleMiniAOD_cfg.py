@@ -60,6 +60,15 @@ if type == 'SignalMC' or type == 'BackgroundMC':
     isMC = True
 else:
     isMC = False
+
+# information for cleaning against leptons
+isSignal = None
+dRClean = 0.5
+if type == 'SignalMC':
+    isSignal = True
+    dRClean = 0.3
+else:
+    isSignal = False
 #--------------------------------------------------------------------------------
    
 process.produceTauIdMVATrainingNtupleMiniAODSequence = cms.Sequence()
@@ -158,6 +167,10 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     srcGenPileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
     #inputFileNameLumiCalc = cms.FileInPath(inputFileNameLumiCalc),
     isMC = cms.bool(isMC),
+    isSignal = cms.bool(isSignal),
+    dRClean = cms.double(dRClean),
+    ptCleanMin = cms.double(10.),
+    matchGenTauVis = cms.bool(True),
     #--------------------------------------------------------                                                                       
     srcWeights = cms.VInputTag(srcWeights),
     verbosity = cms.int32(0)

@@ -163,6 +163,10 @@ private:
 	PFJetIDSelectionFunctor* loosePFJetIdAlgo_;
 
 	bool isMC_;
+	bool isSignal_;
+	double dRClean_;
+	double ptCleanMin_;
+	bool matchGenTauVis_;
 	edm::InputTag srcGenPileUpSummary_;
 	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > tokenGenPileupSummary_;
 	//std::map<edm::RunNumber_t, std::map<edm::LuminosityBlockNumber_t, float> > pileUpByLumiCalc_; // key = run, lumi-section

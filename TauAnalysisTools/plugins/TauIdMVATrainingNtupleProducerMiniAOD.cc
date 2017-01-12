@@ -143,6 +143,11 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 			<< " Failed to find header in File = " << inputFileName.fullPath().data() << " !!\n";
 	}*/
 
+	isSignal_ = cfg.getParameter<bool>("isSignal");
+	dRClean_ = cfg.getParameter<double>("dRClean");
+	ptCleanMin_ = cfg.getParameter<double>("ptCleanMin");
+	matchGenTauVis_ = cfg.getParameter<bool>("matchGenTauVis");
+
 	srcWeights_ = cfg.getParameter<vInputTag>("srcWeights");
 
 	tokenGenInfoProduct_ = consumes<GenEventInfoProduct>(edm::InputTag("generator","","SIM"));
@@ -932,6 +937,46 @@ namespace
 		}
 		return genParticle_matched;
 	}
+
+	void findMatchingGenTauJet(const reco::Candidate::LorentzVector& recTauP4,
+						   const reco::GenParticleCollection& genParticles, double minGenVisPt, const std::vector<int>& pdgIds, double dRmatch,
+						   const reco::GenParticle*& genTau_matched, reco::Candidate::LorentzVector& genVisTauP4_matched, int& genTauDecayMode_matched, bool matchWithVisibleP4=false)
+	{
+		double dRmin = dRmatch;
+		for ( reco::GenParticleCollection::const_iterator genParticle = genParticles.begin();
+							genParticle != genParticles.end(); ++genParticle ) {
+			if ( !(genParticle->status() == 2) ) continue;
+			bool matchedPdgId = false;
+			for ( std::vector<int>::const_iterator pdgId = pdgIds.begin();
+				pdgId != pdgIds.end(); ++pdgId ) {
+				if ( genParticle->pdgId() == (*pdgId) ) {
+					matchedPdgId = true;
+					break;
+				}
+			}
+			if ( !matchedPdgId ) continue;
+			reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(&(*genParticle));
+			if ( !(genVisTauP4.pt() > minGenVisPt) ) continue;
+			std::string genTauDecayMode_string = getGenTauDecayMode(&(*genParticle));
+			int genTauDecayMode = -1;
+			if      ( genTauDecayMode_string == "oneProng0Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng0PiZero;
+			else if ( genTauDecayMode_string == "oneProng1Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng1PiZero;
+			else if ( genTauDecayMode_string == "oneProng2Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng2PiZero;
+			else if ( genTauDecayMode_string == "threeProng0Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng0PiZero;
+			else if ( genTauDecayMode_string == "threeProng1Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng1PiZero;
+			else if ( genTauDecayMode_string == "oneProngOther"   ||
+					genTauDecayMode_string == "threeProngOther" ||
+					genTauDecayMode_string == "rare"            ) genTauDecayMode = reco::PFTau::kRareDecayMode;
+			if ( genTauDecayMode == -1 ) continue; // skip leptonic tau decays
+			double dR = deltaR(genParticle->p4(), recTauP4);
+			if ( matchWithVisibleP4 ) dR = deltaR(genVisTauP4, recTauP4);
+			if ( dR < dRmin ) {
+				genTau_matched = &(*genParticle);
+				genVisTauP4_matched = genVisTauP4;
+				genTauDecayMode_matched = genTauDecayMode;
+			}
+		}
+	}
 }
 
 void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& evt)
@@ -1003,46 +1048,36 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 	size_t numRecTaus = recTaus->size();
 	for ( size_t iRecTau = 0; iRecTau < numRecTaus; ++iRecTau ) {
 		pat::TauRef recTau(recTaus, iRecTau);
-		setRecTauValues(recTau, evt, es);
 
-		const reco::GenParticle* genTau_matched = 0;
-		reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);
-		int genTauDecayMode_matched = -1;
-		if ( isMC_ ) {
-			double dRmin = dRmatch_;
-			for ( reco::GenParticleCollection::const_iterator genParticle = prunedGenParticles->begin();
-					genParticle != prunedGenParticles->end(); ++genParticle ) {
-				if ( !(genParticle->status() == 2) ) continue;
-				bool matchedPdgId = false;
-				for ( std::vector<int>::const_iterator pdgId = pdgIdsGenTau_.begin();
-					pdgId != pdgIdsGenTau_.end(); ++pdgId ) {
-					if ( genParticle->pdgId() == (*pdgId) ) {
-						matchedPdgId = true;
-						break;
-					}
-				}
-				if ( !matchedPdgId ) continue;
-				reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(&(*genParticle));
-				if ( !(genVisTauP4.pt() > minGenVisPt_) ) continue;
-				std::string genTauDecayMode_string = getGenTauDecayMode(&(*genParticle));
-				int genTauDecayMode = -1;
-				if      ( genTauDecayMode_string == "oneProng0Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng0PiZero;
-				else if ( genTauDecayMode_string == "oneProng1Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng1PiZero;
-				else if ( genTauDecayMode_string == "oneProng2Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng2PiZero;
-				else if ( genTauDecayMode_string == "threeProng0Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng0PiZero;
-				else if ( genTauDecayMode_string == "threeProng1Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng1PiZero;
-				else if ( genTauDecayMode_string == "oneProngOther"   ||
-						genTauDecayMode_string == "threeProngOther" ||
-						genTauDecayMode_string == "rare"            ) genTauDecayMode = reco::PFTau::kRareDecayMode;
-				if ( genTauDecayMode == -1 ) continue; // skip leptonic tau decays
-				double dR = deltaR(genParticle->p4(), recTau->p4());
-				if ( dR < dRmin ) {
-					genTau_matched = &(*genParticle);
-					genVisTauP4_matched = genVisTauP4;
-					genTauDecayMode_matched = genTauDecayMode;
-				}
+		// clean tau against leptons / genTauJets depending on
+		// whether event is signal or background
+		if( isMC_ ) {
+			const reco::GenParticle* genTau_matched_for_cleaning = 0;
+			reco::Candidate::LorentzVector genVisTauP4_matched_for_cleaning(0.,0.,0.,0.);
+			int genTauDecayMode_matched_for_cleaning = -1;
+
+			findMatchingGenTauJet(recTau->p4(), *prunedGenParticles, ptCleanMin_, pdgIdsGenTau_, dRClean_, genTau_matched_for_cleaning, genVisTauP4_matched_for_cleaning, genTauDecayMode_matched_for_cleaning, matchGenTauVis_);
+			const pat::PackedGenParticle* genElectron_matched_for_cleaning = findMatchingGenParticle(recTau->p4(), *packedGenParticles, ptCleanMin_, pdgIdsGenElectron_, dRClean_);
+			const pat::PackedGenParticle* genMuon_matched_for_cleaning = findMatchingGenParticle(recTau->p4(), *packedGenParticles, ptCleanMin_, pdgIdsGenMuon_, dRClean_);
+
+			if ( isSignal_ ) {
+				// pass only if recTau matches genTauJet within deltaR cone specified in config file
+				if ( !genTau_matched_for_cleaning ) continue;
+			} else {
+				// pass only if recTau matches none of the following objects within deltaR cone specified in config file
+				// - generated electrons
+				// - generated muons
+				// - genTauJets
+				if ( genTau_matched_for_cleaning || genElectron_matched_for_cleaning || genMuon_matched_for_cleaning ) continue;
 			}
-			// TODO: check why some gen taus are filled with dummy/default values
+
+			setRecTauValues(recTau, evt, es);
+
+			const reco::GenParticle* genTau_matched = 0;
+			reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);
+			int genTauDecayMode_matched = -1;
+
+			findMatchingGenTauJet(recTau->p4(), *prunedGenParticles, minGenVisPt_, pdgIdsGenTau_, dRmatch_, genTau_matched, genVisTauP4_matched, genTauDecayMode_matched);
 			setGenTauMatchValues(recTau->p4(), genTau_matched, genVisTauP4_matched, genTauDecayMode_matched);
 
 			if ( genTau_matched ) {
@@ -1068,7 +1103,6 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 			const pat::PackedGenParticle* genMuon_matched = findMatchingGenParticle(recTau->p4(), *packedGenParticles, minGenVisPt_, pdgIdsGenMuon_, dRmatch_);
 			setGenParticleMatchValues("genMuon", recTau->p4(), genMuon_matched);
 
-			// TODO: check why some matched gen quarks/gluons are filled with dummy/default values
 			const reco::GenParticle* genQuarkOrGluon_matched = findMatchingGenParticle(recTau->p4(), *prunedGenParticles, minGenVisPt_, pdgIdsGenQuarkOrGluon_, dRmatch_);
 			setGenParticleMatchValues("genQuarkOrGluon", recTau->p4(), genQuarkOrGluon_matched);
 
