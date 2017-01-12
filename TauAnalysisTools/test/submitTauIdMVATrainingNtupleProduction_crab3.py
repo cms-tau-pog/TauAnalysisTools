@@ -201,12 +201,12 @@ samples = {
         'total_files'                        : -1,
         'type'                               : 'BackgroundMC'
     },
-    #'QCDEmEnrichedPt80to120' : {
-    #    'datasetpath'                        : '/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM',
-    #    'files_per_job'                      : 1,
-    #    'total_files'                        : -1,
-    #    'type'                               : 'BackgroundMC'
-    #},
+    'QCDEmEnrichedPt80to120' : {
+        'datasetpath'                        : '/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        'files_per_job'                      : 1,
+        'total_files'                        : -1,
+        'type'                               : 'BackgroundMC'
+    },
     #'QCDEmEnrichedPt120to170' : {
     #    'datasetpath'                        : '/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM',
     #    'files_per_job'                      : 1,
@@ -295,8 +295,8 @@ samples[vbfSampleName] = {
     'total_files'                        : -1,
     'type'                               : 'SignalMC'
 }
-# currently 25 mass points available
-mssmHiggsMassPoints1 = [ 80, 90, 100, 110, 120, 130, 160, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1500, 1600, 2000, 2300, 2600, 2900, 3200 ]
+# currently 29 mass points available
+mssmHiggsMassPoints1 = [ 80, 90, 100, 110, 120, 130, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     samples[ggSampleName] = {
@@ -306,8 +306,8 @@ for massPoint in mssmHiggsMassPoints1:
         'type'                               : 'SignalMC'
     }
 
-# currently 30 mass points available
-mssmHiggsMassPoints2 = [ 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
+# currently 31 mass points available
+mssmHiggsMassPoints2 = [ 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     samples[bbSampleName] = {
@@ -317,8 +317,8 @@ for massPoint in mssmHiggsMassPoints2:
         'type'                               : 'SignalMC'
     }
 
-# currently 10 mass points available
-ZprimeMassPoints = [ 500, 750, 1000, 1250, 1500, 2000, 2500, 3000, 3500, 4000 ]
+# currently 11 mass points available
+ZprimeMassPoints = [ 500, 750, 1000, 1250, 1500, 1750, 2000, 2500, 3000, 3500, 4000 ]
 for massPoint in ZprimeMassPoints:
     sampleName = "Zprime%1.0ftoTauTau" % massPoint
     samples[sampleName] = {
@@ -328,8 +328,8 @@ for massPoint in ZprimeMassPoints:
         'type'                               : 'SignalMC'
     }
 
-# currently 25 mass points available
-WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2600, 2800, 3000, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800 ]
+# currently 27 mass points available
+WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800 ]
 for massPoint in WprimeMassPoints:
     sampleName = "Wprime%1.0ftoTauNu" % massPoint
     samples[sampleName] = {
