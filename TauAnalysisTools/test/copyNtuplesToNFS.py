@@ -198,6 +198,8 @@ for massPoint in WprimeMassPoints:
 
 # loop through dictionary, create directories according to sampleName
 # and copy corresponding ntuples to the directory
+print "starting folder creation and copying of files"
+
 for sampleName, sampleOption in samples.items():
     
     folderToBeCreated = outputPath + sampleName
@@ -205,4 +207,7 @@ for sampleName, sampleOption in samples.items():
     
     filesToCopy = inputPath + sampleOption['datasetpath'] + "/*/*/*/*.root"
     copyCommand = "cp " + filesToCopy + " " + folderToBeCreated + "/"
+    print "copying " + filesToCopy
     subprocess.call(copyCommand, shell = True)
+
+print "done"
