@@ -5,9 +5,15 @@ import os
 version = 'tauId_v3_0'
 train_option = 'optaDBAll'
 
-inputFilePath  = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/ntuples/"
+# Set this to true if you want to compute ROC curves for additional
+# discriminators for comparisons on ALL events available in the ntuples
+# NB: if pt-dependent pruning is used, this will not result in an
+# apples-to-apples comparison!
+computeROConAllEvents = False
 
-outputFilePath = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V1/%s/trainfilesfinal_v1/" % version
+inputFilePath  = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/ntuples/"
+
+outputFilePath = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/%s/trainfilesfinal_v1/" % version
 
 preselection_oldDMs = \
     'decayModeFindingOldDMs > 0.5' \
@@ -24,7 +30,7 @@ mvaDiscriminators = {
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
-        'applyEventPruningSignal'   : 1, # do pt-dependent pruning
+        'applyEventPruningSignal'   : 0, # no pruning
         'applyEventPruningBackground' : 1, # pt-dependent pruning
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
@@ -57,13 +63,13 @@ mvaDiscriminators = {
             'leadPFChargedHadrCandPt/F',
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
-            'genTauPt/F'
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBoldDMwLTraw'#,
+            #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            #'byTightCombinedIsolationDeltaBetaCorr3Hits'
         ],
         'otherVariables' : [
-            'byIsolationMVArun2v1DBoldDMwLTraw',
-            'byLooseCombinedIsolationDeltaBetaCorr3Hits',
-            'byMediumCombinedIsolationDeltaBetaCorr3Hits',
-            'byTightCombinedIsolationDeltaBetaCorr3Hits'
         ],
         'legendEntry'         : "MVA opt1aLTDB",
         'color'               : 1
@@ -73,7 +79,7 @@ mvaDiscriminators = {
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
-        'applyEventPruningSignal'   : 1, # do pt-dependent pruning
+        'applyEventPruningSignal'   : 0, # no pruning
         'applyEventPruningBackground' : 1, # pt-dependent pruning
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
@@ -105,13 +111,13 @@ mvaDiscriminators = {
             'leadPFChargedHadrCandPt/F',
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
-            'genTauPt/F'
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBoldDMwLTraw'#,
+            #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            #'byTightCombinedIsolationDeltaBetaCorr3Hits'
         ],
         'otherVariables' : [
-            'byIsolationMVArun2v1DBoldDMwLTraw',
-            'byLooseCombinedIsolationDeltaBetaCorr3Hits',
-            'byMediumCombinedIsolationDeltaBetaCorr3Hits',
-            'byTightCombinedIsolationDeltaBetaCorr3Hits'
         ],
         'legendEntry'         : "MVA opt2aLTDB",
         'color'               : 2
@@ -122,76 +128,12 @@ cutDiscriminators = {
     'rawMVAoldDMwLT' : {
         'preselection'        : preselection_oldDMs,
         'discriminator'       : 'byIsolationMVArun2v1DBoldDMwLTraw',
-        'numBins'             : 2020,
-        'min'                 : -1.01,
-        'max'                 : +1.01,
+        'numBins'             : 30000,
+        'min'                 : -1.5,
+        'max'                 : +1.5,
         'legendEntry'         : "2015 MVA",
         'color'               : 2
     }#,
-#    'wpVLooseMVAoldDMwLT' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byVLooseIsolationMVArun2v1DBoldDMwLT',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "2015 MVA WPs",
-#        'color'               : 4,
-#        'markerStyle'         : 20
-#    },
-#    'wpLooseMVAoldDMwLT' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byLooseIsolationMVArun2v1DBoldDMwLT',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 4,
-#        'markerStyle'         : 21
-#    },
-#    'wpMediumMVAoldDMwLT' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byMediumIsolationMVArun2v1DBoldDMwLT',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 4,
-#        'markerStyle'         : 33,
-#        'markerSize'          : 2
-#    },
-#    'wpTightMVAoldDMwLT' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byTightIsolationMVArun2v1DBoldDMwLT',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 4,
-#        'markerStyle'         : 22,
-#        'markerSize'          : 2
-#    },
-#    'wpVTightMVAoldDMwLT' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byVTightIsolationMVArun2v1DBoldDMwLT',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 4,
-#        'markerStyle'         : 23,
-#        'markerSize'          : 2
-#    },
-#    'wpVVTightMVAoldDMwLT' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byVVTightIsolationMVArun2v1DBoldDMwLT',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 4,
-#        'markerStyle'         : 34,
-#        'markerSize'          : 2
-#    },
 #    'hpsCombinedIsolation3HitsLooseOldDMs' : {
 #        'preselection'        : preselection_oldDMs,
 #        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
@@ -231,12 +173,6 @@ plots = {
             'mvaIsolation3HitsDeltaR05opt1aLTDB',
             'mvaIsolation3HitsDeltaR05opt2aLTDB',
             'rawMVAoldDMwLT'#,
-#            'wpVLooseMVAoldDMwLT',
-#            'wpLooseMVAoldDMwLT',
-#            'wpMediumMVAoldDMwLT',
-#            'wpTightMVAoldDMwLT',
-#            'wpVTightMVAoldDMwLT',
-#            'wpVVTightMVAoldDMwLT',
 #            'hpsCombinedIsolation3HitsLooseOldDMs',
 #            'hpsCombinedIsolation3HitsMediumOldDMs',
 #            'hpsCombinedIsolation3HitsTightOldDMs'
@@ -585,49 +521,102 @@ for discriminator in mvaDiscriminators.keys():
         ]
     }
 
-for discriminator in cutDiscriminators.keys():
-
-    print "processing discriminator = %s" % discriminator
-
-    makeROCcurveTauIdMVA_configFileNames[discriminator] = {}
-    makeROCcurveTauIdMVA_outputFileNames[discriminator] = {}
-    makeROCcurveTauIdMVA_logFileNames[discriminator]    = {}
-
-    outputFileName = os.path.join(outputFilePath, "makeROCcurveTauIdMVA_%s.root" % discriminator)
-    print " outputFileName = '%s'" % outputFileName
-    makeROCcurveTauIdMVA_outputFileNames[discriminator]['TestTree'] = outputFileName
-
-    cfgFileName_original = configFile_makeROCcurveTauIdMVA
-    cfgFile_original = open(cfgFileName_original, "r")
-    cfg_original = cfgFile_original.read()
-    cfgFile_original.close()
-    cfg_modified  = cfg_original
-    cfg_modified += "\n"
-    cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
-    for inputFileName in inputFileNames:
-        cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % inputFileName
-    cfg_modified += "\n"
-    cfg_modified += "process.makeROCcurveTauIdMVA.signalSamples = cms.vstring(%s)\n" % signalSamples
-    cfg_modified += "process.makeROCcurveTauIdMVA.backgroundSamples = cms.vstring(%s)\n" % backgroundSamples
-    cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD')\n"
-    cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('%s')\n" % cutDiscriminators[discriminator]['preselection']
-    cfg_modified += "process.makeROCcurveTauIdMVA.branchNameLogTauPt = cms.string('')\n"
-    cfg_modified += "process.makeROCcurveTauIdMVA.branchNameTauPt = cms.string('recTauPt')\n"
-    cfg_modified += "process.makeROCcurveTauIdMVA.discriminator = cms.string('%s')\n" % cutDiscriminators[discriminator]['discriminator']
-    cfg_modified += "process.makeROCcurveTauIdMVA.graphName = cms.string('%s_%s')\n" % (discriminator, "TestTree")
-    cfg_modified += "process.makeROCcurveTauIdMVA.binning.numBins = cms.int32(%i)\n" % cutDiscriminators[discriminator]['numBins']
-    cfg_modified += "process.makeROCcurveTauIdMVA.binning.min = cms.double(%1.2f)\n" % cutDiscriminators[discriminator]['min']
-    cfg_modified += "process.makeROCcurveTauIdMVA.binning.max = cms.double(%1.2f)\n" % cutDiscriminators[discriminator]['max']
-    cfg_modified += "process.makeROCcurveTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
-    cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_cfg.py" % discriminator))
-    print " cfgFileName_modified = '%s'" % cfgFileName_modified
-    cfgFile_modified = open(cfgFileName_modified, "w")
-    cfgFile_modified.write(cfg_modified)
-    cfgFile_modified.close()
-    makeROCcurveTauIdMVA_configFileNames[discriminator]['TestTree'] = cfgFileName_modified
-
-    logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
-    makeROCcurveTauIdMVA_logFileNames[discriminator]['TestTree'] = logFileName
+if computeROConAllEvents:
+    for discriminator in cutDiscriminators.keys():
+    
+        print "processing discriminator = %s" % discriminator
+    
+        makeROCcurveTauIdMVA_configFileNames[discriminator] = {}
+        makeROCcurveTauIdMVA_outputFileNames[discriminator] = {}
+        makeROCcurveTauIdMVA_logFileNames[discriminator]    = {}
+    
+        outputFileName = os.path.join(outputFilePath, "makeROCcurveTauIdMVA_%s.root" % discriminator)
+        print " outputFileName = '%s'" % outputFileName
+        makeROCcurveTauIdMVA_outputFileNames[discriminator]['TestTree'] = outputFileName
+    
+        cfgFileName_original = configFile_makeROCcurveTauIdMVA
+        cfgFile_original = open(cfgFileName_original, "r")
+        cfg_original = cfgFile_original.read()
+        cfgFile_original.close()
+        cfg_modified  = cfg_original
+        cfg_modified += "\n"
+        cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
+        for inputFileName in inputFileNames:
+            cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % inputFileName
+        cfg_modified += "\n"
+        cfg_modified += "process.makeROCcurveTauIdMVA.signalSamples = cms.vstring(%s)\n" % signalSamples
+        cfg_modified += "process.makeROCcurveTauIdMVA.backgroundSamples = cms.vstring(%s)\n" % backgroundSamples
+        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD')\n"
+        cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('%s')\n" % cutDiscriminators[discriminator]['preselection']
+        cfg_modified += "process.makeROCcurveTauIdMVA.branchNameLogTauPt = cms.string('')\n"
+        cfg_modified += "process.makeROCcurveTauIdMVA.branchNameTauPt = cms.string('recTauPt')\n"
+        cfg_modified += "process.makeROCcurveTauIdMVA.discriminator = cms.string('%s')\n" % cutDiscriminators[discriminator]['discriminator']
+        cfg_modified += "process.makeROCcurveTauIdMVA.graphName = cms.string('%s_%s')\n" % (discriminator, "TestTree")
+        cfg_modified += "process.makeROCcurveTauIdMVA.binning.numBins = cms.int32(%i)\n" % cutDiscriminators[discriminator]['numBins']
+        cfg_modified += "process.makeROCcurveTauIdMVA.binning.min = cms.double(%1.2f)\n" % cutDiscriminators[discriminator]['min']
+        cfg_modified += "process.makeROCcurveTauIdMVA.binning.max = cms.double(%1.2f)\n" % cutDiscriminators[discriminator]['max']
+        cfg_modified += "process.makeROCcurveTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
+        cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_cfg.py" % discriminator))
+        print " cfgFileName_modified = '%s'" % cfgFileName_modified
+        cfgFile_modified = open(cfgFileName_modified, "w")
+        cfgFile_modified.write(cfg_modified)
+        cfgFile_modified.close()
+        makeROCcurveTauIdMVA_configFileNames[discriminator]['TestTree'] = cfgFileName_modified
+    
+        logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
+        makeROCcurveTauIdMVA_logFileNames[discriminator]['TestTree'] = logFileName
+else:
+    for mvaDiscriminator in mvaDiscriminators.keys():
+        for cutDiscriminator in cutDiscriminators.keys():
+            
+            print "processing discriminator = %s" % cutDiscriminator
+            
+            makeROCcurveTauIdMVA_configFileNames[cutDiscriminator] = {}
+            makeROCcurveTauIdMVA_outputFileNames[cutDiscriminator] = {}
+            makeROCcurveTauIdMVA_logFileNames[cutDiscriminator]    = {}
+            
+            for tree in [ "TestTree" ]:
+                outputFileName = os.path.join(outputFilePath, "makeROCcurveTauIdMVA_%s_%s.root" % (cutDiscriminator, tree))
+                print " outputFileName = '%s'" % outputFileName
+                makeROCcurveTauIdMVA_outputFileNames[cutDiscriminator][tree] = outputFileName
+                
+                cfgFileName_original = configFile_makeROCcurveTauIdMVA
+                cfgFile_original = open(cfgFileName_original, "r")
+                cfg_original = cfgFile_original.read()
+                cfgFile_original.close()
+                cfg_modified  = cfg_original
+                cfg_modified += "\n"
+                cfg_modified += "process.fwliteInput.fileNames = cms.vstring('%s')\n" % trainTauIdMVA_outputFileNames[mvaDiscriminator]
+                cfg_modified += "\n"
+                cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
+                cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
+                cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('%s')\n" % tree
+                cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('')\n"
+                cfg_modified += "process.makeROCcurveTauIdMVA.classId_signal = cms.int32(0)\n"
+                cfg_modified += "process.makeROCcurveTauIdMVA.classId_background = cms.int32(1)\n"
+                cfg_modified += "process.makeROCcurveTauIdMVA.branchNameClassId = cms.string('classID')\n"
+                if 'recTauPt/F' in mvaDiscriminators[mvaDiscriminator]['spectatorVariables']:
+                    cfg_modified += "process.makeROCcurveTauIdMVA.branchNameLogTauPt = cms.string('')\n"
+                    cfg_modified += "process.makeROCcurveTauIdMVA.branchNameTauPt = cms.string('recTauPt')\n"
+                else:
+                    cfg_modified += "process.makeROCcurveTauIdMVA.branchNameLogTauPt = cms.string('TMath_Log_TMath_Max_1.,recTauPt__')\n"
+                    cfg_modified += "process.makeROCcurveTauIdMVA.branchNameTauPt = cms.string('')\n"
+                cfg_modified += "process.makeROCcurveTauIdMVA.discriminator = cms.string('%s')\n" % cutDiscriminators[cutDiscriminator]['discriminator']
+                cfg_modified += "process.makeROCcurveTauIdMVA.branchNameEvtWeight = cms.string('weight')\n"
+                cfg_modified += "process.makeROCcurveTauIdMVA.graphName = cms.string('%s_%s')\n" % (cutDiscriminator, tree)
+                cfg_modified += "process.makeROCcurveTauIdMVA.binning.numBins = cms.int32(%i)\n" % cutDiscriminators[cutDiscriminator]['numBins']
+                cfg_modified += "process.makeROCcurveTauIdMVA.binning.min = cms.double(%1.2f)\n" % cutDiscriminators[cutDiscriminator]['min']
+                cfg_modified += "process.makeROCcurveTauIdMVA.binning.max = cms.double(%1.2f)\n" % cutDiscriminators[cutDiscriminator]['max']
+                cfg_modified += "process.makeROCcurveTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
+                cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_%s_cfg.py" % (cutDiscriminator, tree)))
+                print " cfgFileName_modified = '%s'" % cfgFileName_modified
+                cfgFile_modified = open(cfgFileName_modified, "w")
+                cfgFile_modified.write(cfg_modified)
+                cfgFile_modified.close()
+                makeROCcurveTauIdMVA_configFileNames[cutDiscriminator][tree] = cfgFileName_modified
+                
+                logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
+                makeROCcurveTauIdMVA_logFileNames[cutDiscriminator][tree] = logFileName
 
 hadd_inputFileNames = []
 for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
