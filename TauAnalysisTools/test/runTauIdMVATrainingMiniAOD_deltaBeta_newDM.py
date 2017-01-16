@@ -252,7 +252,7 @@ backgroundSamples = [
     "QCDEmEnrichedPt20to30",
     "QCDEmEnrichedPt30to50",
     "QCDEmEnrichedPt50to80",
-    "QCDEmEnrichedPt80to120"
+    "QCDEmEnrichedPt80to120",
     "QCDEmEnrichedPt170to300",
     "QCDEmEnrichedPtGt300"
 ]
