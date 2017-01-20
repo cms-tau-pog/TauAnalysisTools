@@ -1,0 +1,117 @@
+1) First cerate GBRForest objects from TMVA xml files using
+TauAnalysisTools/test/writeGBRForests_tauIdMVA_cfg.py
+
+2) create cuts for MVA working points using:
+TauAnalysisTools/macros/plotTauIdMVAEfficiency_and_FakeRate.C
+
+3) Update this python cfg file
+ TauAnalysisTools/python/writeTauIdDiscrMVA_cfi.py
+
+(which is used to write the GBRForest objects and efficiency working points (TGraphs) to sqlite file.  )
+
+The "outputRecord" should contain the name similar to what is used here:
+ 
+https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_X/RecoTauTag/Configuration/python/loadRecoTauTagMVAsFromPrepDB_cfi.py
+(And that you plan to use in defining the discriminators). 
+
+4) then  use this config 
+TauAnalysisTools/test/writeMVAs_cfg.py
+to make the sqlite file:
+cmsRun writeMVAs_cfg.py
+
+5) Then check each of the payloads individually. There is a script to help you out called "testAllIOVs.py".
+python testAllIOVs.py
+
+Example output:
+...
+        ===============================================================
+        Tag: RecoTauTag_againstMuonMVAv1_WPeff99_0
+        ===============================================================
+        OID: 0001-00000062
+        Scope: Unknown
+        Description:  
+        TimeType: runnumber
+        Since                 Till                  Payload OID    Payload Class       
+        --------------------  --------------------  -------------  --------------------
+                           1  18446744073709551615  0002-00000051  PhysicsTGraphPayload
+
+        Total # of payload objects: 1
+        ===============================================================
+        Tag: RecoTauTag_againstMuonMVAv1_WPeff99_5
+        ===============================================================
+        OID: 0001-00000061
+        Scope: Unknown
+        Description:  
+        TimeType: runnumber
+        Since                 Till                  Payload OID    Payload Class       
+        --------------------  --------------------  -------------  --------------------
+                           1  18446744073709551615  0002-00000050  PhysicsTGraphPayload
+
+        Total # of payload objects: 1
+        =================================================================
+        Tag: RecoTauTag_againstMuonMVAv1_mvaOutput_normalization
+        =================================================================
+        OID: 0001-00000064
+        Scope: Unknown
+        Description:  
+        TimeType: runnumber
+        Since                 Till                  Payload OID    Payload Class         
+        --------------------  --------------------  -------------  ----------------------
+                           1  18446744073709551615  0003-00000000  PhysicsTFormulaPayload
+
+        Total # of payload objects: 1
+        ===========================================================
+        Tag: RecoTauTag_antiElectronMVA5v1_gbr_NoEleMatch_wGwGSF_BL
+        ===========================================================
+        OID: 0001-00000008
+        Scope: Unknown
+        Description:  
+        TimeType: runnumber
+        Since                 Till                  Payload OID    Payload Class
+        --------------------  --------------------  -------------  -------------
+                           1  18446744073709551615  0000-00000008      GBRForest
+
+        Total # of payload objects: 1
+
+.......
+
+
+6) Upload the payloads to the TEST dropbox:
+python uploadConstants.py --version=2015Oct21 --sqlite_file=RecoTauTag_MVAs_2015Oct21.db --prep
+
+
+7) Now the files can be checked here:
+https://cms-conddb-prod.cern.ch/logs/dropBox/
+
+8) Check the uploaded test payloads. 
+conddb listTags | grep RecoTauTag
+
+I think it is possible to run also TauID by accessing it from preparation database like this
+connect = cms.string("frontier://FrontierPrep/CMS_COND_PHYSICSTOOLS") # prep database
+instead of
+connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS') # prod database
+(Have never tested it though)
+
+9) Now run the "uploadConstants.py" script again. Ommit the "--prep" option this time
+
+python uploadConstants.py --version=2015Oct21 --sqlite_file=RecoTauTag_MVAs_2015Oct21.db
+
+10)Check the uploaded test payloads.
+conddb listTags | grep RecoTauTag
+
+(Always use 6 hours delay before using this command)
+It can also be checked in 
+https://cms-conddb-prod.cern.ch/logs/dropBox/
+
+A few things in the above instructions may not be working:
+1) https://cms-conddb-prod.cern.ch/logs/conditionUploader/ is probably the replacement of https://cms-conddb-prod.cern.ch/logs/dropBox/
+But none of them are opening at the moment (AlCa DB experts should be contacted).
+2) Not sure whether the preparation destination database "oracle://cms_orcoff_prep/CMS_COND_PHYSICSTOOLS"
+and production destination database "oracle://cms_orcon_prod/CMS_COND_31X_PHYSICSTOOLS"  have changed.
+If it does not work, please contact AlCa DB experts. 
+
+-------------------
+Twiki Page with AlcaDB instructions for uploading payloads:
+https://twiki.cern.ch/twiki/bin/view/CMS/ConditionUploader
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/CondDBToolMap
+

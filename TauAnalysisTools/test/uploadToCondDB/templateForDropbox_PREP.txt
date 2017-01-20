@@ -1,0 +1,12 @@
+{
+    "destinationDatabase": "oracle://cms_orcoff_prep/CMS_COND_PHYSICSTOOLS",
+    "destinationTags": {
+        "TAGNAME": {
+            "dependencies": {},
+            "synchronizeTo": "offline"
+        }
+    },
+    "inputTag":	"PRODNAME",
+    "since": null,
+    "userText": ""
+}

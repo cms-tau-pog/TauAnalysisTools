@@ -1,4 +1,3 @@
-
 #include <TFile.h>
 #include <TChain.h>
 #include <TTree.h>
@@ -163,7 +162,7 @@ TGraphAsymmErrors* getEfficiency(const TH1* histogram_numerator, const TH1* hist
     return 0;
   }
   
-  TAxis* xAxis = histogram_numerator->GetXaxis();
+  const TAxis* xAxis = histogram_numerator->GetXaxis();
 
   Int_t nBins = xAxis->GetNbins();
   TArrayF x(nBins);
@@ -474,7 +473,8 @@ TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, 
     int binLowIndex = const_cast<TH1*>(histogramPt)->FindBin(ptMin);
     int binUpIndex  = const_cast<TH1*>(histogramPt)->FindBin(ptMax);
     //std::cout << "ptMin = " << ptMin << ", ptMax = " << ptMax << ": binLowIndex = " << binLowIndex << ", binUpIndex = " << binUpIndex << std::endl;
-    histogramPt->GetXaxis()->SetRange(binLowIndex, binUpIndex);
+    TAxis *axis = const_cast<TAxis *>(histogramPt->GetXaxis());
+    axis->SetRange(binLowIndex, binUpIndex);
 
     // CV: skip bins of low statistics
     if ( histogramPt->GetEntries() < 100 ) {
@@ -524,7 +524,8 @@ TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, 
   }
 
   // reset x-axis range selection 
-  histogramPt->GetXaxis()->SetRange(1., 0.);
+  TAxis *axis = const_cast<TAxis *>(histogramPt->GetXaxis());
+    axis->SetRange(1., 0.);
 
   return graph;
 }
@@ -852,10 +853,18 @@ void plotTauIdMVAEfficiency_and_FakeRate()
   std::vector<mvaEntryType*> mvaEntries;
   //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_6/trainTauIdMVA_mvaIsolation3HitsDeltaR04opt1b.root",     "opt1b",   0.80, kLogTauPt, kTauAbsEta));
   //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_6/trainTauIdMVA_mvaIsolation3HitsDeltaR04opt1c.root",     "opt1c",   0.80, kTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2a.root",   "oldDMwoLT", 0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLT.root", "oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2b.root",   "newDMwoLT", 0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2bLT.root", "newDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2a.root",   "oldDMwoLT", 0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLT.root", "oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2b.root",   "newDMwoLT", 0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2bLT.root", "newDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4aLTDB.root", "isoDBoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4bLTDB.root", "isoDBnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4aLTPuWeight.root", "isoPWoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4bLTPuWeight.root", "isoPWnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTDB.root", "isoDBR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));   
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTPuWeight.root", "isoPWR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+
 
   for ( std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();
 	mvaEntry != mvaEntries.end(); ++mvaEntry ) {
@@ -1008,7 +1017,7 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     (*mvaEntry)->plots_signal_->histogramMVAoutput_vs_Pt_->Write();
     delete outputFile_MVAoutput_vs_Pt;
 
-    std::string outputFileName_effGraphs = Form("wpDiscriminationByIsolationMVA3_%s.root", (*mvaEntry)->mvaName_.data());
+    std::string outputFileName_effGraphs = Form("wpDiscriminationByIsolationMVA1Run2_%s.root", (*mvaEntry)->mvaName_.data());
     graphEfficiencyEq90percent->SetName(Form("%sEff90", (*mvaEntry)->mvaName_.data()));
     graphEfficiencyEq80percent->SetName(Form("%sEff80", (*mvaEntry)->mvaName_.data()));
     graphEfficiencyEq70percent->SetName(Form("%sEff70", (*mvaEntry)->mvaName_.data()));
@@ -1030,6 +1039,12 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     //(*mvaEntry)->plots_background_->histogramPt_denominator_->Write();
     //(*mvaEntry)->plots_background_->histogramEta_numerator_->Write();
     //(*mvaEntry)->plots_background_->histogramEta_denominator_->Write();
+    //(*mvaEntry)->mvaOutput_normalization_->Write();
+    TString formula_old = (*mvaEntry)->mvaOutput_normalization_->GetTitle();
+    TString formula_new = TString(formula_old);
+    formula_new = formula_new.ReplaceAll("[0]", Form("%f", (*mvaEntry)->mvaOutput_normalization_->GetParameter(0)));
+    formula_new = formula_new.ReplaceAll("[1]", Form("%f", (*mvaEntry)->mvaOutput_normalization_->GetParameter(1)));
+    (*mvaEntry)->mvaOutput_normalization_->SetTitle(formula_new);
     (*mvaEntry)->mvaOutput_normalization_->Write();
     delete outputFile_effGraphs;
 
