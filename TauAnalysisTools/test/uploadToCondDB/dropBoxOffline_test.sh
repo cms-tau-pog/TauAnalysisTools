@@ -46,7 +46,8 @@ cp $DBFILE ${PWD}/${TAGNAME}.db
 #scp -p ${PWD}/${TAGNAME}@${UUID}.txt webcondvm.cern.ch:/tmp
 #ssh webcondvm.cern.ch "mv /tmp/${TAGNAME}@${UUID}.db /DropBox_test"
 #ssh webcondvm.cern.ch "mv /tmp/${TAGNAME}@${UUID}.txt /DropBox_test"
-./upload.py ${TAGNAME}.txt
+#./upload.py ${TAGNAME}.txt
+./uploadConditions.py ${TAGNAME}.txt
 
 exit 0
 
