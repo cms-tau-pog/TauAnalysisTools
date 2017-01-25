@@ -1,5 +1,5 @@
 {
-    "destinationDatabase": "oracle://cms_orcoff_prep/CMS_COND_PHYSICSTOOLS",
+    "destinationDatabase": "oracle://cms_orcoff_prep/CMS_CONDITIONS",
     "destinationTags": {
         "TAGNAME": {
             "dependencies": {},
