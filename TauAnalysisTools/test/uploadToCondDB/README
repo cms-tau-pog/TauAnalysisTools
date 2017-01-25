@@ -81,13 +81,17 @@ python uploadConstants.py --version=2015Oct21 --sqlite_file=RecoTauTag_MVAs_2015
 
 
 7) Now the files can be checked here:
-https://cms-conddb-prod.cern.ch/logs/dropBox/
+ https://cms-conddb.cern.ch/cmsDbBrowser/search/Prep/RecoTauTag
 
 8) Check the uploaded test payloads. 
-conddb listTags | grep RecoTauTag
+conddb --db dev search RecoTauTag
+
+or:
+
+conddb --db dev listTags | grep RecoTauTag
 
 I think it is possible to run also TauID by accessing it from preparation database like this
-connect = cms.string("frontier://FrontierPrep/CMS_COND_PHYSICSTOOLS") # prep database
+connect = cms.string("frontier://FrontierPrep/CMS_CONDITIONS") # prep database
 instead of
 connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS') # prod database
 (Have never tested it though)
@@ -101,17 +105,13 @@ conddb listTags | grep RecoTauTag
 
 (Always use 6 hours delay before using this command)
 It can also be checked in 
-https://cms-conddb-prod.cern.ch/logs/dropBox/
+https://cms-conddb.cern.ch/cmsDbBrowser/search/Prod/RecoTauTag
 
-A few things in the above instructions may not be working:
-1) https://cms-conddb-prod.cern.ch/logs/conditionUploader/ is probably the replacement of https://cms-conddb-prod.cern.ch/logs/dropBox/
-But none of them are opening at the moment (AlCa DB experts should be contacted).
-2) Not sure whether the preparation destination database "oracle://cms_orcoff_prep/CMS_COND_PHYSICSTOOLS"
-and production destination database "oracle://cms_orcon_prod/CMS_COND_31X_PHYSICSTOOLS"  have changed.
-If it does not work, please contact AlCa DB experts. 
 
 -------------------
 Twiki Page with AlcaDB instructions for uploading payloads:
-https://twiki.cern.ch/twiki/bin/view/CMS/ConditionUploader
-https://twiki.cern.ch/twiki/bin/viewauth/CMS/CondDBToolMap
-
+https://cms-conddb.cern.ch/cmsDbBrowser/logs/condition_uploader_logs/Prod/ (or ..../Prep depending on what you want to browse)
+- Conditions uploader: https://twiki.cern.ch/twiki/bin/view/CMS/ConditionUploader
+- Browser service: https://twiki.cern.ch/twiki/bin/view/CMS/CmsDbBrowser
+- Tutorial for AlCa/DB contacts: https://indico.cern.ch/event/507993/
+- conddb commands https://twiki.cern.ch/twiki/bin/viewauth/CMS/CondDBToolMap
