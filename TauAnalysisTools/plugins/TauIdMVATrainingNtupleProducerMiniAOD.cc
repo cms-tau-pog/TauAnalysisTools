@@ -257,6 +257,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	addBranchI("recTauNphotonSignal");
 	addBranchI("recTauNphotonIso");
 	addBranchI("recTauNphotonTotal");
+	addBranchF("recTauGJangleDiff");
 	addBranchF("numPileUp");
 	addBranch_EnPxPyPz("genTau");
 	addBranchF("genTauDeltaR");
@@ -461,10 +462,22 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
 		setValueF("recDecayDistSign2D", recDecayDistSign2D_);*/
 		setValueF("recDecayDist2D", -999.);
 		setValueF("recDecayDistSign2D", -999.);
+		// calculate difference between maximally allowed Gottfried-Jackson angle (angle between tau and a1 momentum)
+		// and measured Gottfried-Jackson angle from flightlength vector and tau momentum
+		// thetaGJmax = arcsin( ( m_tau^2 - m_a1^2 ) / ( 2 * m_tau * mag(p_a1) ) )
+		// thetaGJmeasured is simply the angle between the flightLength vector and the tau momentum
+		double mTau = 1.77682;
+		double mAOne = recTau->p4().M();
+		double flightLengthMag = recTau->flightLength().Mag2();
+		double pAOneMag = recTau->p();
+		double thetaGJmax = TMath::ASin( (TMath::Power(mTau,2) - TMath::Power(mAOne,2) ) / ( 2 * mTau * pAOneMag ) );
+		double thetaGJmeasured = TMath::ACos( ( recTau->p4().px() * recTau->flightLength().x() + recTau->p4().py() * recTau->flightLength().y() + recTau->p4().pz() * recTau->flightLength().z() ) / ( pAOneMag * TMath::Sqrt(flightLengthMag) ) );
+		setValueF("recTauGJangleDiff", thetaGJmeasured - thetaGJmax);
 	}
 	else{
 		setValueF("recDecayDist2D", -999.);
 		setValueF("recDecayDistSign2D", -999.);
+		setValueF("recTauGJangleDiff", -999.);
 	}
 
 	edm::ESHandle<TransientTrackBuilder> transTrackBuilder;
