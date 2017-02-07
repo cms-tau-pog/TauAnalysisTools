@@ -244,13 +244,6 @@ for massPoint in smHiggsMassPoints:
     #    'total_files'                        : -1,
     #    'type'                               : 'SignalMC'
     #}
-    tthSampleName = "tthHiggs%1.0ftoTauTau" % massPoint
-    samples[tthSampleName] = {
-        'datasetpath'                        : '/ttHJetToTT_M%1.0f_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
-        'files_per_job'                      : 1,
-        'total_files'                        : -1,
-        'type'                               : 'SignalMC'
-    }
     wPlusHSampleName = "WplusHHiggs%1.0ftoTauTau" % massPoint
     samples[wPlusHSampleName] = {
         'datasetpath'                        : '/WplusHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
@@ -272,15 +265,36 @@ for massPoint in smHiggsMassPoints:
         'total_files'                        : -1,
         'type'                               : 'SignalMC'
     }
-smHiggsMassPoints5 = [ 125, 130 ]
-for massPoint in smHiggsMassPoints5:
-	ggSampleName = "ggHiggs%1.0ftoTauTau" % massPoint
-	samples[ggSampleName] = {
-	    'datasetpath'                        : '/GluGluHToTauTau_M%1.0f_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
-	    'files_per_job'                      : 1,
-	    'total_files'                        : -1,
-	    'type'                               : 'SignalMC'
+smHiggsMassPoints2 = [ 120, 130 ]
+for massPoint in smHiggsMassPoints2:
+	tthSampleName = "tthHiggs%1.0ftoTauTau" % massPoint
+	samples[tthSampleName] = {
+	    'datasetpath'                            : '/ttHJetToTT_M%1.0f_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
+	    'files_per_job'                          : 1,
+	    'total_files'                            : -1,
+	    'type'                                   : 'SignalMC'
 	}
+tthSampleName = "tthHiggs125toTauTau"
+samples[tthSampleName] = {
+    'datasetpath'                            : '/ttHJetToTT_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext4-v1/MINIAODSIM',
+    'files_per_job'                          : 1,
+    'total_files'                            : -1,
+    'type'                                   : 'SignalMC'
+}
+ggSampleName = "ggHiggs125toTauTau"
+samples[ggSampleName] = {
+    'datasetpath'                        : '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+    'files_per_job'                      : 1,
+    'total_files'                        : -1,
+    'type'                               : 'SignalMC'
+}
+ggSampleName = "ggHiggs130toTauTau"
+samples[ggSampleName] = {
+    'datasetpath'                        : '/GluGluHToTauTau_M130_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+    'files_per_job'                      : 1,
+    'total_files'                        : -1,
+    'type'                               : 'SignalMC'
+}
 vbfSampleName = "vbfHiggs125toTauTau"
 samples[vbfSampleName] = {
     'datasetpath'                        : '/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
