@@ -63,8 +63,7 @@ mvaDiscriminators = {
             'leadPFChargedHadrCandPt/F',
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
-            'genTauPt/F',
-            'byIsolationMVArun2v1DBdR03newDMwLTraw'
+            'genTauPt/F'
         ],
         'otherVariables' : [
         ],
@@ -73,23 +72,10 @@ mvaDiscriminators = {
     }
 }
 
-cutDiscriminators = {
-    'rawMVAnewDMdR03wLT' : {
-        'preselection'        : preselection_newDMs,
-        'discriminator'       : 'byIsolationMVArun2v1DBdR03newDMwLTraw',
-        'numBins'             : 30000,
-        'min'                 : -1.5,
-        'max'                 : +1.5,
-        'legendEntry'         : "2015 MVA",
-        'color'               : 2
-    }
-}
-
 plots = {
 'mvaIsolation_optDeltaR03BDeltaBeta' : {
         'graphs' : [
-            'mvaIsolation3HitsDeltaR03opt1bLTDB',
-            'rawMVAnewDMdR03wLT'
+            'mvaIsolation3HitsDeltaR03opt1bLTDB'
         ]
     }
 }
