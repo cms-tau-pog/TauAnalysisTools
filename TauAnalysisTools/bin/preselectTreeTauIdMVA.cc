@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
   bool checkBranchesForNaNs = cfgPreselectTreeTauIdMVA.getParameter<bool>("checkBranchesForNaNs");
 
   int applyEventPruning = cfgPreselectTreeTauIdMVA.getParameter<int>("applyEventPruning");
+  bool applyPtDependentPruning = cfgPreselectTreeTauIdMVA.getParameter<bool>("applyPtDependentPruning");
 
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
@@ -141,7 +142,7 @@ int main(int argc, char* argv[])
     preselection, branchesToKeep_expressions, 
     applyEventPruning, branchNamePt, branchNameEta, branchNameNumMatches,
     -1, false, false, 0, 0, 0,
-    maxEvents, checkBranchesForNaNs, reportEvery);
+    maxEvents, checkBranchesForNaNs, reportEvery, applyPtDependentPruning);
   std::cout << "--> " << outputTree->GetEntries() << " Entries pass preselection." << std::endl;
 
   std::cout << "output Tree:" << std::endl;

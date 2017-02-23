@@ -98,6 +98,7 @@ process.preselectTreeTauIdMVA = cms.PSet(
     branchNameEvtWeight = cms.string('evtWeight'),
 
     applyEventPruning = cms.int32(1),
+    applyPtDependentPruning = cms.bool(False),
 
     keepAllBranches = cms.bool(False),
     checkBranchesForNaNs = cms.bool(True),

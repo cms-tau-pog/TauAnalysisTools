@@ -30,8 +30,10 @@ mvaDiscriminators = {
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
         'reweight'            : 'min:KILL',
-        'applyEventPruningSignal'   : 0, # no pruning
-        'applyEventPruningBackground' : 0, # no pruning
+        'applyEventPruningSignal'   : 0, # no random pruning
+        'applyEventPruningBackground' : 0, # no random pruning
+        'applyPtDependentPruningSignal' : False, # no pt-dependent pruning
+        'applyPtDependentPruningBackground' : False, # no pt-dependent pruning
         'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
         'inputVariables'      : [
             'TMath::Log(TMath::Max(1., recTauPt))/F',
@@ -197,12 +199,15 @@ for discriminator in mvaDiscriminators.keys():
         if sample == 'signal':
             cfg_modified += "process.preselectTreeTauIdMVA.samples = cms.vstring(%s)\n" % signalSamples
             eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruningSignal']
+            ptDependentPruning = mvaDiscriminators[discriminator]['applyPtDependentPruningSignal']
         else:
             cfg_modified += "process.preselectTreeTauIdMVA.samples = cms.vstring(%s)\n" % backgroundSamples
             eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruningBackground']
+            ptDependentPruning = mvaDiscriminators[discriminator]['applyPtDependentPruningBackground']
         cfg_modified += "process.preselectTreeTauIdMVA.inputTreeName = cms.string('%s')\n" % "tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD"
         cfg_modified += "process.preselectTreeTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
         cfg_modified += "process.preselectTreeTauIdMVA.applyEventPruning = cms.int32(%i)\n" % eventPruningLevel
+        cfg_modified += "process.preselectTreeTauIdMVA.applyPtDependentPruning = cms.int32(%s)\n" % ptDependentPruning
         cfg_modified += "process.preselectTreeTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.otherVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['otherVariables']
