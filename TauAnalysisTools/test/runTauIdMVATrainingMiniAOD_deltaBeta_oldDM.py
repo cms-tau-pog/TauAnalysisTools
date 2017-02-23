@@ -371,7 +371,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "process.preselectTreeTauIdMVA.inputTreeName = cms.string('%s')\n" % "tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD"
         cfg_modified += "process.preselectTreeTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
         cfg_modified += "process.preselectTreeTauIdMVA.applyEventPruning = cms.int32(%i)\n" % eventPruningLevel
-        cfg_modified += "process.preselectTreeTauIdMVA.applyPtDependentPruning = cms.int32(%s)\n" % ptDependentPruning
+        cfg_modified += "process.preselectTreeTauIdMVA.applyPtDependentPruning = cms.bool(%s)\n" % ptDependentPruning
         cfg_modified += "process.preselectTreeTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.otherVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['otherVariables']
