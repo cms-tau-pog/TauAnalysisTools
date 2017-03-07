@@ -66,7 +66,8 @@ mvaDiscriminators = {
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
             'genTauPt/F',
-            'byIsolationMVArun2v1DBnewDMwLTraw'#,
+            'byIsolationMVArun2v1DBnewDMwLTraw',
+            'byIsolationMVArun2v1DBnewDMwLTraw2016'#,
             #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
             #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
             #'byTightCombinedIsolationDeltaBetaCorr3Hits'
