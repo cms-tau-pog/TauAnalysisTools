@@ -109,7 +109,7 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
 		     const std::string& preselection, const std::vector<std::string>& branchesToKeep_expressions,
 		     int applyEventPruning, const std::string& branchNamePt, const std::string& branchNameEta, const std::string& branchNameNumMatches, 
 		     int reweight_or_KILL, bool applyPtReweighting, bool applyEtaReweighting, TH1* histogramLogPt, TH1* histogramAbsEta, TH2* histogramLogPtVsAbsEta,
-		     int maxEvents, bool checkForNaNs, unsigned reportEvery, bool applyPtDependentPruning=true)
+		     int maxEvents, bool checkForNaNs, unsigned reportEvery, bool applyPtDependentPruning=false)
 {
   std::cout << "<preselectTree>:" << std::endl;
 
