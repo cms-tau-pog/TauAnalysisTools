@@ -257,6 +257,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	addBranchI("recTauNphotonSignal");
 	addBranchI("recTauNphotonIso");
 	addBranchI("recTauNphotonTotal");
+	addBranchF("recTauGJangleMeasured");
 	addBranchF("recTauGJangleDiff");
 	addBranchF("numPileUp");
 	addBranch_EnPxPyPz("genTau");
@@ -474,15 +475,18 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
 			double pAOneMag = recTau->p();
 			double thetaGJmax = TMath::ASin( (TMath::Power(mTau,2) - TMath::Power(mAOne,2) ) / ( 2 * mTau * pAOneMag ) );
 			double thetaGJmeasured = TMath::ACos( ( recTau->p4().px() * recTau->flightLength().x() + recTau->p4().py() * recTau->flightLength().y() + recTau->p4().pz() * recTau->flightLength().z() ) / ( pAOneMag * TMath::Sqrt(flightLengthMag) ) );
+			setValueF("recTauGJangleMeasured", thetaGJmeasured);
 			setValueF("recTauGJangleDiff", thetaGJmeasured - thetaGJmax);
 		}
 		else{
+			setValueF("recTauGJangleMeasured", -999.);
 			setValueF("recTauGJangleDiff", -999.);
 		}
 	}
 	else{
 		setValueF("recDecayDist2D", -999.);
 		setValueF("recDecayDistSign2D", -999.);
+		setValueF("recTauGJangleMeasured", -999.);
 		setValueF("recTauGJangleDiff", -999.);
 	}
 
