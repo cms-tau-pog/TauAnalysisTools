@@ -92,13 +92,13 @@ mvaDiscriminators = {
             'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
             'TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum))/F',
             'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone))/F',
             'recTauDecayMode/I',
             'TMath::Min(30., recTauNphoton)/F',
             'TMath::Min(0.5, recTauPtWeightedDetaStrip)/F',
             'TMath::Min(0.5, recTauPtWeightedDphiStrip)/F',
             'TMath::Min(0.5, recTauPtWeightedDrSignal)/F',
             'TMath::Min(0.5, recTauPtWeightedDrIsolation)/F',
-            'TMath::Min(100., recTauLeadingTrackChi2)/F',
             'TMath::Min(1., recTauEratio)/F',
             'TMath::Sign(+1., recImpactParam)/F',
             'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
@@ -108,7 +108,8 @@ mvaDiscriminators = {
             'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
             'hasRecDecayVertex/I',
             'TMath::Sqrt(recDecayDistMag)/F',
-            'TMath::Min(10., recDecayDistSign)/F'
+            'TMath::Min(10., recDecayDistSign)/F',
+            'TMath::Max(-1.,recTauGJangleDiff)/F'
         ],
         'spectatorVariables'  : [
             ##'recTauPt/F',
@@ -136,7 +137,7 @@ cutDiscriminators = {
         'min'                 : -1.5,
         'max'                 : +1.5,
         'legendEntry'         : "2015 MVA",
-        'color'               : 2
+        'color'               : 3
     }#,
 #    'hpsCombinedIsolation3HitsLooseOldDMs' : {
 #        'preselection'        : preselection_oldDMs,
