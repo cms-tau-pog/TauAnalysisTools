@@ -70,14 +70,63 @@ mvaDiscriminators = {
         'otherVariables' : [
         ],
         'legendEntry'         : "MVA opt1bLTDBdR03",
-        'color'               : 1
+        'color'               : 2
+    },
+    'mvaIsolation3HitsDeltaR03opt2bLTDB' : {
+        'preselection'		: preselection_newDMs,
+        'applyPtReweighting'  : True,
+        'applyEtaReweighting' : True,
+        'reweight'			: 'min:KILL',
+        'applyEventPruningSignal'   : 0, # no random pruning
+        'applyEventPruningBackground' : 0, # no random pruning
+        'applyPtDependentPruningSignal' : False, # no pt-dependent pruning
+        'applyPtDependentPruningBackground' : False, # no pt-dependent pruning
+        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+        'inputVariables'	  : [
+            'TMath::Log(TMath::Max(1., recTauPt))/F',
+            'TMath::Abs(recTauEta)/F',
+            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSumdR03))/F',
+            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtSumdR03))/F',
+            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalConedR03))/F',
+            'recTauDecayMode/I',
+            'TMath::Min(30., recTauNphoton)/F',
+            'TMath::Min(0.5, recTauPtWeightedDetaStrip)/F',
+            'TMath::Min(0.5, recTauPtWeightedDphiStrip)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrSignal)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrIsolation)/F',
+            'TMath::Min(1., recTauEratio)/F',
+            'TMath::Sign(+1., recImpactParam)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
+            'TMath::Sign(+1., recImpactParam3D)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
+            'hasRecDecayVertex/I',
+            'TMath::Sqrt(recDecayDistMag)/F',
+            'TMath::Min(10., recDecayDistSign)/F',
+            'TMath::Max(-1.,recTauGJangleDiff)/F'
+        ],
+        'spectatorVariables'  : [
+            ##'recTauPt/F',
+            'leadPFChargedHadrCandPt/F',
+            'numOfflinePrimaryVertices/I',
+            'genVisTauPt/F',
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBdR03newDMwLTraw'
+        ],
+        'otherVariables' : [
+        ],
+        'legendEntry'         : "MVA opt2bLTDBdR03",
+        'color'               : 2
     }
 }
 
 plots = {
 'mvaIsolation_optDeltaR03BDeltaBeta' : {
         'graphs' : [
-            'mvaIsolation3HitsDeltaR03opt1bLTDB'
+            'mvaIsolation3HitsDeltaR03opt1bLTDB',
+            'mvaIsolation3HitsDeltaR03opt2bLTDB'
         ]
     }
 }
