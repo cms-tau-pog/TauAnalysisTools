@@ -48,7 +48,6 @@ mvaDiscriminators = {
             'TMath::Min(0.5, recTauPtWeightedDphiStrip)/F',
             'TMath::Min(0.5, recTauPtWeightedDrSignal)/F',
             'TMath::Min(0.5, recTauPtWeightedDrIsolation)/F',
-            'TMath::Min(100., recTauLeadingTrackChi2)/F',
             'TMath::Min(1., recTauEratio)/F',
             'TMath::Sign(+1., recImpactParam)/F',
             'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
@@ -58,7 +57,8 @@ mvaDiscriminators = {
             'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
             'hasRecDecayVertex/I',
             'TMath::Sqrt(recDecayDistMag)/F',
-            'TMath::Min(10., recDecayDistSign)/F'
+            'TMath::Min(10., recDecayDistSign)/F',
+            'TMath::Max(-1.,recTauGJangleDiff)/F'
         ],
         'spectatorVariables'  : [
             ##'recTauPt/F',
