@@ -29,6 +29,7 @@
 #include "TauAnalysisTools/TauAnalysisTools/bin/tauIdMVATrainingAuxFunctions.h"
 
 #include "TMVA/Factory.h"
+#include "TMVA/DataLoader.h"
 #include "TMVA/MethodBase.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
@@ -172,8 +173,10 @@ int main(int argc, char* argv[])
   TMVA::Tools::Instance();
   TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
   
-  factory->AddSignalTree(tree_signal);
-  factory->AddBackgroundTree(tree_background);
+  TMVA::DataLoader* dataloader = new TMVA::DataLoader("dataset");
+
+  dataloader->AddSignalTree(tree_signal);
+  dataloader->AddBackgroundTree(tree_background);
 
   for ( vstring::const_iterator inputVariable = inputVariables.begin();
 	inputVariable != inputVariables.end(); ++inputVariable ) {
@@ -181,7 +184,7 @@ int main(int argc, char* argv[])
     if ( idx == (inputVariable->length() - 2) ) {
       std::string inputVariableName = std::string(*inputVariable, 0, idx);      
       char inputVariableType = (*inputVariable)[idx + 1];
-      factory->AddVariable(inputVariableName.data(), inputVariableType);
+      dataloader->AddVariable(inputVariableName.data(), inputVariableType);
     } else {
       throw cms::Exception("trainTauIdMVA") 
 	<< "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
@@ -199,29 +202,29 @@ int main(int argc, char* argv[])
       if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
     }
     if ( !isInputVariable ) {
-      factory->AddSpectator(spectatorVariableName.data());
+      dataloader->AddSpectator(spectatorVariableName.data());
     }
   }
   if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight && 
        (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) ) {
     std::string signalWeightExpression = "ptVsEtaReweight";
     if ( branchNameEvtWeight != "" ) signalWeightExpression.append("*").append(branchNameEvtWeight);
-    factory->SetSignalWeightExpression(signalWeightExpression.data());
+    dataloader->SetSignalWeightExpression(signalWeightExpression.data());
   } else {
-    if ( branchNameEvtWeight != "" ) factory->SetSignalWeightExpression(branchNameEvtWeight.data());
+    if ( branchNameEvtWeight != "" ) dataloader->SetSignalWeightExpression(branchNameEvtWeight.data());
   }
   if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight && 
        (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) ) {
     std::string backgroundWeightExpression = "ptVsEtaReweight";
     if ( branchNameEvtWeight != "" ) backgroundWeightExpression.append("*").append(branchNameEvtWeight);
-    factory->SetBackgroundWeightExpression(backgroundWeightExpression.data());
+    dataloader->SetBackgroundWeightExpression(backgroundWeightExpression.data());
   } else {
-    if ( branchNameEvtWeight != "" ) factory->SetBackgroundWeightExpression(branchNameEvtWeight.data());
+    if ( branchNameEvtWeight != "" ) dataloader->SetBackgroundWeightExpression(branchNameEvtWeight.data());
   }
 
   TCut cut = "";
-  factory->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
-  factory->BookMethod(mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
+  dataloader->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
+  factory->BookMethod(dataloader, mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
 
   std::cout << "Info: calling TMVA::Factory::TrainAllMethods" << std::endl;
   factory->TrainAllMethods();
