@@ -858,12 +858,15 @@ void plotTauIdMVAEfficiency_and_FakeRate()
   //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2b.root",   "newDMwoLT", 0.80, kLogTauPt, kTauAbsEta));
   //mvaEntries.push_back(new mvaEntryType("/data1/veelken/tmp/tauIdMVATraining/tauId_v1_14_2/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2bLT.root", "newDMwLT",  0.80, kLogTauPt, kTauAbsEta));
   
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4aLTDB.root", "isoDBoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4bLTDB.root", "isoDBnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4aLTPuWeight.root", "isoPWoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4bLTPuWeight.root", "isoPWnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTDB.root", "isoDBR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));   
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTPuWeight.root", "isoPWR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4aLTDB.root", "isoDBoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4bLTDB.root", "isoDBnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4aLTPuWeight.root", "isoPWoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt4bLTPuWeight.root", "isoPWnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTDB.root", "isoDBR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTPuWeight.root", "isoPWR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/tauId_v3_0/trainfilesfinal_v1_oldDMs/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt1aLTDB.root", "isoDBoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/tauId_v3_0/trainfilesfinal_newDMs_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt1bLTDB.root", "isoDBnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
 
 
   for ( std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();

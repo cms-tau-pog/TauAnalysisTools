@@ -9,7 +9,7 @@ process.fwliteInput = cms.PSet(
     
     maxEvents = cms.int32(-1),
     
-    outputEvery = cms.uint32(1000)
+    outputEvery = cms.uint32(100000)
 )
 
 #----------------------------------------------------------------------------------------------------

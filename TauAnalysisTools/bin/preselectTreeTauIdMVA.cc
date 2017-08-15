@@ -73,12 +73,15 @@ int main(int argc, char* argv[])
 
   vstring spectatorVariables = cfgPreselectTreeTauIdMVA.getParameter<vstring>("spectatorVariables");
 
+  vstring otherVariables = cfgPreselectTreeTauIdMVA.getParameter<vstring>("otherVariables");
+
   std::string branchNameEvtWeight = cfgPreselectTreeTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
 
   bool keepAllBranches = cfgPreselectTreeTauIdMVA.getParameter<bool>("keepAllBranches");
   bool checkBranchesForNaNs = cfgPreselectTreeTauIdMVA.getParameter<bool>("checkBranchesForNaNs");
 
   int applyEventPruning = cfgPreselectTreeTauIdMVA.getParameter<int>("applyEventPruning");
+  bool applyPtDependentPruning = cfgPreselectTreeTauIdMVA.getParameter<bool>("applyPtDependentPruning");
 
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
@@ -118,6 +121,7 @@ int main(int argc, char* argv[])
   branchesToKeep_expressions.push_back(branchNameEta);
   if ( branchNameNumMatches != "" ) branchesToKeep_expressions.push_back(branchNameNumMatches);
   branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), spectatorVariables.begin(), spectatorVariables.end());
+  branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), otherVariables.begin(), otherVariables.end());
 
   if ( keepAllBranches ) {
     TObjArray* branches = inputTree->GetListOfBranches();
@@ -138,7 +142,7 @@ int main(int argc, char* argv[])
     preselection, branchesToKeep_expressions, 
     applyEventPruning, branchNamePt, branchNameEta, branchNameNumMatches,
     -1, false, false, 0, 0, 0,
-    maxEvents, checkBranchesForNaNs, reportEvery);
+    maxEvents, checkBranchesForNaNs, reportEvery, applyPtDependentPruning);
   std::cout << "--> " << outputTree->GetEntries() << " Entries pass preselection." << std::endl;
 
   std::cout << "output Tree:" << std::endl;
