@@ -152,6 +152,8 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 
 	tokenGenInfoProduct_ = consumes<GenEventInfoProduct>(edm::InputTag("generator","","SIM"));
 
+	ptMin_nPhotons_ = cfg.getParameter<std::vector<std::string> >("ptMin_nPhotons");
+
 	verbosity_ = ( cfg.exists("verbosity") ) ? cfg.getParameter<int>("verbosity") : 0;
 
 	STIP = new SignedTransverseImpactParameter();
@@ -252,6 +254,9 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	addBranchF("recTauPtWeightedDrSignal");
 	addBranchF("recTauPtWeightedDrIsolation");
 	addBranchI("recTauNphoton");
+	for (unsigned iPtMin = 0; iPtMin < ptMin_nPhotons_.size(); iPtMin++) {
+		addBranchI("recTauNphoton_ptGt"+ptMin_nPhotons_.at(iPtMin));
+	}
 	addBranchF("recTauEratio");
 	addBranchF("recTauLeadingTrackChi2");
 	addBranchI("recTauNphotonSignal");
@@ -404,6 +409,19 @@ namespace
 		}
 		for (auto& cand : tau.isolationGammaCands()) {
 			if (cand->pt() > 0.5)
+				++n_photons;
+		}
+		return n_photons;
+	}
+
+	unsigned int n_photons_total(const pat::Tau& tau, double ptMin) {
+		unsigned int n_photons = 0;
+		for (auto& cand : tau.signalGammaCands()) {
+			if (cand->pt() > ptMin)
+				++n_photons;
+		}
+		for (auto& cand : tau.isolationGammaCands()) {
+			if (cand->pt() > ptMin)
 				++n_photons;
 		}
 		return n_photons;
@@ -633,6 +651,9 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
 	setValueF("recTauPtWeightedDrSignal", pt_weighted_dr_signal(*recTau, tau_decaymode));
 	setValueF("recTauPtWeightedDrIsolation", pt_weighted_dr_iso(*recTau, tau_decaymode));
 	setValueI("recTauNphoton", n_photons_total(*recTau));
+	for (unsigned iPtMin = 0; iPtMin < ptMin_nPhotons_.size(); iPtMin++) {
+		setValueI("recTauNphoton_ptGt"+ptMin_nPhotons_.at(iPtMin), n_photons_total(*recTau, std::stof(ptMin_nPhotons_.at(iPtMin))));
+	}
 	setValueF("recTauEratio", returnEratio(*recTau));
 	setValueF("recTauLeadingTrackChi2", returnChi2(*recTau));
 	setValueI("recTauNphotonSignal", recTau->signalGammaCands().size());
