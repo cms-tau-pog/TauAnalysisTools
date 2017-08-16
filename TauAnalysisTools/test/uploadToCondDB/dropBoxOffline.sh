@@ -50,7 +50,8 @@ cp $DBFILE ${PWD}/${TAGNAME}.db
 #ssh webcondvm.cern.ch "mv /tmp/${TAGNAME}@${UUID}.tar.bz2 /DropBox"
 #ssh webcondvm.cern.ch "mv /tmp/${TAGNAME}@${UUID}.db /DropBox"
 #ssh webcondvm.cern.ch "mv /tmp/${TAGNAME}@${UUID}.txt /DropBox"
-./upload.py ${TAGNAME}.txt
+#./upload.py ${TAGNAME}.txt
+./uploadConditions.py ${TAGNAME}.txt
 
 exit 0
 

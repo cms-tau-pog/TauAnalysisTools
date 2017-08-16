@@ -70,7 +70,7 @@ mvaDiscriminators = {
         'otherVariables' : [
         ],
         'legendEntry'         : "MVA opt1bLTDBdR03",
-        'color'               : 2
+        'color'               : 1
     },
     'mvaIsolation3HitsDeltaR03opt2bLTDB' : {
         'preselection'		: preselection_newDMs,
@@ -112,8 +112,7 @@ mvaDiscriminators = {
             'leadPFChargedHadrCandPt/F',
             'numOfflinePrimaryVertices/I',
             'genVisTauPt/F',
-            'genTauPt/F',
-            'byIsolationMVArun2v1DBdR03newDMwLTraw'
+            'genTauPt/F'
         ],
         'otherVariables' : [
         ],
