@@ -173,6 +173,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     matchGenTauVis = cms.bool(True),
     #--------------------------------------------------------                                                                       
     srcWeights = cms.VInputTag(srcWeights),
+    ptMin_nPhotons = cms.vstring("0.5","0.75","1.0","1.25","1.5"),
     verbosity = cms.int32(0)
 )
 
