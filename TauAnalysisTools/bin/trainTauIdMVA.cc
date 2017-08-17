@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
       reader->AddSpectator(spectatorVariableName.data(), &dummyVariable);
     }
   }
-  TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), Form("weights/%s_%s.weights.xml", mvaName.data(), mvaMethodName.data()));
+  TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), Form("dataset/weights/%s_%s.weights.xml", mvaName.data(), mvaMethodName.data()));
   saveAsGBRForest(mva, mvaName, outputFileName);
   delete mva;
   
