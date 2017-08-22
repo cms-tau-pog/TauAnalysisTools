@@ -957,7 +957,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "\n"    
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
-        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('%s')\n" % tree
+        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('dataset/%s')\n" % tree
         ##cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
         cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('')\n"
         cfg_modified += "process.makeROCcurveTauIdMVA.classId_signal = cms.int32(0)\n"
