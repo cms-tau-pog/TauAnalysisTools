@@ -179,6 +179,7 @@ private:
 	edm::EDGetTokenT<GenEventInfoProduct> tokenGenInfoProduct_;
 
 	std::vector<std::string> ptMin_nPhotons_;
+	std::vector<std::string> ptMin_photonPtSumOutsideSignalCone;
 
 	struct branchEntryType
 	{

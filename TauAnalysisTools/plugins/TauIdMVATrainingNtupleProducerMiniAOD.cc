@@ -153,6 +153,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 	tokenGenInfoProduct_ = consumes<GenEventInfoProduct>(edm::InputTag("generator","","SIM"));
 
 	ptMin_nPhotons_ = cfg.getParameter<std::vector<std::string> >("ptMin_nPhotons");
+	ptMin_photonPtSumOutsideSignalCone = cfg.getParameter<std::vector<std::string> >("ptMin_photonPtSumOutsideSignalCone");
 
 	verbosity_ = ( cfg.exists("verbosity") ) ? cfg.getParameter<int>("verbosity") : 0;
 
@@ -257,6 +258,9 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	for (unsigned iPtMin = 0; iPtMin < ptMin_nPhotons_.size(); iPtMin++) {
 		addBranchI("recTauNphoton_ptGt"+ptMin_nPhotons_.at(iPtMin));
 	}
+	addBranchF("photonPtSumOutsideSignalCone_default");
+	for (unsigned iPtMin = 0; iPtMin < ptMin_photonPtSumOutsideSignalCone.size(); iPtMin++)
+		addBranchF("photonPtSumOutsideSignalCone_ptGt" + ptMin_photonPtSumOutsideSignalCone.at(iPtMin));
 	addBranchF("recTauEratio");
 	addBranchF("recTauLeadingTrackChi2");
 	addBranchI("recTauNphotonSignal");
@@ -425,6 +429,23 @@ namespace
 				++n_photons;
 		}
 		return n_photons;
+	}
+
+	float getPhotonPtSumOutsideSignalCone(const pat::Tau& tau, float ptMin = -1)
+	{
+		float photonSumPt_outsideSignalCone = 0.;
+
+		// Respectie member in AOD reco::PFTau : signalPFGammaCands(empty for miniAOD)
+		// see: https://github.com/cms-tau-pog/cmssw/blob/ad72bdacd2af21aa7fc7abfe362af89d6faab361/RecoTauTag/RecoTau/plugins/PFRecoTauDiscriminationByIsolation.cc#L579-L586
+		// definition of the reco::PFTau signalConeSize(): max(min(0.1, 3.0 / tau.pt()), 0.05)
+		for (auto& cand :  tau.signalGammaCands())
+		{
+			double dR = deltaR(tau.eta(), tau.phi(), cand->eta(), cand->phi());
+			if ( dR > std::max(std::min(0.1, 3.0 / tau.pt()), 0.05))
+				if (cand->pt() > ptMin)
+					photonSumPt_outsideSignalCone += cand->pt();
+		}
+		return photonSumPt_outsideSignalCone;
 	}
 
 }
@@ -654,6 +675,11 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
 	for (unsigned iPtMin = 0; iPtMin < ptMin_nPhotons_.size(); iPtMin++) {
 		setValueI("recTauNphoton_ptGt"+ptMin_nPhotons_.at(iPtMin), n_photons_total(*recTau, std::stof(ptMin_nPhotons_.at(iPtMin))));
 	}
+
+	setValueF("photonPtSumOutsideSignalCone_default", getPhotonPtSumOutsideSignalCone(*recTau));
+	for (unsigned iPtMin = 0; iPtMin < ptMin_photonPtSumOutsideSignalCone.size(); iPtMin++)
+		setValueF("photonPtSumOutsideSignalCone_ptGt" + ptMin_photonPtSumOutsideSignalCone.at(iPtMin), getPhotonPtSumOutsideSignalCone(*recTau, std::stof(ptMin_photonPtSumOutsideSignalCone.at(iPtMin))));
+
 	setValueF("recTauEratio", returnEratio(*recTau));
 	setValueF("recTauLeadingTrackChi2", returnChi2(*recTau));
 	setValueI("recTauNphotonSignal", recTau->signalGammaCands().size());
