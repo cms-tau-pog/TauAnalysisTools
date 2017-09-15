@@ -213,6 +213,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
 	srcRecTaus = cms.InputTag('NewTauIDsEmbedded'),
 	srcPrunedGenParticles = cms.InputTag('prunedGenParticles'),
 	srcPackedGenParticles = cms.InputTag('packedGenParticles'),
+	srcRecJets = cms.InputTag('slimmedJets'),
 	minGenVisPt = cms.double(10.),
 	dRmatch = cms.double(0.3),
 	tauIdDiscriminators = cms.PSet(

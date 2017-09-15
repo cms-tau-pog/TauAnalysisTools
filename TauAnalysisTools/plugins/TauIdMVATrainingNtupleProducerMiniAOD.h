@@ -53,7 +53,7 @@ public:
 
 private:
 
-	void setRecTauValues(const pat::TauRef&, const edm::Event&, const edm::EventSetup&);
+	void setRecTauValues(const pat::TauRef&, const pat::JetRef&, const edm::Event&, const edm::EventSetup&);
 	void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const reco::GenParticle*, const reco::Candidate::LorentzVector&, int);
 	void setGenTauMatchValues(const reco::Candidate::LorentzVector&, const pat::PackedGenParticle*, const reco::Candidate::LorentzVector&, int);
 	void setGenParticleMatchValues(const std::string&, const reco::Candidate::LorentzVector&, const reco::GenParticle*);
@@ -90,6 +90,9 @@ private:
 	edm::EDGetTokenT<reco::GenParticleCollection> tokenPrunedGenParticles_;
 	edm::InputTag srcPackedGenParticles_;
 	edm::EDGetTokenT<pat::PackedGenParticleCollection> tokenPackedGenParticles_;
+
+	edm::InputTag srcRecJets_;
+	edm::EDGetTokenT<pat::JetCollection> tokenRecJets_;
 
 	double minGenVisPt_;
 	double dRmatch_;
