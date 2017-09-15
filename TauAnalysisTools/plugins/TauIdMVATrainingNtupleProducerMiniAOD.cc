@@ -45,6 +45,9 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 	srcPackedGenParticles_ = cfg.getParameter<edm::InputTag>("srcPackedGenParticles");
 	tokenPackedGenParticles_ = consumes<pat::PackedGenParticleCollection>(srcPackedGenParticles_);
 
+	srcRecJets_ = cfg.getParameter<edm::InputTag>("srcRecJets");
+	tokenRecJets_ = consumes<pat::JetCollection>(edm::InputTag(srcRecJets_));
+
 	minGenVisPt_ = cfg.getParameter<double>("minGenVisPt");
 	dRmatch_ = cfg.getParameter<double>("dRmatch");
 
@@ -462,17 +465,26 @@ namespace
 
 }
 
-void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& recTau, const edm::Event& evt, const edm::EventSetup& es)
+void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& recTau, const pat::JetRef& recJet, const edm::Event& evt, const edm::EventSetup& es)
 {
 	setValue_EnPxPyPz("recTau", recTau->p4());
 	setValue_EnPxPyPz("recTauAlternate", recTau->alternatLorentzVect());
 	setValueI("recTauDecayMode", recTau->decayMode());
 	setValueF("recTauVtxZ", recTau->vertex().z());
 	//setValue_EnPxPyPz("recJet", recTau->jetRef()->p4()); // does not exist in MiniAOD
-	setValue_EnPxPyPz("recJet", reco::Candidate::LorentzVector(0.,0.,0.,0.));
 	//int recJetLooseId = ( (*loosePFJetIdAlgo_)(*recTau->jetRef()) ) ? 1 : 0; // does not exist in MiniAOD
 	//setValueI("recJetLooseId", recJetLooseId);
-	setValueI("recJetLooseId", 1);
+	if (recJet.isNonnull() && deltaR(recTau->p4(), recJet->p4()) < 0.4)
+	{
+		setValue_EnPxPyPz("recJet", recJet->p4());
+		int recJetLooseId = ( (*loosePFJetIdAlgo_)(*recJet) ) ? 1 : 0;
+		setValueI("recJetLooseId", recJetLooseId);
+	}
+	else
+	{
+		setValue_EnPxPyPz("recJet", reco::Candidate::LorentzVector(0.,0.,0.,0.));
+		setValueI("recJetLooseId", 1);
+	}
 	if ( recTau->leadCand().isNonnull() ) setValue_EnPxPyPz("leadPFCand", recTau->leadCand()->p4());
 	else setValue_EnPxPyPz("leadPFCand", reco::Candidate::LorentzVector(0.,0.,0.,0.));
 	if ( recTau->leadChargedHadrCand().isNonnull() ) setValue_EnPxPyPz("leadPFChargedHadrCand", recTau->leadChargedHadrCand()->p4());
@@ -1075,6 +1087,26 @@ namespace
 			}
 		}
 	}
+
+	// find the closest reconstructed jet to the tau using deltaR as a criterion
+	pat::JetRef findMatchingJet(const reco::Candidate::LorentzVector& recTauP4, const edm::Handle<pat::JetCollection>& recJets)
+	{
+		pat::JetRef matchedJet;
+		double minDR = 999.;
+
+		for (size_t iRecJet = 0; iRecJet < recJets->size(); ++iRecJet)
+		{
+			pat::JetRef recJet(recJets, iRecJet);
+			double tmpDR = deltaR(recTauP4, recJet->p4());
+			if (tmpDR < minDR)
+			{
+				minDR = tmpDR;
+				matchedJet = recJet;
+			}
+		}
+
+		return matchedJet;
+	}
 }
 
 void TauIdMVATrainingNtupleProducerMiniAOD::setNumPileUpValue(const edm::Event& evt)
@@ -1123,6 +1155,9 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 		evt.getByToken(tokenPackedGenParticles_, packedGenParticles);
 	}
 
+	edm::Handle<pat::JetCollection> recJets;
+	evt.getByToken(tokenRecJets_, recJets);
+
 	double evtWeight = 1.0;
 	// TODO: check if these are available in MiniAOD
 	for ( vInputTag::const_iterator srcWeight = srcWeights_.begin();
@@ -1169,7 +1204,12 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 				if ( genTau_matched_for_cleaning || genElectron_matched_for_cleaning || genMuon_matched_for_cleaning ) continue;
 			}
 
-			setRecTauValues(recTau, evt, es);
+			// need to find the closest reconstructed jet manually
+			// since recTau->jetRef() is not saved in MiniAOD
+			// TODO: this is not 100% efficient! find other solution
+			pat::JetRef recJet = findMatchingJet(recTau->p4(), recJets);
+
+			setRecTauValues(recTau, recJet, evt, es);
 
 			const reco::GenParticle* genTau_matched = 0;
 			reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);

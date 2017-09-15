@@ -213,10 +213,12 @@ srcWeights = []
 #--------------------------------------------------------------------------------
 
 process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATrainingNtupleProducerMiniAOD",
+<<<<<<< HEAD
     srcRecTaus = cms.InputTag('NewTauIDsEmbedded'),
     srcPrunedGenParticles = cms.InputTag('prunedGenParticles'),
-    srcPackedGenParticles = cms.InputTag('packedGenParticles'),        
-    minGenVisPt = cms.double(10.),                                          
+    srcPackedGenParticles = cms.InputTag('packedGenParticles'),
+    srcRecJets = cms.InputTag('slimmedJets'),
+    minGenVisPt = cms.double(10.),
     dRmatch = cms.double(0.3),
     tauIdDiscriminators = cms.PSet(
         decayModeFindingNewDMs = cms.string('decayModeFindingNewDMs'),
