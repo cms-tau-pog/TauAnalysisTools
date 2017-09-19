@@ -2,12 +2,13 @@
 
 import os
 import subprocess
+import shlex
 
 # generic path to dCache where ntuples are stored
-inputPath = "/pnfs/desy.de/cms/tier2/store/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/"
+inputPath = "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2016/Summer16_25ns_V1/"
 
 # generic path to NFS where we want to copy ntuples to
-outputPath = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/ntuples/"
+outputPath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/ntuples/"
 
 # more or less a copy of the samples in submitTauIdMVATrainingNtupleProduction_crab3.py
 # with reduced information
@@ -198,16 +199,48 @@ for massPoint in WprimeMassPoints:
 
 # loop through dictionary, create directories according to sampleName
 # and copy corresponding ntuples to the directory
-print "starting folder creation and copying of files"
+print "Starting folder creation and copying of files. \n=====>Be mindfull and better remove old folders manualy before calling this script."
 
+rewriteall = None
 for sampleName, sampleOption in samples.items():
-    
     folderToBeCreated = outputPath + sampleName
+    print folderToBeCreated
+
+    if os.path.isdir(folderToBeCreated):
+        if rewriteall != True:
+
+            tocontinue = False
+
+            if rewriteall == None:
+                reply = None
+                while not any(x == reply for x in ["y", "Y", "n", "N"]):
+                    reply = raw_input('rewrite the ' + folderToBeCreated + "folder? [y/n]. Type [Y/N] to apply this to all files.")
+                    if reply == "Y": rewriteall = True
+                    elif reply == "n":
+                        print "Ignorig rewriting", folderToBeCreated
+                        tocontinue = True
+                        break
+                    elif reply == "N":
+                        rewriteall = False
+                        tocontinue = True
+                        break
+                    elif reply != "y":
+                        print ("Sorry, invalid input, try again.")
+
+            if rewriteall == False or tocontinue:
+                print "Ignoring", folderToBeCreated
+                continue
+
+        print "Overwriting ", folderToBeCreated
+        shutil.rmtree(folderToBeCreated)
+
     os.makedirs(folderToBeCreated)
-    
+
     filesToCopy = inputPath + sampleOption['datasetpath'] + "/*/*/*/*.root"
     copyCommand = "cp " + filesToCopy + " " + folderToBeCreated + "/"
-    print "copying " + filesToCopy
-    subprocess.call(copyCommand, shell = True)
+    args = shlex.split(copyCommand)
+    args[0] = sampleName
+    #subprocess.call(copyCommand, shell = True)
+    subprocess.Popen(copyCommand, shell = True)
 
 print "done"
