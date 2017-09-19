@@ -11,9 +11,9 @@ train_option = 'optaDBAll'
 # apples-to-apples comparison!
 computeROConAllEvents = False
 
-inputFilePath  = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/ntuples/"
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/ntuples/"
 
-outputFilePath = "/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/%s/trainfilesfinal_v1/" % version
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/%s/trainfilesfinal_v1/" % version
 
 preselection_oldDMs = \
     'decayModeFindingOldDMs > 0.5' \
