@@ -27,7 +27,8 @@ process.source = cms.Source("PoolSource",
         #'root://xrootd.ba.infn.it//store/cmst3/user/ytakahas/CMG/QCD_Pt-15to3000_Tune4C_Flat_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v1/AODSIM/Dynamic95_20150520/aod_1.root'
         #'file:/disk1/MVAonMiniAOD/RelValZTT_8_0_20_PU25ns_MINIAODSIM_1.root',
         #'file:/disk1/MVAonMiniAOD/RelValZTT_8_0_20_PU25ns_MINIAODSIM_2.root'
-        'file:/disk1/MVAonMiniAOD/DYJetsToLLM50_AMCATNLO_MORIOND17_MINIAODSIM_1.root'
+        #'file:/disk1/MVAonMiniAOD/DYJetsToLLM50_AMCATNLO_MORIOND17_MINIAODSIM_1.root'
+        '/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/00312D7A-FEBD-E611-A713-002590DB923E.root'
     ),
     ##eventsToProcess = cms.untracked.VEventRange(
     ##    '1:917:1719279',
@@ -37,7 +38,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
