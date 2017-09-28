@@ -152,7 +152,10 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 
 	tokenGenInfoProduct_ = consumes<GenEventInfoProduct>(edm::InputTag("generator","","SIM"));
 
+	ptMin_allPhotonsVariables = cfg.getParameter<std::vector<std::string> >("ptMin_allPhotonsVariables");
 	ptMin_nPhotons_ = cfg.getParameter<std::vector<std::string> >("ptMin_nPhotons");
+	ptMin_photonPtSumOutsideSignalCone = cfg.getParameter<std::vector<std::string> >("ptMin_photonPtSumOutsideSignalCone");
+	ptMin_photonPtSumOutsideSignalConedRgt0p1 = cfg.getParameter<std::vector<std::string> >("ptMin_photonPtSumOutsideSignalConedRgt0p1");
 
 	verbosity_ = ( cfg.exists("verbosity") ) ? cfg.getParameter<int>("verbosity") : 0;
 
@@ -249,14 +252,33 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 		addBranchI(vertexCollection->branchName_multiplicity_);
 		addBranch_XYZ(vertexCollection->branchName_position_);
 	}
+
 	addBranchF("recTauPtWeightedDetaStrip");
 	addBranchF("recTauPtWeightedDphiStrip");
 	addBranchF("recTauPtWeightedDrSignal");
 	addBranchF("recTauPtWeightedDrIsolation");
+	for (unsigned iPtMin = 0; iPtMin < ptMin_allPhotonsVariables.size(); iPtMin++)
+	{
+		addBranchF("neutralIsoPtsum_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("recTauPtWeightedDetaStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("recTauPtWeightedDphiStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("recTauPtWeightedDrSignal_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("recTauPtWeightedDrIsolation_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+	}
+
 	addBranchI("recTauNphoton");
 	for (unsigned iPtMin = 0; iPtMin < ptMin_nPhotons_.size(); iPtMin++) {
 		addBranchI("recTauNphoton_ptGt"+ptMin_nPhotons_.at(iPtMin));
 	}
+
+	addBranchF("photonPtSumOutsideSignalCone_default");
+	for (unsigned iPtMin = 0; iPtMin < ptMin_photonPtSumOutsideSignalCone.size(); iPtMin++)
+		addBranchF("photonPtSumOutsideSignalCone_ptGt" + ptMin_photonPtSumOutsideSignalCone.at(iPtMin));
+
+	addBranchF("photonPtSumOutsideSignalConedRgt0p1_default");
+	for (unsigned iPtMin = 0; iPtMin < ptMin_photonPtSumOutsideSignalConedRgt0p1.size(); iPtMin++)
+		addBranchF("photonPtSumOutsideSignalConedRgt0p1_ptGt" + ptMin_photonPtSumOutsideSignalConedRgt0p1.at(iPtMin));
+
 	addBranchF("recTauEratio");
 	addBranchF("recTauLeadingTrackChi2");
 	addBranchI("recTauNphotonSignal");
@@ -326,20 +348,18 @@ namespace
 		else return tau.ecalEnergy()/total;
 	}
 
-	float pt_weighted_dx(const pat::Tau& tau, int mode = 0, int var = 0, int decaymode = -1){
-
-		float sum_pt = 0.;
-		float sum_dx_pt = 0.;
-		float signalrad = std::max(0.05, std::min(0.1, 3./tau.pt()));
-		int is3prong = (decaymode==10);
+	float pt_weighted_dx(const pat::Tau& tau, int mode = 0, int var = 0, int decaymode = -1, float ptMin = 0.5)
+	{
+		float sum_pt(0), sum_dx_pt(0);
+		float signalrad = std::max(std::min(0.1, 3.0 / tau.pt()), 0.05);
+		int is3prong = (decaymode == 10);
 
 		const auto cands = getGammas(tau, mode < 2);
 
-		for (const auto& cand : cands) {
+		for (const auto& cand : cands)
+		{
 			// only look at electrons/photons with pT > 0.5
-			if (cand->pt() < 0.5)
-				continue;
-
+			if (cand->pt() < ptMin) continue;
 			float dr = reco::deltaR(*cand, tau);
 			float deta = std::abs(cand->eta() - tau.eta());
 			float dphi = std::abs(reco::deltaPhi(cand->phi(), tau.phi()));
@@ -347,84 +367,97 @@ namespace
 
 			bool flag = isInside(pt, deta, dphi);
 
-			if(is3prong==0){
-				if (mode == 2 || (mode == 0 && dr < signalrad) || (mode == 1 && dr > signalrad)) {
-					sum_pt += pt;
-					if (var == 0)
-						sum_dx_pt += pt * dr;
-					else if (var == 1)
-						sum_dx_pt += pt * deta;
-					else if (var == 2)
-						sum_dx_pt += pt * dphi;
-				}
-			}else if(is3prong==1){
+			if ( (is3prong == 0 && (mode == 2 || (mode == 0 && dr < signalrad) || (mode == 1 && dr > signalrad))) ||
+			     (is3prong != 0 && ((mode == 2 && flag == false) || (mode == 1 && flag == true) || mode == 0)) )
+			{
+				sum_pt += pt;
 
-				if( (mode==2 && flag==false) || (mode==1 && flag==true) || mode==0){
-					sum_pt += pt;
-
-					if (var == 0)
-						sum_dx_pt += pt * dr;
-					else if (var == 1)
-						sum_dx_pt += pt * deta;
-					else if (var == 2)
-						sum_dx_pt += pt * dphi;
-				}
+				if (var == 0)      sum_dx_pt += pt * dr;
+				else if (var == 1) sum_dx_pt += pt * deta;
+				else if (var == 2) sum_dx_pt += pt * dphi;
 			}
 		}
 
-		if (sum_pt > 0.)
-			return sum_dx_pt/sum_pt;
+		if (sum_pt > 0.) return sum_dx_pt / sum_pt;
 		return 0.;
 	}
 
-	float pt_weighted_dr_signal(const pat::Tau& tau, int dm) {
-		return pt_weighted_dx(tau, 0, 0, dm);
+	float pt_weighted_dr_signal(const pat::Tau& tau, int dm = -1, float ptMin = 0.5)
+	{
+		return pt_weighted_dx(tau, 0, 0, dm, ptMin);
 	}
 
-	float pt_weighted_deta_strip(const pat::Tau& tau, int dm) {
-		if(dm==10){
-			return pt_weighted_dx(tau, 2, 1, dm);
-		}else{
-			return pt_weighted_dx(tau, 1, 1, dm);
-		}
+	float pt_weighted_deta_strip(const pat::Tau& tau, int dm = -1, float ptMin = 0.5)
+	{
+		if (dm == 10) return pt_weighted_dx(tau, 2, 1, dm, ptMin);
+		return pt_weighted_dx(tau, 1, 1, dm, ptMin);
 	}
 
-	float pt_weighted_dphi_strip(const pat::Tau& tau, int dm) {
-		if(dm==10){
-			return pt_weighted_dx(tau, 2, 2, dm);
-		}else{
-			return pt_weighted_dx(tau, 1, 2, dm);
-		}
+	float pt_weighted_dphi_strip(const pat::Tau& tau, int dm = -1, float ptMin = 0.5)
+	{
+		if (dm == 10) return pt_weighted_dx(tau, 2, 2, dm, ptMin);
+		return pt_weighted_dx(tau, 1, 2, dm, ptMin);
 	}
 
-	float pt_weighted_dr_iso(const pat::Tau& tau, int dm) {
-		return pt_weighted_dx(tau, 2, 0, dm);
+	float pt_weighted_dr_iso(const pat::Tau& tau, int dm = -1, float ptMin = 0.5)
+	{
+		return pt_weighted_dx(tau, 2, 0, dm, ptMin);
 	}
 
-	unsigned int n_photons_total(const pat::Tau& tau) {
+	unsigned int n_photons_total(const pat::Tau& tau)
+	{
 		unsigned int n_photons = 0;
-		for (auto& cand : tau.signalGammaCands()) {
-			if (cand->pt() > 0.5)
-				++n_photons;
-		}
-		for (auto& cand : tau.isolationGammaCands()) {
-			if (cand->pt() > 0.5)
-				++n_photons;
-		}
+		for (auto& cand : tau.signalGammaCands())
+			if (cand->pt() > 0.5) ++n_photons;
+
+		for (auto& cand : tau.isolationGammaCands())
+			if (cand->pt() > 0.5) ++n_photons;
+
 		return n_photons;
 	}
 
-	unsigned int n_photons_total(const pat::Tau& tau, double ptMin) {
+	unsigned int n_photons_total(const pat::Tau& tau, double ptMin)
+	{
 		unsigned int n_photons = 0;
-		for (auto& cand : tau.signalGammaCands()) {
-			if (cand->pt() > ptMin)
-				++n_photons;
-		}
-		for (auto& cand : tau.isolationGammaCands()) {
-			if (cand->pt() > ptMin)
-				++n_photons;
-		}
+		for (auto& cand : tau.signalGammaCands())
+			if (cand->pt() > ptMin) ++n_photons;
+
+		for (auto& cand : tau.isolationGammaCands())
+			if (cand->pt() > ptMin) ++n_photons;
+
 		return n_photons;
+	}
+
+	float getPhotonPtSumOutsideSignalCone(const pat::Tau& tau, float ptMin = -1, float signalCone = -1)
+	{
+		float photonSumPt_outsideSignalCone = 0.;
+
+		// definition of the reco::PFTau signalConeSize()
+		if (signalCone < 0)
+			signalCone = std::max(std::min(0.1, 3.0 / tau.pt()), 0.05);
+
+		// Respectie member in AOD reco::PFTau : signalPFGammaCands(empty for miniAOD)
+		// see: https://github.com/cms-tau-pog/cmssw/blob/ad72bdacd2af21aa7fc7abfe362af89d6faab361/RecoTauTag/RecoTau/plugins/PFRecoTauDiscriminationByIsolation.cc#L579-L586
+		for (auto& cand :  tau.signalGammaCands())
+		{
+			double dR = deltaR(tau.eta(), tau.phi(), cand->eta(), cand->phi());
+
+			if (dR > signalCone && cand->pt() > ptMin)
+				photonSumPt_outsideSignalCone += cand->pt();
+		}
+
+		return photonSumPt_outsideSignalCone;
+	}
+
+	float getNeutralIsoPtsum(const pat::Tau& tau, float ptMin = -1)
+	{
+		float neutralIsoPtsum = 0;
+
+		for (auto& cand : tau.isolationGammaCands())
+			if (cand->pt() > ptMin)
+				neutralIsoPtsum += cand->pt();
+
+		return neutralIsoPtsum;
 	}
 
 }
@@ -646,14 +679,35 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
 	}
 	//variables from Yuta for dynamic strip
 	int tau_decaymode = recTau->decayMode();
+
 	setValueF("recTauPtWeightedDetaStrip", pt_weighted_deta_strip(*recTau, tau_decaymode));
 	setValueF("recTauPtWeightedDphiStrip", pt_weighted_dphi_strip(*recTau, tau_decaymode));
 	setValueF("recTauPtWeightedDrSignal", pt_weighted_dr_signal(*recTau, tau_decaymode));
 	setValueF("recTauPtWeightedDrIsolation", pt_weighted_dr_iso(*recTau, tau_decaymode));
+	for (unsigned iPtMin = 0; iPtMin < ptMin_allPhotonsVariables.size(); iPtMin++)
+	{
+		setValueF("neutralIsoPtsum_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getNeutralIsoPtsum(*recTau, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
+		setValueF("recTauPtWeightedDetaStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_deta_strip(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
+		setValueF("recTauPtWeightedDphiStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_dphi_strip(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
+		setValueF("recTauPtWeightedDrSignal_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_dr_signal(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
+		setValueF("recTauPtWeightedDrIsolation_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_dr_iso(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
+
+	}
+
 	setValueI("recTauNphoton", n_photons_total(*recTau));
 	for (unsigned iPtMin = 0; iPtMin < ptMin_nPhotons_.size(); iPtMin++) {
 		setValueI("recTauNphoton_ptGt"+ptMin_nPhotons_.at(iPtMin), n_photons_total(*recTau, std::stof(ptMin_nPhotons_.at(iPtMin))));
 	}
+
+	setValueF("photonPtSumOutsideSignalCone_default", getPhotonPtSumOutsideSignalCone(*recTau));
+	for (unsigned iPtMin = 0; iPtMin < ptMin_photonPtSumOutsideSignalCone.size(); iPtMin++)
+		setValueF("photonPtSumOutsideSignalCone_ptGt" + ptMin_photonPtSumOutsideSignalCone.at(iPtMin), getPhotonPtSumOutsideSignalCone(*recTau, std::stof(ptMin_photonPtSumOutsideSignalCone.at(iPtMin))));
+
+	setValueF("photonPtSumOutsideSignalConedRgt0p1_default", getPhotonPtSumOutsideSignalCone(*recTau, -1, 0.1));
+	for (unsigned iPtMin = 0; iPtMin < ptMin_photonPtSumOutsideSignalConedRgt0p1.size(); iPtMin++)
+		setValueF("photonPtSumOutsideSignalConedRgt0p1_ptGt" + ptMin_photonPtSumOutsideSignalConedRgt0p1.at(iPtMin),
+			getPhotonPtSumOutsideSignalCone(*recTau, std::stof(ptMin_photonPtSumOutsideSignalConedRgt0p1.at(iPtMin)), 0.1));
+
 	setValueF("recTauEratio", returnEratio(*recTau));
 	setValueF("recTauLeadingTrackChi2", returnChi2(*recTau));
 	setValueI("recTauNphotonSignal", recTau->signalGammaCands().size());

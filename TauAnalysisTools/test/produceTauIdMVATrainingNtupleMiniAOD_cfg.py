@@ -28,6 +28,8 @@ process.source = cms.Source("PoolSource",
         #'file:/disk1/MVAonMiniAOD/RelValZTT_8_0_20_PU25ns_MINIAODSIM_1.root',
         #'file:/disk1/MVAonMiniAOD/RelValZTT_8_0_20_PU25ns_MINIAODSIM_2.root'
         'root://cms-xrd-global.cern.ch//store/mc/PhaseIFall16MiniAOD/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PhaseIFall16PUFlat20to50_PhaseIFall16_81X_upgrade2017_realistic_v26_ext1-v1/70000/02A37775-A0E9-E611-8E01-0025907B4F2E.root'
+        #'file:/disk1/MVAonMiniAOD/DYJetsToLLM50_AMCATNLO_MORIOND17_MINIAODSIM_1.root'
+        #'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/00312D7A-FEBD-E611-A713-002590DB923E.root'
     ),
     ##eventsToProcess = cms.untracked.VEventRange(
     ##    '1:917:1719279',
@@ -37,7 +39,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
@@ -288,7 +290,10 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     matchGenTauVis = cms.bool(True),
     #--------------------------------------------------------                                                                       
     srcWeights = cms.VInputTag(srcWeights),
+    ptMin_allPhotonsVariables = cms.vstring("0.5","1.0","1.5"),
     ptMin_nPhotons = cms.vstring("0.5","0.75","1.0","1.25","1.5"),
+    ptMin_photonPtSumOutsideSignalCone = cms.vstring("0.5","1.0","1.5"),
+    ptMin_photonPtSumOutsideSignalConedRgt0p1 = cms.vstring("0.5","1.0","1.5"),
     verbosity = cms.int32(0)
 )
 
