@@ -178,6 +178,7 @@ private:
 
 	edm::EDGetTokenT<GenEventInfoProduct> tokenGenInfoProduct_;
 
+	std::vector<std::string> ptMin_allPhotonsVariables;
 	std::vector<std::string> ptMin_nPhotons_;
 	std::vector<std::string> ptMin_photonPtSumOutsideSignalCone;
 	std::vector<std::string> ptMin_photonPtSumOutsideSignalConedRgt0p1;

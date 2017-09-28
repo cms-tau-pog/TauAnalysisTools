@@ -27,7 +27,7 @@ cat > $1.zsh <<EOF
 #$ -o $1.out
 #
 #$ -e $1.err
-nice /afs/desy.de/user/g/glusheno/RWTH/MVAtraining/CMSSW_8_0_26_patch1/bin/slc6_amd64_gcc530/trainTauIdMVA /nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/tauId_v3_0/trainfilesfinal_v1/$1.py &> /nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/tauId_v3_0/trainfilesfinal_v1/$1.log
+nice /afs/desy.de/user/g/glusheno/RWTH/MVAtraining/CMSSW_8_0_26_patch1/bin/slc6_amd64_gcc530/trainTauIdMVA /nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1_allPhotonsCut/tauId_v3_0/trainfilesfinal_v1/$1.py &> /nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1_allPhotonsCut/tauId_v3_0/trainfilesfinal_v1/$1.log
 
 EOF
 
