@@ -873,13 +873,11 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
   evt.getByLabel(srcRecTaus_, recTaus);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
-  if ( isMC_ ) {
-    evt.getByLabel(srcGenParticles_, genParticles);
-  }
+  if (isMC_) evt.getByLabel(srcGenParticles_, genParticles);
   
   double evtWeight = 1.0;
-  for ( vInputTag::const_iterator srcWeight = srcWeights_.begin();
-	srcWeight != srcWeights_.end(); ++srcWeight ) {
+  for (vInputTag::const_iterator srcWeight = srcWeights_.begin(); srcWeight != srcWeights_.end(); ++srcWeight)
+  {
     edm::Handle<double> weight;
     evt.getByLabel(*srcWeight, weight);
     evtWeight *= (*weight);
@@ -887,74 +885,83 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
 
   //weight from MC@NLO 
   double weightevt = 1;
-  try{
-  edm::Handle<GenEventInfoProduct> genEvt;
-  evt.getByLabel("generator",genEvt);
-  weightevt = genEvt->weight();
-  //std::cout<<" mc@nlo weight "<<weightevt<<std::endl;
+  try
+  {
+    edm::Handle<GenEventInfoProduct> genEvt;
+    evt.getByLabel("generator",genEvt);
+    weightevt = genEvt->weight();
+    //std::cout<<" mc@nlo weight "<<weightevt<<std::endl;
   }
-  catch(std::exception &e){ std::cerr << e.what();}
+  catch(std::exception &e) { std::cerr << e.what(); }
   
 
   size_t numRecTaus = recTaus->size();
-  for ( size_t iRecTau = 0; iRecTau < numRecTaus; ++iRecTau ) {
+  for ( size_t iRecTau = 0; iRecTau < numRecTaus; ++iRecTau )
+  {
     reco::PFTauRef recTau(recTaus, iRecTau);
     setRecTauValues(recTau, evt, es);
 
     const reco::GenParticle* genTau_matched = 0;
     reco::Candidate::LorentzVector genVisTauP4_matched(0.,0.,0.,0.);
     int genTauDecayMode_matched = -1;
-    if ( isMC_ ) {      
+    if ( isMC_ )
+    {      
       double dRmin = dRmatch_;
-      for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin();
-	    genParticle != genParticles->end(); ++genParticle ) {
-	if ( !(genParticle->status() == 2) ) continue;
-	bool matchedPdgId = false;
-	for ( std::vector<int>::const_iterator pdgId = pdgIdsGenTau_.begin();
-	      pdgId != pdgIdsGenTau_.end(); ++pdgId ) {
-	  if ( genParticle->pdgId() == (*pdgId) ) {
-	    matchedPdgId = true;
-	    break;
-	  }
-	}
-	if ( !matchedPdgId ) continue;
-	reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(&(*genParticle));
-	if ( !(genVisTauP4.pt() > minGenVisPt_) ) continue;
-	std::string genTauDecayMode_string = getGenTauDecayMode(&(*genParticle));
-	int genTauDecayMode = -1;
-	if      ( genTauDecayMode_string == "oneProng0Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng0PiZero;
-	else if ( genTauDecayMode_string == "oneProng1Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng1PiZero;
-	else if ( genTauDecayMode_string == "oneProng2Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng2PiZero;
-	else if ( genTauDecayMode_string == "threeProng0Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng0PiZero;
-	else if ( genTauDecayMode_string == "threeProng1Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng1PiZero;
-	else if ( genTauDecayMode_string == "oneProngOther"   ||
-		  genTauDecayMode_string == "threeProngOther" ||
-		  genTauDecayMode_string == "rare"            ) genTauDecayMode = reco::PFTau::kRareDecayMode;
-	if ( genTauDecayMode == -1 ) continue; // skip leptonic tau decays
-	double dR = deltaR(genParticle->p4(), recTau->p4());
-	if ( dR < dRmin ) {
-	  genTau_matched = &(*genParticle);
-	  genVisTauP4_matched = genVisTauP4;
-	  genTauDecayMode_matched = genTauDecayMode;
-	}
+      for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin(); genParticle != genParticles->end(); ++genParticle )
+      {
+        if ( !(genParticle->status() == 2) ) continue;
+
+        bool matchedPdgId = false;
+        for ( std::vector<int>::const_iterator pdgId = pdgIdsGenTau_.begin(); pdgId != pdgIdsGenTau_.end(); ++pdgId )
+          if ( genParticle->pdgId() == (*pdgId) )
+          {
+            matchedPdgId = true;
+            break;
+          }
+
+        if ( !matchedPdgId ) continue;
+        reco::Candidate::LorentzVector genVisTauP4 = getVisMomentum(&(*genParticle));
+        if ( !(genVisTauP4.pt() > minGenVisPt_) ) continue;
+        std::string genTauDecayMode_string = getGenTauDecayMode(&(*genParticle));
+        int genTauDecayMode = -1;
+        if      ( genTauDecayMode_string == "oneProng0Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng0PiZero;
+        else if ( genTauDecayMode_string == "oneProng1Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng1PiZero;
+        else if ( genTauDecayMode_string == "oneProng2Pi0"    ) genTauDecayMode = reco::PFTau::kOneProng2PiZero;
+        else if ( genTauDecayMode_string == "threeProng0Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng0PiZero;
+        else if ( genTauDecayMode_string == "threeProng1Pi0"  ) genTauDecayMode = reco::PFTau::kThreeProng1PiZero;
+        else if ( genTauDecayMode_string == "oneProngOther"   ||
+        genTauDecayMode_string == "threeProngOther" ||
+        genTauDecayMode_string == "rare"            ) genTauDecayMode = reco::PFTau::kRareDecayMode;
+        if ( genTauDecayMode == -1 ) continue; // skip leptonic tau decays
+
+        double dR = deltaR(genParticle->p4(), recTau->p4());
+        if ( dR < dRmin )
+        {
+          genTau_matched = &(*genParticle);
+          genVisTauP4_matched = genVisTauP4;
+          genTauDecayMode_matched = genTauDecayMode;
+        }
       }
       setGenTauMatchValues(recTau->p4(), genTau_matched, genVisTauP4_matched, genTauDecayMode_matched);
 
-      if ( genTau_matched ) {
-	reco::Candidate::Point genEvtVertex = genTau_matched->vertex();
-	const reco::GenParticle* genLeadChargedHadron = getGenLeadChargedDecayProduct(genTau_matched);
-	assert(genLeadChargedHadron);
-	reco::Candidate::Point genDecayVertex = genLeadChargedHadron->vertex();
-	double flightPathPx = genDecayVertex.x() - genEvtVertex.x();
-	double flightPathPy = genDecayVertex.y() - genEvtVertex.y();
-	double genImpactParam = TMath::Abs(flightPathPx*genLeadChargedHadron->py() - flightPathPy*genLeadChargedHadron->px())/genLeadChargedHadron->pt();
-	setValueF("genImpactParam", genImpactParam);
-	setValue_XYZ("genDecayVertex", genDecayVertex);
-	setValue_XYZ("genEvtVertex", genDecayVertex);
-      } else {
-	setValueF("genImpactParam", -1.);
-	setValue_XYZ("genDecayVertex", reco::Candidate::Point(0.,0.,0.));
-	setValue_XYZ("genEvtVertex", reco::Candidate::Point(0.,0.,0.));
+      if ( genTau_matched )
+      {
+        reco::Candidate::Point genEvtVertex = genTau_matched->vertex();
+        const reco::GenParticle* genLeadChargedHadron = getGenLeadChargedDecayProduct(genTau_matched);
+        assert(genLeadChargedHadron);
+        reco::Candidate::Point genDecayVertex = genLeadChargedHadron->vertex();
+        double flightPathPx = genDecayVertex.x() - genEvtVertex.x();
+        double flightPathPy = genDecayVertex.y() - genEvtVertex.y();
+        double genImpactParam = TMath::Abs(flightPathPx*genLeadChargedHadron->py() - flightPathPy*genLeadChargedHadron->px())/genLeadChargedHadron->pt();
+        setValueF("genImpactParam", genImpactParam);
+        setValue_XYZ("genDecayVertex", genDecayVertex);
+        setValue_XYZ("genEvtVertex", genDecayVertex);
+      }
+      else
+      {
+        setValueF("genImpactParam", -1.);
+        setValue_XYZ("genDecayVertex", reco::Candidate::Point(0.,0.,0.));
+        setValue_XYZ("genEvtVertex", reco::Candidate::Point(0.,0.,0.));
       }
 
       const reco::GenParticle* genElectron_matched = findMatchingGenParticle(recTau->p4(), *genParticles, minGenVisPt_, pdgIdsGenElectron_, dRmatch_);
@@ -972,23 +979,23 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
       if ( genMuon_matched         ) ++numHypotheses;
       if ( genQuarkOrGluon_matched ) ++numHypotheses;
       if ( numHypotheses > 1 ) 
-	edm::LogWarning("TauIdMVATrainingNtupleProducer::analyze")
-	  << " Matching between reconstructed PFTau and generator level tau-jets, electrons, muons and quark/gluon jets is ambiguous !!";
+      edm::LogWarning("TauIdMVATrainingNtupleProducer::analyze")
+      << " Matching between reconstructed PFTau and generator level tau-jets, electrons, muons and quark/gluon jets is ambiguous !!";
 
       setValueI("run" ,evt.run());
       setValueI("event", (evt.eventAuxiliary()).event());
       setValueI("lumi", evt.luminosityBlock());
 
       for ( std::vector<vertexCollectionEntryType>::const_iterator vertexCollection = vertexCollectionEntries_.begin();
-	    vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection ) {
-	edm::Handle<reco::VertexCollection> vertices;
-	evt.getByLabel(vertexCollection->src_, vertices);
-	setValueI(vertexCollection->branchName_multiplicity_, vertices->size());
-	if ( vertices->size() >= 1 ) {
-	  setValue_XYZ(vertexCollection->branchName_position_, vertices->front().position()); // CV: first entry is vertex with highest sum(trackPt), take as "the" event vertex
-	} else {
-	  setValue_XYZ(vertexCollection->branchName_position_, reco::Candidate::Point(0.,0.,0.));
-	}
+        vertexCollection != vertexCollectionEntries_.end(); ++vertexCollection )
+      {
+        edm::Handle<reco::VertexCollection> vertices;
+        evt.getByLabel(vertexCollection->src_, vertices);
+        setValueI(vertexCollection->branchName_multiplicity_, vertices->size());
+        if ( vertices->size() >= 1 )
+          setValue_XYZ(vertexCollection->branchName_position_, vertices->front().position()); // CV: first entry is vertex with highest sum(trackPt), take as "the" event vertex
+        else
+          setValue_XYZ(vertexCollection->branchName_position_, reco::Candidate::Point(0.,0.,0.));
       }
 
       setNumPileUpValue(evt);
@@ -996,7 +1003,7 @@ void TauIdMVATrainingNtupleProducer::produce(edm::Event& evt, const edm::EventSe
       setValueF("evtWeight", evtWeight);
       setValueF("genEvtWeight", weightevt);
 
-//--- fill all computed quantities into TTree
+      //--- fill all computed quantities into TTree
       assert(ntuple_);
       ntuple_->Fill();
     }
