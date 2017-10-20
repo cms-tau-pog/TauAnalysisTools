@@ -11,9 +11,9 @@ train_option = 'optaDBAll'
 # apples-to-apples comparison!
 computeROConAllEvents = False
 
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/ntuples/"
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut/ntuples/"
 
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1/%s/trainfilesfinal_v1/" % version
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut/%s/trainfilesfinal_v1/" % version
 
 preselection_oldDMs = \
     'decayModeFindingOldDMs > 0.5' \
@@ -26,6 +26,82 @@ preselection_newDMs = \
 
 mvaDiscriminators = {
     'mvaIsolation3HitsDeltaR05opt1aLTDB' : {
+        'preselection'        : preselection_oldDMs,
+        'applyPtReweighting'  : True,
+        'applyEtaReweighting' : True,
+        'reweight'            : 'min:KILL',
+        'applyEventPruningSignal'   : 0, # no random pruning
+        'applyEventPruningBackground' : 0, # no random pruning
+        'applyPtDependentPruningSignal' : False, # no pt-dependent pruning
+        'applyPtDependentPruningBackground' : True, # pt-dependent pruning
+        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+        'inputVariables'      : [
+            'TMath::Log(TMath::Max(1., recTauPt))/F',
+            'TMath::Abs(recTauEta)/F',
+            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone))/F',
+            'recTauDecayMode/I',
+            'TMath::Min(30., recTauNphoton)/F',
+            'TMath::Min(0.5, recTauPtWeightedDetaStrip)/F',
+            'TMath::Min(0.5, recTauPtWeightedDphiStrip)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrSignal)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrIsolation)/F',
+            'TMath::Min(100., recTauLeadingTrackChi2)/F',
+            'TMath::Min(1., recTauEratio)/F',
+            'TMath::Sign(+1., recImpactParam)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
+            'TMath::Sign(+1., recImpactParam3D)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
+            'hasRecDecayVertex/I',
+            'TMath::Sqrt(recDecayDistMag)/F',
+            'TMath::Min(10., recDecayDistSign)/F'
+        ],
+        'spectatorVariables'  : [
+            ##'recTauPt/F',
+            'leadPFChargedHadrCandPt/F',
+            'numOfflinePrimaryVertices/I',
+            'genVisTauPt/F',
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBoldDMwLTraw',
+            'byIsolationMVArun2v1DBoldDMwLTraw2016',
+            'recTauLeadingTrackChi2'#,
+            #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            #'byTightCombinedIsolationDeltaBetaCorr3Hits'
+        ],
+        'otherVariables' : [
+            'recTauNphoton_ptGt1.0',
+            'recTauNphoton_ptGt1.5',
+            'photonPtSumOutsideSignalCone_ptGt0.5',
+            'photonPtSumOutsideSignalCone_ptGt1.0',
+            'photonPtSumOutsideSignalCone_ptGt1.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt0.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.0',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.5',
+            'neutralIsoPtsum_ptGt0.5',
+            'neutralIsoPtsum_ptGt1.0',
+            'neutralIsoPtsum_ptGt1.5',
+            'recTauPtWeightedDetaStrip_ptGt0.5',
+            'recTauPtWeightedDetaStrip_ptGt1.0',
+            'recTauPtWeightedDetaStrip_ptGt1.5',
+            'recTauPtWeightedDphiStrip_ptGt0.5',
+            'recTauPtWeightedDphiStrip_ptGt1.0',
+            'recTauPtWeightedDphiStrip_ptGt1.5',
+            'recTauPtWeightedDrSignal_ptGt0.5',
+            'recTauPtWeightedDrSignal_ptGt1.0',
+            'recTauPtWeightedDrSignal_ptGt1.5',
+            'recTauPtWeightedDrIsolation_ptGt0.5',
+            'recTauPtWeightedDrIsolation_ptGt1.0',
+            'recTauPtWeightedDrIsolation_ptGt1.5'
+        ],
+        'legendEntry'         : "nominal 2016 set",
+        'color'               : 1
+    },
+    'mvaIsolation3HitsDeltaR05opt2aLTDB' : {
         'preselection'        : preselection_oldDMs,
         'applyPtReweighting'  : True,
         'applyEtaReweighting' : True,
@@ -67,15 +143,267 @@ mvaDiscriminators = {
             'genVisTauPt/F',
             'genTauPt/F',
             'byIsolationMVArun2v1DBoldDMwLTraw',
-            'byIsolationMVArun2v1DBoldDMwLTraw2016'#,
+            'byIsolationMVArun2v1DBoldDMwLTraw2016',
+            'recTauLeadingTrackChi2'#,
             #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
             #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
             #'byTightCombinedIsolationDeltaBetaCorr3Hits'
         ],
         'otherVariables' : [
+            'recTauNphoton_ptGt1.0',
+            'recTauNphoton_ptGt1.5',
+            'photonPtSumOutsideSignalCone_ptGt0.5',
+            'photonPtSumOutsideSignalCone_ptGt1.0',
+            'photonPtSumOutsideSignalCone_ptGt1.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt0.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.0',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.5',
+            'neutralIsoPtsum_ptGt0.5',
+            'neutralIsoPtsum_ptGt1.0',
+            'neutralIsoPtsum_ptGt1.5',
+            'recTauPtWeightedDetaStrip_ptGt0.5',
+            'recTauPtWeightedDetaStrip_ptGt1.0',
+            'recTauPtWeightedDetaStrip_ptGt1.5',
+            'recTauPtWeightedDphiStrip_ptGt0.5',
+            'recTauPtWeightedDphiStrip_ptGt1.0',
+            'recTauPtWeightedDphiStrip_ptGt1.5',
+            'recTauPtWeightedDrSignal_ptGt0.5',
+            'recTauPtWeightedDrSignal_ptGt1.0',
+            'recTauPtWeightedDrSignal_ptGt1.5',
+            'recTauPtWeightedDrIsolation_ptGt0.5',
+            'recTauPtWeightedDrIsolation_ptGt1.0',
+            'recTauPtWeightedDrIsolation_ptGt1.5'
         ],
-        'legendEntry'         : "MVA opt1aLTDB",
-        'color'               : 1
+        'legendEntry'         : "nominal 2017 set",
+        'color'               : 4
+    },
+    'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5' : {
+        'preselection'        : preselection_oldDMs,
+        'applyPtReweighting'  : True,
+        'applyEtaReweighting' : True,
+        'reweight'            : 'min:KILL',
+        'applyEventPruningSignal'   : 0, # no random pruning
+        'applyEventPruningBackground' : 0, # no random pruning
+        'applyPtDependentPruningSignal' : False, # no pt-dependent pruning
+        'applyPtDependentPruningBackground' : True, # pt-dependent pruning
+        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+        'inputVariables'      : [
+            'TMath::Log(TMath::Max(1., recTauPt))/F',
+            'TMath::Abs(recTauEta)/F',
+            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtsum_ptGt0.5))/F',
+            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_ptGt0.5))/F',
+            'recTauDecayMode/I',
+            'TMath::Min(30., recTauNphoton)/F',
+            'TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt0.5)/F',
+            'TMath::Min(0.5, recTauPtWeightedDphiStrip_ptGt0.5)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrSignal_ptGt0.5)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrIsolation_ptGt0.5)/F',
+            'TMath::Min(1., recTauEratio)/F',
+            'TMath::Sign(+1., recImpactParam)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
+            'TMath::Sign(+1., recImpactParam3D)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
+            'hasRecDecayVertex/I',
+            'TMath::Sqrt(recDecayDistMag)/F',
+            'TMath::Min(10., recDecayDistSign)/F',
+            'TMath::Max(-1.,recTauGJangleDiff)/F'
+        ],
+        'spectatorVariables'  : [
+            ##'recTauPt/F',
+            'leadPFChargedHadrCandPt/F',
+            'numOfflinePrimaryVertices/I',
+            'genVisTauPt/F',
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBoldDMwLTraw',
+            'byIsolationMVArun2v1DBoldDMwLTraw2016',
+            'recTauLeadingTrackChi2'#,
+            #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            #'byTightCombinedIsolationDeltaBetaCorr3Hits'
+        ],
+        'otherVariables' : [
+            'recTauNphoton_ptGt1.0',
+            'recTauNphoton_ptGt1.5',
+            'photonPtSumOutsideSignalCone_ptGt0.5',
+            'photonPtSumOutsideSignalCone_ptGt1.0',
+            'photonPtSumOutsideSignalCone_ptGt1.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt0.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.0',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.5',
+            'neutralIsoPtsum_ptGt0.5',
+            'neutralIsoPtsum_ptGt1.0',
+            'neutralIsoPtsum_ptGt1.5',
+            'recTauPtWeightedDetaStrip_ptGt0.5',
+            'recTauPtWeightedDetaStrip_ptGt1.0',
+            'recTauPtWeightedDetaStrip_ptGt1.5',
+            'recTauPtWeightedDphiStrip_ptGt0.5',
+            'recTauPtWeightedDphiStrip_ptGt1.0',
+            'recTauPtWeightedDphiStrip_ptGt1.5',
+            'recTauPtWeightedDrSignal_ptGt0.5',
+            'recTauPtWeightedDrSignal_ptGt1.0',
+            'recTauPtWeightedDrSignal_ptGt1.5',
+            'recTauPtWeightedDrIsolation_ptGt0.5',
+            'recTauPtWeightedDrIsolation_ptGt1.0',
+            'recTauPtWeightedDrIsolation_ptGt1.5'
+        ],
+        'legendEntry'         : "nominal 2017 set",
+        'color'               : 4
+    },
+    'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0' : {
+        'preselection'        : preselection_oldDMs,
+        'applyPtReweighting'  : True,
+        'applyEtaReweighting' : True,
+        'reweight'            : 'min:KILL',
+        'applyEventPruningSignal'   : 0, # no random pruning
+        'applyEventPruningBackground' : 0, # no random pruning
+        'applyPtDependentPruningSignal' : False, # no pt-dependent pruning
+        'applyPtDependentPruningBackground' : True, # pt-dependent pruning
+        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+        'inputVariables'      : [
+            'TMath::Log(TMath::Max(1., recTauPt))/F',
+            'TMath::Abs(recTauEta)/F',
+            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtsum_ptGt1.0))/F',
+            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_ptGt1.0))/F',
+            'recTauDecayMode/I',
+            'TMath::Min(30., recTauNphoton_ptGt1.0)/F',
+            'TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt1.0)/F',
+            'TMath::Min(0.5, recTauPtWeightedDphiStrip_ptGt1.0)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrSignal_ptGt1.0)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrIsolation_ptGt1.0)/F',
+            'TMath::Min(1., recTauEratio)/F',
+            'TMath::Sign(+1., recImpactParam)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
+            'TMath::Sign(+1., recImpactParam3D)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
+            'hasRecDecayVertex/I',
+            'TMath::Sqrt(recDecayDistMag)/F',
+            'TMath::Min(10., recDecayDistSign)/F',
+            'TMath::Max(-1.,recTauGJangleDiff)/F'
+        ],
+        'spectatorVariables'  : [
+            ##'recTauPt/F',
+            'leadPFChargedHadrCandPt/F',
+            'numOfflinePrimaryVertices/I',
+            'genVisTauPt/F',
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBoldDMwLTraw',
+            'byIsolationMVArun2v1DBoldDMwLTraw2016',
+            'recTauLeadingTrackChi2'#,
+            #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            #'byTightCombinedIsolationDeltaBetaCorr3Hits'
+        ],
+        'otherVariables' : [
+            'recTauNphoton_ptGt1.0',
+            'recTauNphoton_ptGt1.5',
+            'photonPtSumOutsideSignalCone_ptGt0.5',
+            'photonPtSumOutsideSignalCone_ptGt1.0',
+            'photonPtSumOutsideSignalCone_ptGt1.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt0.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.0',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.5',
+            'neutralIsoPtsum_ptGt0.5',
+            'neutralIsoPtsum_ptGt1.0',
+            'neutralIsoPtsum_ptGt1.5',
+            'recTauPtWeightedDetaStrip_ptGt0.5',
+            'recTauPtWeightedDetaStrip_ptGt1.0',
+            'recTauPtWeightedDetaStrip_ptGt1.5',
+            'recTauPtWeightedDphiStrip_ptGt0.5',
+            'recTauPtWeightedDphiStrip_ptGt1.0',
+            'recTauPtWeightedDphiStrip_ptGt1.5',
+            'recTauPtWeightedDrSignal_ptGt0.5',
+            'recTauPtWeightedDrSignal_ptGt1.0',
+            'recTauPtWeightedDrSignal_ptGt1.5',
+            'recTauPtWeightedDrIsolation_ptGt0.5',
+            'recTauPtWeightedDrIsolation_ptGt1.0',
+            'recTauPtWeightedDrIsolation_ptGt1.5'
+        ],
+        'legendEntry'         : "nominal 2017 set",
+        'color'               : 4
+    },
+    'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5' : {
+        'preselection'        : preselection_oldDMs,
+        'applyPtReweighting'  : True,
+        'applyEtaReweighting' : True,
+        'reweight'            : 'min:KILL',
+        'applyEventPruningSignal'   : 0, # no random pruning
+        'applyEventPruningBackground' : 0, # no random pruning
+        'applyPtDependentPruningSignal' : False, # no pt-dependent pruning
+        'applyPtDependentPruningBackground' : True, # pt-dependent pruning
+        'mvaTrainingOptions'  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+        'inputVariables'      : [
+            'TMath::Log(TMath::Max(1., recTauPt))/F',
+            'TMath::Abs(recTauEta)/F',
+            'TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, neutralIsoPtsum_ptGt1.5))/F',
+            'TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F',
+            'TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_ptGt1.5))/F',
+            'recTauDecayMode/I',
+            'TMath::Min(30., recTauNphoton_ptGt1.0)/F',
+            'TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt1.5)/F',
+            'TMath::Min(0.5, recTauPtWeightedDphiStrip_ptGt1.5)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrSignal_ptGt1.5)/F',
+            'TMath::Min(0.5, recTauPtWeightedDrIsolation_ptGt1.5)/F',
+            'TMath::Min(1., recTauEratio)/F',
+            'TMath::Sign(+1., recImpactParam)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign))/F',
+            'TMath::Sign(+1., recImpactParam3D)/F',
+            'TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F',
+            'TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F',
+            'hasRecDecayVertex/I',
+            'TMath::Sqrt(recDecayDistMag)/F',
+            'TMath::Min(10., recDecayDistSign)/F',
+            'TMath::Max(-1.,recTauGJangleDiff)/F'
+        ],
+        'spectatorVariables'  : [
+            ##'recTauPt/F',
+            'leadPFChargedHadrCandPt/F',
+            'numOfflinePrimaryVertices/I',
+            'genVisTauPt/F',
+            'genTauPt/F',
+            'byIsolationMVArun2v1DBoldDMwLTraw',
+            'byIsolationMVArun2v1DBoldDMwLTraw2016',
+            'recTauLeadingTrackChi2'#,
+            #'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+            #'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+            #'byTightCombinedIsolationDeltaBetaCorr3Hits'
+        ],
+        'otherVariables' : [
+            'recTauNphoton_ptGt1.0',
+            'recTauNphoton_ptGt1.5',
+            'photonPtSumOutsideSignalCone_ptGt0.5',
+            'photonPtSumOutsideSignalCone_ptGt1.0',
+            'photonPtSumOutsideSignalCone_ptGt1.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt0.5',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.0',
+            'photonPtSumOutsideSignalConedRgt0p1_ptGt1.5',
+            'neutralIsoPtsum_ptGt0.5',
+            'neutralIsoPtsum_ptGt1.0',
+            'neutralIsoPtsum_ptGt1.5',
+            'recTauPtWeightedDetaStrip_ptGt0.5',
+            'recTauPtWeightedDetaStrip_ptGt1.0',
+            'recTauPtWeightedDetaStrip_ptGt1.5',
+            'recTauPtWeightedDphiStrip_ptGt0.5',
+            'recTauPtWeightedDphiStrip_ptGt1.0',
+            'recTauPtWeightedDphiStrip_ptGt1.5',
+            'recTauPtWeightedDrSignal_ptGt0.5',
+            'recTauPtWeightedDrSignal_ptGt1.0',
+            'recTauPtWeightedDrSignal_ptGt1.5',
+            'recTauPtWeightedDrIsolation_ptGt0.5',
+            'recTauPtWeightedDrIsolation_ptGt1.0',
+            'recTauPtWeightedDrIsolation_ptGt1.5'
+        ],
+        'legendEntry'         : "nominal 2017 set",
+        'color'               : 4
     }
 }
 
@@ -98,48 +426,53 @@ cutDiscriminators = {
         'legendEntry'         : "2016 MVA",
         'color'               : 3
     }#,
-#    'hpsCombinedIsolation3HitsLooseOldDMs' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "HPS 3hit WPs",
-#        'color'               : 8,
-#        'markerStyle'         : 20
-#    },
-#    'hpsCombinedIsolation3HitsMediumOldDMs' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byMediumCombinedIsolationDeltaBetaCorr3Hits',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 8,
-#        'markerStyle'         : 21
-#    },
-#    'hpsCombinedIsolation3HitsTightOldDMs' : {
-#        'preselection'        : preselection_oldDMs,
-#        'discriminator'       : 'byTightCombinedIsolationDeltaBetaCorr3Hits',
-#        'numBins'             : 2,
-#        'min'                 : -0.5,
-#        'max'                 : +1.5,
-#        'legendEntry'         : "",
-#        'color'               : 8,
-#        'markerStyle'         : 33,
-#        'markerSize'          : 2
-#    }
+    #    'hpsCombinedIsolation3HitsLooseOldDMs' : {
+    #        'preselection'        : preselection_oldDMs,
+    #        'discriminator'       : 'byLooseCombinedIsolationDeltaBetaCorr3Hits',
+    #        'numBins'             : 2,
+    #        'min'                 : -0.5,
+    #        'max'                 : +1.5,
+    #        'legendEntry'         : "HPS 3hit WPs",
+    #        'color'               : 8,
+    #        'markerStyle'         : 20
+    #    },
+    #    'hpsCombinedIsolation3HitsMediumOldDMs' : {
+    #        'preselection'        : preselection_oldDMs,
+    #        'discriminator'       : 'byMediumCombinedIsolationDeltaBetaCorr3Hits',
+    #        'numBins'             : 2,
+    #        'min'                 : -0.5,
+    #        'max'                 : +1.5,
+    #        'legendEntry'         : "",
+    #        'color'               : 8,
+    #        'markerStyle'         : 21
+    #    },
+    #    'hpsCombinedIsolation3HitsTightOldDMs' : {
+    #        'preselection'        : preselection_oldDMs,
+    #        'discriminator'       : 'byTightCombinedIsolationDeltaBetaCorr3Hits',
+    #        'numBins'             : 2,
+    #        'min'                 : -0.5,
+    #        'max'                 : +1.5,
+    #        'legendEntry'         : "",
+    #        'color'               : 8,
+    #        'markerStyle'         : 33,
+    #        'markerSize'          : 2
+    #    }
 }
 
 plots = {
-'mvaIsolation_optDeltaR05BDeltaBeta' : {
+    'mvaIsolation_optDeltaR05BDeltaBeta' : 
+    {
         'graphs' : [
             'mvaIsolation3HitsDeltaR05opt1aLTDB',
+            'mvaIsolation3HitsDeltaR05opt2aLTDB',
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5',
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0',
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5',
             'rawMVAoldDMwLT',
             'rawMVAoldDMwLT2016'#,
-#            'hpsCombinedIsolation3HitsLooseOldDMs',
-#            'hpsCombinedIsolation3HitsMediumOldDMs',
-#            'hpsCombinedIsolation3HitsTightOldDMs'
+            #'hpsCombinedIsolation3HitsLooseOldDMs',
+            #'hpsCombinedIsolation3HitsMediumOldDMs',
+            #'hpsCombinedIsolation3HitsTightOldDMs'
         ]
     }
 }
@@ -148,77 +481,55 @@ allDiscriminators = {}
 allDiscriminators.update(mvaDiscriminators)
 allDiscriminators.update(cutDiscriminators)
 
-signalSamples = [
-    "ZplusJets_madgraph"
-]
-#smHiggsMassPoints = [ 120, 125, 130 ]
-#for massPoint in smHiggsMassPoints:
-#    wPlusHSampleName = "WplusHHiggs%1.0ftoTauTau" % massPoint
-#    signalSamples.append(wPlusHSampleName)
-#    wMinusHSampleName = "WminusHHiggs%1.0ftoTauTau" % massPoint
-#    signalSamples.append(wMinusHSampleName)
-#    zHSampleName = "ZHHiggs%1.0ftoTauTau" % massPoint
-#    signalSamples.append(zHSampleName)
-#smHiggsMassPoints5 = [ 120, 130 ]
-#for massPoint in smHiggsMassPoints5:
-#    tthSampleName = "tthHiggs%1.0ftoTauTau" % massPoint
-#    signalSamples.append(tthSampleName)
-#ggSampleName = "ggHiggs125toTauTau"
-#signalSamples.append(ggSampleName)
-#vbfSampleName = "vbfHiggs125toTauTau"
-#signalSamples.append(vbfSampleName)
-mssmHiggsMassPoints1 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900 ]
+signalSamples = ["ZplusJets_madgraph", "ggHiggs125toTauTau", "vbfHiggs125toTauTau"]
+mssmHiggsMassPoints1 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     signalSamples.append(ggSampleName)
-mssmHiggsMassPoints2 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 3200 ]
+
+mssmHiggsMassPoints2 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     signalSamples.append(bbSampleName)
-ZprimeMassPoints = [ 750, 1000, 1250, 1750, 2000, 2500, 3000, 3500, 4000 ]
-for massPoint in ZprimeMassPoints:
-    sampleName = "Zprime%1.0ftoTauTau" % massPoint
-    signalSamples.append(sampleName)
-#WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800 ]
-#for massPoint in WprimeMassPoints:
-#    sampleName = "Wprime%1.0ftoTauNu" % massPoint
-#    signalSamples.append(sampleName)
+#"WplusHHiggs%1.0ftoTauTau", "WminusHHiggs%1.0ftoTauTau", "ZHHiggs%1.0ftoTauTau", "tthHiggs%1.0ftoTauTau", "vbfHiggs125toTauTau"
+#"Zprime%1.0ftoTauTau", "Wprime%1.0ftoTauNu"
 
 backgroundSamples = [
-    "TT_powheg",
-#    "PPmuXptGt20Mu15",
-#    "QCDmuEnrichedPt30to50",
-#    "QCDmuEnrichedPt50to80",
-#    "QCDmuEnrichedPt80to120",
-#    "QCDmuEnrichedPt120to170",
-#    "QCDmuEnrichedPt170to300",
-#    "QCDmuEnrichedPt300to470",
-#    "QCDmuEnrichedPt470to600",
-#    "QCDmuEnrichedPt600to800",
-#    "QCDmuEnrichedPt800to1000",
-#    "QCDmuEnrichedPtGt1000",
-    "WplusJets_madgraph",
-#    "QCDjetsFlatPt15to7000",
-    "QCDjetsPt30to50",
-    "QCDjetsPt50to80",
-    "QCDjetsPt80to120",
-    "QCDjetsPt120to170",
-    "QCDjetsPt170to300",
-    "QCDjetsPt300to470",
-    "QCDjetsPt470to600",
-    "QCDjetsPt600to800",
-    "QCDjetsPt800to1000",
-    "QCDjetsPt1000to1400",
-    "QCDjetsPt1400to1800",
-#    "QCDjetsPt1800to2400",
-    "QCDjetsPt2400to3200",
-    "QCDjetsPtGt3200",
-#    "QCDEmEnrichedPt20to30",
-#    "QCDEmEnrichedPt30to50",
-#    "QCDEmEnrichedPt50to80",
-#    "QCDEmEnrichedPt80to120",
-#    "QCDEmEnrichedPt170to300",
-#    "QCDEmEnrichedPtGt300"
+"QCDmuEnrichedPt800to1000",
+"TT_powheg",
+"QCDEmEnrichedPt50to80",
+"QCDjetsPt80to120",
+"QCDEmEnrichedPtGt300",
+"QCDmuEnrichedPt120to170",
+"QCDjetsPt300to470",
+"QCDjetsPt2400to3200",
+"QCDjetsPtGt3200",
+"QCDEmEnrichedPt30to50",
+"QCDjetsPt470to600",
+"QCDmuEnrichedPt470to600",
+"QCDmuEnrichedPt170to300",
+"QCDEmEnrichedPt15to20",
+"QCDjetsPt1800to2400",
+"QCDjetsPt30to50",
+"QCDjetsPt170to300",
+# "TTJets",
+"WplusJets_madgraph",
+"QCDmuEnrichedPt20to30",
+"QCDmuEnrichedPt50to80",
+"QCDmuEnrichedPt600to800",
+"QCDEmEnrichedPt120to170",
+"QCDmuEnrichedPt80to120",
+"QCDjetsPt800to1000",
+"QCDmuEnrichedPt30to50",
+"QCDEmEnrichedPt20to30",
+"QCDjetsPt1400to1800",
+"QCDjetsPt120to170",
+"QCDjetsPt600to800",
+"QCDEmEnrichedPt170to300",
+"QCDmuEnrichedPt15to20",
+"QCDjetsPt1000to1400",
+"QCDmuEnrichedPt300to470",
+"QCDEmEnrichedPt80to120",
 ]
 
 execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
