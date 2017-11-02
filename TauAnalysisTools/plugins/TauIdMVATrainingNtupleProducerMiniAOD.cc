@@ -260,9 +260,15 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	addBranchF("recTauPtWeightedDphiStrip");
 	addBranchF("recTauPtWeightedDrSignal");
 	addBranchF("recTauPtWeightedDrIsolation");
+
 	for (unsigned iPtMin = 0; iPtMin < ptMin_allPhotonsVariables.size(); iPtMin++)
 	{
-		addBranchF("neutralIsoPtsum_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("neutralIsoPtSum_IsoConeR0p3_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("neutralIsoPtSum_IsoConeR0p5_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		addBranchF("photonPtSumOutsideSignalCone_IsoConeR0p5_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+
+		addBranchF("neutralIsoPtSum_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
 		addBranchF("recTauPtWeightedDetaStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
 		addBranchF("recTauPtWeightedDphiStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
 		addBranchF("recTauPtWeightedDrSignal_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
@@ -422,6 +428,7 @@ namespace
 	unsigned int n_photons_total(const pat::Tau& tau, double ptMin)
 	{
 		unsigned int n_photons = 0;
+
 		for (auto& cand : tau.signalGammaCands())
 			if (cand->pt() > ptMin) ++n_photons;
 
@@ -431,7 +438,7 @@ namespace
 		return n_photons;
 	}
 
-	float getPhotonPtSumOutsideSignalCone(const pat::Tau& tau, float ptMin = -1, float signalCone = -1)
+	float getPhotonPtSumOutsideSignalCone(const pat::Tau& tau, float ptMin = -1, float signalCone = -1, float isolationCone = -1)
 	{
 		float photonSumPt_outsideSignalCone = 0.;
 
@@ -445,19 +452,18 @@ namespace
 		{
 			double dR = deltaR(tau.eta(), tau.phi(), cand->eta(), cand->phi());
 
-			if (dR > signalCone && cand->pt() > ptMin)
+			if ((dR > signalCone && cand->pt() > ptMin) && (isolationCone < 0 || dR <= isolationCone))
 				photonSumPt_outsideSignalCone += cand->pt();
 		}
 
 		return photonSumPt_outsideSignalCone;
 	}
 
-	float getNeutralIsoPtsum(const pat::Tau& tau, float ptMin = -1)
+	float getNeutralIsoPtsum(const pat::Tau& tau, float ptMin = -1, float dRiso = -1)
 	{
 		float neutralIsoPtsum = 0;
-
 		for (auto& cand : tau.isolationGammaCands())
-			if (cand->pt() > ptMin)
+			if (cand->pt() > ptMin && !(dRiso > 0 && deltaR(tau.eta(), tau.phi(), cand->eta(), cand->phi()) > dRiso))
 				neutralIsoPtsum += cand->pt();
 
 		return neutralIsoPtsum;
@@ -698,7 +704,14 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setRecTauValues(const pat::TauRef& r
 	setValueF("recTauPtWeightedDrIsolation", pt_weighted_dr_iso(*recTau, tau_decaymode));
 	for (unsigned iPtMin = 0; iPtMin < ptMin_allPhotonsVariables.size(); iPtMin++)
 	{
-		setValueF("neutralIsoPtsum_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getNeutralIsoPtsum(*recTau, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
+
+		setValueF("neutralIsoPtSum_IsoConeR0p3_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getNeutralIsoPtsum(*recTau, std::stof(ptMin_allPhotonsVariables.at(iPtMin)), 0.3));
+		setValueF("neutralIsoPtSum_IsoConeR0p5_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getNeutralIsoPtsum(*recTau, std::stof(ptMin_allPhotonsVariables.at(iPtMin)), 0.5));
+		//setValueF("chargedIsoPtSumdR03_ptGt" + ptMin_allPhotonsVariables.at(iPtMin));
+		setValueF("photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getPhotonPtSumOutsideSignalCone(*recTau, std::stof(ptMin_photonPtSumOutsideSignalCone.at(iPtMin)), -1, 0.3));
+		setValueF("photonPtSumOutsideSignalCone_IsoConeR0p5_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getPhotonPtSumOutsideSignalCone(*recTau, std::stof(ptMin_photonPtSumOutsideSignalCone.at(iPtMin)), -1, 0.5));
+
+		setValueF("neutralIsoPtSum_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), getNeutralIsoPtsum(*recTau, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
 		setValueF("recTauPtWeightedDetaStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_deta_strip(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
 		setValueF("recTauPtWeightedDphiStrip_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_dphi_strip(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
 		setValueF("recTauPtWeightedDrSignal_ptGt" + ptMin_allPhotonsVariables.at(iPtMin), pt_weighted_dr_signal(*recTau, tau_decaymode, std::stof(ptMin_allPhotonsVariables.at(iPtMin))));
