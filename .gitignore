@@ -1,4 +1,10 @@
 *.pyc
 *~
+*.out
+*.log
+*.zsh
+*tauIdMVATrainingNtupleProduction_crab_create_and_submit.sh
 *.root
+*crab_tauIdMVATrainingNtupleProduction*.py
+*produceTauIdMVATrainingNtupleMiniAOD*.py
 */python/*/__init__.py
