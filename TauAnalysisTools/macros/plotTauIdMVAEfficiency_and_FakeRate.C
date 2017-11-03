@@ -531,6 +531,7 @@ TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, 
 }
 
 void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
+		TGraph* graph0, const std::string& legendEntry0,
 		TGraph* graph1, const std::string& legendEntry1,
 		TGraph* graph2, const std::string& legendEntry2,
 		TGraph* graph3, const std::string& legendEntry3,
@@ -571,10 +572,17 @@ void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
 
   dummyHistogram->Draw("axis");
 
-  graph1->SetLineColor(colors[0]);
+	graph0->SetLineColor(colors[0]);
+	graph0->SetLineWidth(2);
+	graph0->Draw("L");
+	legend->AddEntry(graph0, legendEntry0.data(), "l");
+
+	if ( graph1 ) {
+		graph1->SetLineColor(colors[1]);
   graph1->SetLineWidth(2);
   graph1->Draw("L");
   legend->AddEntry(graph1, legendEntry1.data(), "l");
+	}
 
   if ( graph2 ) {
     graph2->SetLineColor(colors[1]);
@@ -638,6 +646,76 @@ void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
 }
 //-------------------------------------------------------------------------------
 
+void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
+		std::vector< std::pair<TGraph*, const std::string&> > v,
+		double xMin, double xMax, unsigned numBinsX, const std::string& xAxisTitle, double xAxisOffset,
+		double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
+		double legendX0, double legendY0,
+		const std::string& outputFileName)
+{
+	TCanvas* canvas = new TCanvas("canvas", "canvas", canvasSizeX, canvasSizeY);
+	canvas->SetFillColor(10);
+	canvas->SetBorderSize(2);
+	canvas->SetLeftMargin(0.12);
+	canvas->SetBottomMargin(0.12);
+
+	std::vector<int> colors;
+	for (int i = 1; i <= v.size(); i++)
+		colors.push_back(i);
+
+	TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.44, legendY0 + 0.20, "", "brNDC");
+	legend->SetBorderSize(0);
+	legend->SetFillColor(0);
+
+	TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", numBinsX, xMin, xMax);
+	dummyHistogram->SetTitle("");
+	dummyHistogram->SetStats(false);
+	dummyHistogram->SetMinimum(yMin);
+	dummyHistogram->SetMaximum(yMax);
+
+	TAxis* xAxis = dummyHistogram->GetXaxis();
+	xAxis->SetTitle(xAxisTitle.data());
+	xAxis->SetTitleOffset(xAxisOffset);
+
+	TAxis* yAxis = dummyHistogram->GetYaxis();
+	yAxis->SetTitle(yAxisTitle.data());
+	yAxis->SetTitleOffset(yAxisOffset);
+
+	dummyHistogram->Draw("axis");
+
+	for (int i = 0; i < v.size(); i++)
+	{
+		v.at(i).first->SetLineColor(colors.at(0));
+		v.at(i).first->SetLineWidth(2);
+		v.at(i).first->Draw("L");
+		legend->AddEntry(v.at(i).first, v.at(i).second.data(), "l");
+	}
+
+	legend->Draw();
+
+		TPaveText* label = 0;
+	if ( title.Length() > 0 ) {
+		label = new TPaveText(0.175, 0.925, 0.48, 0.98, "NDC");
+		label->AddText(title.Data());
+		label->SetTextAlign(13);
+		label->SetTextSize(0.045);
+		label->SetFillStyle(0);
+		label->SetBorderSize(0);
+		label->Draw();
+	}
+
+	canvas->Update();
+	size_t idx = outputFileName.find_last_of('.');
+	std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+	if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
+	canvas->Print(std::string(outputFileName_plot).append(".png").data());
+	canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
+
+	delete legend;
+	delete label;
+	delete dummyHistogram;
+	delete canvas;
+}
 struct plotEntryType
 {
   plotEntryType(const std::string& name, double mvaCut)
@@ -723,14 +801,17 @@ struct plotEntryType
 void fillPlots(const std::string& inputFileName, const std::string& treeName, plotEntryType* plots_signal, plotEntryType* plots_background, 
 	       double mvaCut, 
 	       int tauPtMode, int tauEtaMode,
-	       TFormula* mvaOutput_normalization)
+				 TFormula* mvaOutput_normalization,
+				 const std::string& inputFileDirs = "")
 {
   int classId_signal     = 0;
   int classId_background = 1;
 
   TFile* inputFile = new TFile(inputFileName.data());
+	inputFile->Print();
 
-  TTree* tree = dynamic_cast<TTree*>(inputFile->Get(treeName.data()));
+	TTree* tree = dynamic_cast<TTree*>(inputFile->Get( TString(inputFileDirs) + TString(treeName.data())));
+	tree->Print();
 
   Float_t recTauPt, recLogTauPt, recTauEta, recTauAbsEta;
   if ( tauPtMode == kTauPt ) {
@@ -814,12 +895,13 @@ void fillPlots(const std::string& inputFileName, const std::string& treeName, pl
 
 struct mvaEntryType
 {
-  mvaEntryType(const std::string& inputFileName, const std::string& mvaName, double mvaCut, int tauPtMode, int tauEtaMode)
+	mvaEntryType(const std::string& inputFileName, const std::string& mvaName, double mvaCut, int tauPtMode, int tauEtaMode, const std::string& inputFileDirs="")
     : inputFileName_(inputFileName),
       mvaName_(mvaName),
       mvaCut_(mvaCut),
       tauPtMode_(tauPtMode),
-      tauEtaMode_(tauEtaMode)      
+			tauEtaMode_(tauEtaMode),
+			inputFileDirs_(inputFileDirs)
   {
     legendEntry_ = Form("MVA %s", mvaName.data());
     plots_signal_ = new plotEntryType("signal", mvaCut);
@@ -831,6 +913,7 @@ struct mvaEntryType
     mvaOutput_normalization_->SetParameter(1, 1.);
   }
   ~mvaEntryType() {}
+	std::string inputFileDirs_;
   std::string inputFileName_;
   std::string mvaName_;
   std::string legendEntry_;
@@ -865,8 +948,8 @@ void plotTauIdMVAEfficiency_and_FakeRate()
   //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTDB.root", "isoDBR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
   //mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTPuWeight.root", "isoPWR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
 
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/tauId_v3_0/trainfilesfinal_v1_oldDMs/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt1aLTDB.root", "isoDBoldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
-  mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anehrkor/TauIDMVATraining2016/Summer16_25ns_V2/tauId_v3_0/trainfilesfinal_newDMs_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt1bLTDB.root", "isoDBnewDMwLT",  0.80, kLogTauPt, kTauAbsEta));
+	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut/tauId_v3_0/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0.root", "tauIdMVAIsoDBoldDMwLT_2017_pt_0p1",  0.80, kLogTauPt, kTauAbsEta, "dataset/"));
+	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_2017strategy/tauId_v3_0/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0.root", "tauIdMVAIsoDBoldDMwLT_2016_pt_0p1",  0.80, kLogTauPt, kTauAbsEta, ""));
 
 
   for ( std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();
@@ -875,11 +958,13 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     fillPlots((*mvaEntry)->inputFileName_, "TrainTree", (*mvaEntry)->plots_signal_, (*mvaEntry)->plots_background_, 
 	      (*mvaEntry)->mvaCut_, 
 	      (*mvaEntry)->tauPtMode_, (*mvaEntry)->tauEtaMode_, 
-	      (*mvaEntry)->mvaOutput_normalization_);
+				(*mvaEntry)->mvaOutput_normalization_,
+				(*mvaEntry)->inputFileDirs_);
     fillPlots((*mvaEntry)->inputFileName_, "TestTree", (*mvaEntry)->plots_signal_, (*mvaEntry)->plots_background_, 
 	      (*mvaEntry)->mvaCut_, 
 	      (*mvaEntry)->tauPtMode_, (*mvaEntry)->tauEtaMode_, 
-	      (*mvaEntry)->mvaOutput_normalization_);
+				(*mvaEntry)->mvaOutput_normalization_,
+				(*mvaEntry)->inputFileDirs_);
   }
 /*  
   showEfficiency("", 800, 600,
@@ -1002,8 +1087,10 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     TGraph* graphEfficiencyEq70percent = compMVAcut((*mvaEntry)->plots_signal_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_signal_->histogramPt_, 0.70);
     TGraph* graphEfficiencyEq80percent = compMVAcut((*mvaEntry)->plots_signal_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_signal_->histogramPt_, 0.80);
     TGraph* graphEfficiencyEq90percent = compMVAcut((*mvaEntry)->plots_signal_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_signal_->histogramPt_, 0.90);
+		TGraph* graphEfficiencyEq95percent = compMVAcut((*mvaEntry)->plots_signal_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_signal_->histogramPt_, 0.95);
 
     showGraphs("#tau_{had} Efficiency", 800, 600,
+				 graphEfficiencyEq95percent, "95%",
 	       graphEfficiencyEq90percent, "90%",
 	       graphEfficiencyEq80percent, "80%",
 	       graphEfficiencyEq70percent, "70%",
@@ -1021,6 +1108,7 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     delete outputFile_MVAoutput_vs_Pt;
 
     std::string outputFileName_effGraphs = Form("wpDiscriminationByIsolationMVA1Run2_%s.root", (*mvaEntry)->mvaName_.data());
+		graphEfficiencyEq95percent->SetName(Form("%sEff95", (*mvaEntry)->mvaName_.data()));
     graphEfficiencyEq90percent->SetName(Form("%sEff90", (*mvaEntry)->mvaName_.data()));
     graphEfficiencyEq80percent->SetName(Form("%sEff80", (*mvaEntry)->mvaName_.data()));
     graphEfficiencyEq70percent->SetName(Form("%sEff70", (*mvaEntry)->mvaName_.data()));
@@ -1028,6 +1116,7 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     graphEfficiencyEq50percent->SetName(Form("%sEff50", (*mvaEntry)->mvaName_.data()));
     graphEfficiencyEq40percent->SetName(Form("%sEff40", (*mvaEntry)->mvaName_.data()));      
     TFile* outputFile_effGraphs = new TFile(outputFileName_effGraphs.data(), "RECREATE");
+		graphEfficiencyEq95percent->Write();
     graphEfficiencyEq90percent->Write();
     graphEfficiencyEq80percent->Write();
     graphEfficiencyEq70percent->Write();
@@ -1058,13 +1147,14 @@ void plotTauIdMVAEfficiency_and_FakeRate()
     TGraph* graphFakeRateEq020percent = compMVAcut((*mvaEntry)->plots_background_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_background_->histogramPt_, 0.020);
     TGraph* graphFakeRateEq050percent = compMVAcut((*mvaEntry)->plots_background_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_background_->histogramPt_, 0.050);
     
+			std::vector< std::pair<TGraph*, const std::string&> > v = {{graphFakeRateEq050percent, "5%"},
+				 {graphFakeRateEq020percent, "2%"},
+				 {graphFakeRateEq010percent, "1%"},
+				 {graphFakeRateEq005percent, "0.5%"},
+				 {graphFakeRateEq002percent, "0.2%"},
+				 {graphFakeRateEq001percent, "0.1%"}};
     showGraphs("#tau_{had} Fake-rate", 800, 600,
-	       graphFakeRateEq050percent, "5%",
-	       graphFakeRateEq020percent, "2%",
-	       graphFakeRateEq010percent, "1%",
-	       graphFakeRateEq005percent, "0.5%",
-	       graphFakeRateEq002percent, "0.2%",
-	       graphFakeRateEq001percent, "0.1%",
+				 v,
 	       0., 2500., 10, "P_{T} / GeV", 1.2,
 	       0.0, 1.0, "MVA_{cut}", 1.35,
 	       0.69, 0.145, 
