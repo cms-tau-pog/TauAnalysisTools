@@ -299,6 +299,7 @@ mvaDiscriminators = {
         'color'               : 1
     },
 
+    # These are performing worse
     'mvaIsolation3HitsDeltaR05opt1aLTDB_photonPtSumOutsideSignalConedRgt0p1PtGt0p5' : {
         'preselection'        : preselection_oldDMs,
         'applyPtReweighting'  : True,
