@@ -6,10 +6,10 @@ import shlex
 import shutil
 
 # generic path to dCache where ntuples are stored
-inputPath = "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2016/Summer17_25ns_V1_allPhotonsCut"
+inputPath = "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones"
 
 # generic path to NFS where we want to copy ntuples to
-outputPath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut/ntuples/"
+outputPath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
 
 # more or less a copy of the samples in submitTauIdMVATrainingNtupleProduction_crab3.py
 # with reduced information
