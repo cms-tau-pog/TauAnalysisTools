@@ -513,6 +513,51 @@
 	    },
 
 
+
+	    "mvaIsolation3HitsDeltaR05opt2aLTDB" : {
+	        "preselection"        : "preselection_oldDMs",
+	        "applyPtReweighting"  : true,
+	        "applyEtaReweighting" : true,
+	        "reweight"            : "min:KILL",
+	        "applyEventPruningSignal"   : 0,
+	        "applyEventPruningBackground" : 0,
+	        "applyPtDependentPruningSignal" : false,
+	        "applyPtDependentPruningBackground" : true,
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "inputVariables"      : [
+	            "TMath::Log(TMath::Max(1., recTauPt))/F",
+	            "TMath::Abs(recTauEta)/F",
+	            "TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F",
+	            "TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum))/F",
+	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
+	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone))/F",
+	            "recTauDecayMode/I",
+	            "TMath::Min(30., recTauNphoton)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDetaStrip)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDphiStrip)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDrSignal)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDrIsolation)/F",
+	            "TMath::Min(1., recTauEratio)/F",
+	            "TMath::Sign(+1., recImpactParam)/F",
+	            "TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F",
+	            "TMath::Min(10., TMath::Abs(recImpactParamSign))/F",
+	            "TMath::Sign(+1., recImpactParam3D)/F",
+	            "TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F",
+	            "TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F",
+	            "hasRecDecayVertex/I",
+	            "TMath::Sqrt(recDecayDistMag)/F",
+	            "TMath::Min(10., recDecayDistSign)/F",
+	            "TMath::Max(-1.,recTauGJangleDiff)/F"
+	        ],
+	        "spectatorVariables"  : [
+	            "commonSpectatorVariables"
+	        ],
+	        "otherVariables" : [
+	            "commonOtherVariables"
+	        ],
+	        "legendEntry"         : "nominal 2017 training",
+	        "color"               : 4
+	    },
 		"mvaIsolation3HitsDeltaR05opt2aLTDB_0p5" : {
 	        "preselection"        : "preselection_oldDMs",
 	        "applyPtReweighting"  : true,
@@ -670,7 +715,7 @@
 	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
 	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_ptGt0.5))/F",
 	            "recTauDecayMode/I",
-	            "TMath::Min(30., recTauNphoton)/F",
+	            "TMath::Min(30., recTauNphoton_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDphiStrip_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDrSignal_ptGt0.5)/F",
@@ -806,7 +851,7 @@
 	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
 	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalConedRgt0p1_ptGt0.5))/F",
 	            "recTauDecayMode/I",
-	            "TMath::Min(30., recTauNphoton)/F",
+	            "TMath::Min(30., recTauNphoton_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDphiStrip_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDrSignal_ptGt0.5)/F",
