@@ -481,6 +481,7 @@ class SamplesHandles(object):
         #        'total_files'                        : -1,
         #        'type'                               : 'SignalMC'
         #    }
+        return samples
 
     @staticmethod
     def getSamplesBg17():
@@ -491,12 +492,13 @@ class SamplesHandles(object):
                 'total_files'                        : -1,
                 'type'                               : 'BackgroundMC'
             },
-            'TTJets': {
-                'datasetpath'                        : '/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10-v3/MINIAODSIM',
-                'files_per_job'                      : 1,
-                'total_files'                        : -1,
-                'type'                               : 'BackgroundMC'
-            },
+            # was excluded because of too many TT bar events(~30%) in the signal after preselection
+            # 'TTJets': {
+            #     'datasetpath'                        : '/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10-v3/MINIAODSIM',
+            #     'files_per_job'                      : 1,
+            #     'total_files'                        : -1,
+            #     'type'                               : 'BackgroundMC'
+            # },
            # 'PPmuXptGt20Mu15' : {
            #     'datasetpath'                        : '/QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8/RunIISummer17MiniAOD-FlatPU0to70_92X_upgrade2017_realistic_v10-v1/MINIAODSIM',
            #     'files_per_job'                      : 1,
@@ -727,3 +729,11 @@ class SamplesHandles(object):
         s = SamplesHandles.getSamplesSg17()
         s.update(SamplesHandles.getSamplesBg17())
         return s
+
+    def getDatabeseNames(self):
+        datasetnames = []
+        for sample in self.samples.values():
+            datasetnames.append(sample['datasetpath'].split('/')[1])
+        datasetnames.sort()
+        return datasetnames
+
