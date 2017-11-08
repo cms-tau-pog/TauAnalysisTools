@@ -17,9 +17,10 @@
 	        "numBins"             : 30000,
 	        "min"                 : -1.5,
 	        "max"                 : 1.5,
-	        "legendEntry"         : "2015 MVA, dRiso 0.3",
+	        "legendEntry"         : "2015 MVA, dRiso 0.3, old DM",
 	        "color"               : 3
 	    },
+
 	    "rawMVAoldDMwLT" :
 	    {
 	        "preselection"        : "preselection_oldDMs",
@@ -27,7 +28,7 @@
 	        "numBins"             : 30000,
 	        "min"                 : -1.5,
 	        "max"                 : 1.5,
-	        "legendEntry"         : "2015 MVA, dRiso 0.5",
+	        "legendEntry"         : "2015 MVA, dRiso 0.5, old DM",
 	        "color"               : 15
     	},
 		"rawMVAoldDMwLT2016" :
@@ -37,9 +38,28 @@
 			"numBins"             : 30000,
 			"min"                 : -1.5,
 			"max"                 : 1.5,
-			"legendEntry"         : "2016 MVA",
+			"legendEntry"         : "2016 MVA, dRiso 0.5, old DM",
 			"color"               : 3
-		}
+		},
+
+		"rawMVAnewDMwLT" : {
+	        "preselection"        : "preselection_newDMs",
+	        "discriminator"       : "byIsolationMVArun2v1DBnewDMwLTraw",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "2015 MVA, dRiso 0.5, new DM",
+	        "color"               : 2
+	    },
+	    "rawMVAnewDMwLT2016" : {
+	        "preselection"        : "preselection_newDMs",
+	        "discriminator"       : "byIsolationMVArun2v1DBnewDMwLTraw2016",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "2016 MVA, dRiso 0.5, new DM",
+	        "color"               : 3
+	    }
     },
 
 	"commonOtherVariables":
@@ -69,13 +89,13 @@
         "recTauPtWeightedDrIsolation_ptGt1.5",
 
         "chargedIsoPtSumdR03",
-
+        "neutralIsoPtSumdR03",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt0.5",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt1.0",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt1.5",
-		"photonPtSumOutsideSignalConedR03_ptGt0.5",
-		"photonPtSumOutsideSignalConedR03_ptGt1.0",
-		"photonPtSumOutsideSignalConedR03_ptGt1.5"
+		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt0.5",
+		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.0",
+		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.5"
     ],
 
     "commonSpectatorVariables"  :
@@ -86,8 +106,11 @@
 		"genVisTauPt/F",
 		"genTauPt/F",
 		"recTauLeadingTrackChi2",
+		"byIsolationMVArun2v1DBdR03oldDMwLTraw",
 		"byIsolationMVArun2v1DBoldDMwLTraw",
-		"byIsolationMVArun2v1DBdR03oldDMwLTraw"
+		"byIsolationMVArun2v1DBoldDMwLTraw2016",
+		"byIsolationMVArun2v1DBnewDMwLTraw",
+		"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	],
 	
 	"trainings":
@@ -249,7 +272,7 @@
 	            "TMath::Log(TMath::Max(1.e-2, chargedIsoPtSumdR03))/F",
 	            "TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum_IsoConeR0p3_ptGt0.5))/F",
 	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
-	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalConedR03_ptGt0.5))/F",
+	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt0.5))/F",
 	            "recTauDecayMode/I",
 	            "TMath::Min(30., recTauNphoton_ptGt0.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt0.5)/F",
@@ -270,7 +293,7 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -295,7 +318,7 @@
 	            "TMath::Log(TMath::Max(1.e-2, chargedIsoPtSumdR03))/F",
 	            "TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum_IsoConeR0p3_ptGt1.0))/F",
 	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
-	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalConedR03_ptGt1.0))/F",
+	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.0))/F",
 	            "recTauDecayMode/I",
 	            "TMath::Min(30., recTauNphoton_ptGt1.0)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt1.0)/F",
@@ -316,7 +339,7 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -341,7 +364,7 @@
 	            "TMath::Log(TMath::Max(1.e-2, chargedIsoPtSumdR03))/F",
 	            "TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum_IsoConeR0p3_ptGt1.5))/F",
 	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
-	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalConedR03_ptGt1.5))/F",
+	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.5))/F",
 	            "recTauDecayMode/I",
 	            "TMath::Min(30., recTauNphoton_ptGt1.5)/F",
 	            "TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt1.5)/F",
@@ -362,7 +385,7 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -411,7 +434,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+	            "byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -457,7 +481,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+	            "byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -503,7 +528,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+	            "byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -551,7 +577,9 @@
 	            "TMath::Max(-1.,recTauGJangleDiff)/F"
 	        ],
 	        "spectatorVariables"  : [
-	            "commonSpectatorVariables"
+	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -596,7 +624,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -642,7 +671,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -688,7 +718,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -735,7 +766,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -780,7 +812,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -825,7 +858,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -871,7 +905,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -916,7 +951,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -961,7 +997,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1002,7 +1039,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1042,7 +1080,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1082,7 +1121,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	        "recTauNphoton_ptGt1.0",
@@ -1145,7 +1185,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1185,7 +1226,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1225,7 +1267,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
-	            "byIsolationMVArun2v1DBoldDMwLTraw"
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
