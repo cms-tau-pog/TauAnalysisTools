@@ -44,9 +44,9 @@ train_option = 'optaDBAll'
 # apples-to-apples comparison!
 computeROConAllEvents = False
 
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
 
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_WIP1/" % version
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_newDM/" % version
 
 with open('trainingsets.json') as f:
     ff = json.load(f, object_hook=_decode_dict)
@@ -70,20 +70,28 @@ for tval in trainings.values():
 # DO NOT process isodR03 and isodR05 together! - different input variables
 # preselection root-files can be shared only if thew follow the same preselection choice (1 of 4)
 mvaDiscriminators = {
-    'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'], # this one should have different presel input file
-    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0']
+    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5'],
+    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0'],
+    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5']
 }
 
+# to ensure the final reweighting root files will be suitable for larger spectra of trainings 
+for value in mvaDiscriminators.values():
+    value["spectatorVariables"] += commonsDict['commonOtherVariables']
+
 cutDiscriminators = {
-    'rawMVAoldDMwLT': cutDiscriminatorsAll['rawMVAoldDMwLT']
+    'rawMVAnewDMwLT': cutDiscriminatorsAll['rawMVAnewDMwLT'],
+    'rawMVAnewDMwLT2016': cutDiscriminatorsAll['rawMVAnewDMwLT2016']
 }
 
 plots = {
-    'mvaIsolation_optDeltaR03BDeltaBeta' : {
+    'mvaIsolation_optDeltaR05BDeltaBeta' : {
         'graphs' : [
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0',
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5',
             'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0',
-            'rawMVAoldDMwLT'
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5',
+            'rawMVAnewDMwLT',
+            'rawMVAnewDMwLT2016'
         ]
     }
 }
@@ -92,77 +100,55 @@ allDiscriminators = {}
 allDiscriminators.update(mvaDiscriminators)
 allDiscriminators.update(cutDiscriminators)
 
-signalSamples = [
-    "ZplusJets_mcatnlo"
-]
-smHiggsMassPoints = [ 120, 125, 130 ]
-for massPoint in smHiggsMassPoints:
-    wPlusHSampleName = "WplusHHiggs%1.0ftoTauTau" % massPoint
-    signalSamples.append(wPlusHSampleName)
-    wMinusHSampleName = "WminusHHiggs%1.0ftoTauTau" % massPoint
-    signalSamples.append(wMinusHSampleName)
-    zHSampleName = "ZHHiggs%1.0ftoTauTau" % massPoint
-    signalSamples.append(zHSampleName)
-smHiggsMassPoints5 = [ 120, 130 ]
-for massPoint in smHiggsMassPoints5:
-    tthSampleName = "tthHiggs%1.0ftoTauTau" % massPoint
-    signalSamples.append(tthSampleName)
-ggSampleName = "ggHiggs125toTauTau"
-signalSamples.append(ggSampleName)
-vbfSampleName = "vbfHiggs125toTauTau"
-signalSamples.append(vbfSampleName)
-mssmHiggsMassPoints1 = [ 80, 90, 100, 110, 120, 130, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
+signalSamples = ["ZplusJets_madgraph", "ggHiggs125toTauTau", "vbfHiggs125toTauTau"]
+mssmHiggsMassPoints1 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints1:
     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
     signalSamples.append(ggSampleName)
-mssmHiggsMassPoints2 = [ 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
+
+mssmHiggsMassPoints2 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
 for massPoint in mssmHiggsMassPoints2:
     bbSampleName = "bbA%1.0ftoTauTau" % massPoint
     signalSamples.append(bbSampleName)
-ZprimeMassPoints = [ 500, 750, 1000, 1250, 1500, 1750, 2000, 2500, 3000, 3500, 4000 ]
-for massPoint in ZprimeMassPoints:
-    sampleName = "Zprime%1.0ftoTauTau" % massPoint
-    signalSamples.append(sampleName)
-WprimeMassPoints = [ 400, 600, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800 ]
-for massPoint in WprimeMassPoints:
-    sampleName = "Wprime%1.0ftoTauNu" % massPoint
-    signalSamples.append(sampleName)
+#"WplusHHiggs%1.0ftoTauTau", "WminusHHiggs%1.0ftoTauTau", "ZHHiggs%1.0ftoTauTau", "tthHiggs%1.0ftoTauTau", "vbfHiggs125toTauTau"
+#"Zprime%1.0ftoTauTau", "Wprime%1.0ftoTauNu"
 
 backgroundSamples = [
-    "TT_powheg",
-    "PPmuXptGt20Mu15",
-    "QCDmuEnrichedPt30to50",
-    "QCDmuEnrichedPt50to80",
-    "QCDmuEnrichedPt80to120",
-    "QCDmuEnrichedPt120to170",
-    "QCDmuEnrichedPt170to300",
-    "QCDmuEnrichedPt300to470",
-    "QCDmuEnrichedPt470to600",
-    "QCDmuEnrichedPt600to800",
-    "QCDmuEnrichedPt800to1000",
-    "QCDmuEnrichedPtGt1000",
-    "WplusJets_mcatnlo",
-    "QCDjetsFlatPt15to7000",
-    "QCDjetsPt30to50",
-    "QCDjetsPt50to80",
-    "QCDjetsPt80to120",
-    "QCDjetsPt120to170",
-    "QCDjetsPt170to300",
-    "QCDjetsPt300to470",
-    "QCDjetsPt470to600",
-    "QCDjetsPt600to800",
-    "QCDjetsPt800to1000",
-    "QCDjetsPt1000to1400",
-    "QCDjetsPt1400to1800",
-    "QCDjetsPt1800to2400",
-    "QCDjetsPt2400to3200",
-    "QCDjetsPtGt3200",
-    "QCDEmEnrichedPt20to30",
-    "QCDEmEnrichedPt30to50",
-    "QCDEmEnrichedPt50to80",
-    "QCDEmEnrichedPt80to120",
-    "QCDEmEnrichedPt170to300",
-    "QCDEmEnrichedPtGt300"
+"QCDmuEnrichedPt800to1000",
+"TT_powheg",
+"QCDEmEnrichedPt50to80",
+"QCDjetsPt80to120",
+"QCDEmEnrichedPtGt300",
+"QCDmuEnrichedPt120to170",
+"QCDjetsPt300to470",
+"QCDjetsPt2400to3200",
+"QCDjetsPtGt3200",
+"QCDEmEnrichedPt30to50",
+"QCDjetsPt470to600",
+"QCDmuEnrichedPt470to600",
+"QCDmuEnrichedPt170to300",
+"QCDEmEnrichedPt15to20",
+"QCDjetsPt1800to2400",
+"QCDjetsPt30to50",
+"QCDjetsPt170to300",
+# "TTJets",
+"WplusJets_madgraph",
+"QCDmuEnrichedPt20to30",
+"QCDmuEnrichedPt50to80",
+"QCDmuEnrichedPt600to800",
+"QCDEmEnrichedPt120to170",
+"QCDmuEnrichedPt80to120",
+"QCDjetsPt800to1000",
+"QCDmuEnrichedPt30to50",
+"QCDEmEnrichedPt20to30",
+"QCDjetsPt1400to1800",
+"QCDjetsPt120to170",
+"QCDjetsPt600to800",
+"QCDEmEnrichedPt170to300",
+"QCDmuEnrichedPt15to20",
+"QCDjetsPt1000to1400",
+"QCDmuEnrichedPt300to470",
+"QCDEmEnrichedPt80to120",
 ]
 
 execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
@@ -396,7 +382,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "\n"    
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
-        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('%s')\n" % tree
+        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('dataset/%s')\n" % tree
         ##cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
         cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('')\n"
         cfg_modified += "process.makeROCcurveTauIdMVA.classId_signal = cms.int32(0)\n"
