@@ -784,7 +784,11 @@ class SamplesHandles(object):
                         }
             }
         }
-        if key == "all": return samplesPU
+        if key == "all":
+            z = samplesPU["noPU"]
+            z.update(samplesPU["PU140"])
+            z.update(samplesPU["PU200"])
+            return z
         elif key in samplesPU.keys(): return samplesPU[key]
         else: assert  "no such PU key: " + key
 
