@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from samplesHandles import SamplesHandles
 import os
 import json
 import pprint
@@ -35,18 +36,12 @@ def _decode_dict(data):
         rv[key] = value
     return rv
 
-version = 'tauId_dR05'
+DM = "new"
 train_option = 'optaDBAll'
 
-# Set this to true if you want to compute ROC curves for additional
-# discriminators for comparisons on ALL events available in the ntuples
-# NB: if pt-dependent pruning is used, this will not result in an
-# apples-to-apples comparison!
-computeROConAllEvents = False
-
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
-
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_newDM/" % version
+sh = SamplesHandles("2017")
+signalSamples = sh.getSamplesSg17().keys()
+backgroundSamples = sh.getSamplesBg17().keys()
 
 with open('trainingsets.json') as f:
     ff = json.load(f, object_hook=_decode_dict)
@@ -67,89 +62,86 @@ for tval in trainings.values():
     replaceCommomns('commonOtherVariables', commonsDict['commonOtherVariables'], tval["otherVariables"])
     replaceCommomns('commonSpectatorVariables', commonsDict['commonSpectatorVariables'], tval["spectatorVariables"])
 
-# DO NOT process isodR03 and isodR05 together! - different input variables
-# preselection root-files can be shared only if thew follow the same preselection choice (1 of 4)
-mvaDiscriminators = {
-    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5'],
-    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0'],
-    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5']
-}
-
-# to ensure the final reweighting root files will be suitable for larger spectra of trainings 
-for value in mvaDiscriminators.values():
-    value["spectatorVariables"] += commonsDict['commonOtherVariables']
-
-cutDiscriminators = {
-    'rawMVAnewDMwLT': cutDiscriminatorsAll['rawMVAnewDMwLT'],
-    'rawMVAnewDMwLT2016': cutDiscriminatorsAll['rawMVAnewDMwLT2016']
-}
-
-plots = {
-    'mvaIsolation_optDeltaR05BDeltaBeta' : {
-        'graphs' : [
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5',
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0',
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5',
-            'rawMVAnewDMwLT',
-            'rawMVAnewDMwLT2016'
-        ]
+decaymodes = {
+    "new": {
+        "mvaDiscriminators": {
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'], # this one should have different presel input file
+            # 'mvaIsolation3HitsDeltaR05opt1aLTDB': trainings['mvaIsolation3HitsDeltaR05opt1aLTDB'], # only untill will be possible to lead the trainings
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5'],
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0'],
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5']},
+        "cutDiscriminators": {
+            'rawMVAnewDMwLT': cutDiscriminatorsAll['rawMVAnewDMwLT'],
+            'rawMVAnewDMwLT2016': cutDiscriminatorsAll['rawMVAnewDMwLT2016']
+        },
+        "plots": {
+            'mvaIsolation_optDeltaR05BDeltaBeta_newDM' : {
+                'graphs' : [
+                    # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0',
+                    # 'mvaIsolation3HitsDeltaR05opt1aLTDB',
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5',
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0',
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5',
+                    'rawMVAnewDMwLT',
+                    'rawMVAnewDMwLT2016'
+                ]
+            }
+        },
+        "version": 'tauId_dR05_new_v2'
+    },
+    "old": {
+        "mvaDiscriminators": {
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'], # this one should have different presel input file
+            # 'mvaIsolation3HitsDeltaR05opt1aLTDB': trainings['mvaIsolation3HitsDeltaR05opt1aLTDB'], # only untill will be possible to lead the trainings
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_0p5'],
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'],
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p5']},
+        "cutDiscriminators": {
+            'rawMVAoldDMwLT': cutDiscriminatorsAll['rawMVAoldDMwLT'],
+            'rawMVAoldDMwLT2016': cutDiscriminatorsAll['rawMVAoldDMwLT2016']
+        },
+        "plots": {
+            'mvaIsolation_optDeltaR05BDeltaBeta_oldDM' : {
+                'graphs' : [
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5',
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0',
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5',
+                    'rawMVAoldDMwLT',
+                    'rawMVAoldDMwLT2016'
+                ]
+            }
+        },
+        "version": 'tauId_dR05_old_v2'
     }
 }
 
+
+# Set this to true if you want to compute ROC curves for additional
+# discriminators for comparisons on ALL events available in the ntuples
+# NB: if pt-dependent pruning is used, this will not result in an
+# apples-to-apples comparison!
+computeROConAllEvents = False
+version = decaymodes[DM]["version"]
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_newDM/" % version
+
+
+# DO NOT process isodR03 and isodR05 together! - different input variables
+# preselection root-files can be shared only if thew follow the same preselection choice (1 of 4)
+mvaDiscriminators = decaymodes[DM]["mvaDiscriminators"]
+
+# to ensure the final reweighting root files will be suitable for larger spectra of trainings
+for value in mvaDiscriminators.values():
+    value["spectatorVariables"] += commonsDict['commonOtherVariables']
+
+cutDiscriminators = decaymodes[DM]["cutDiscriminators"]
+plots = decaymodes[DM]["plots"]
 allDiscriminators = {}
 allDiscriminators.update(mvaDiscriminators)
 allDiscriminators.update(cutDiscriminators)
 
-signalSamples = ["ZplusJets_madgraph", "ggHiggs125toTauTau", "vbfHiggs125toTauTau"]
-mssmHiggsMassPoints1 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
-for massPoint in mssmHiggsMassPoints1:
-    ggSampleName = "ggA%1.0ftoTauTau" % massPoint
-    signalSamples.append(ggSampleName)
+#====================================================NO SETTINGS BELOW THIS LINE
 
-mssmHiggsMassPoints2 = [ 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
-for massPoint in mssmHiggsMassPoints2:
-    bbSampleName = "bbA%1.0ftoTauTau" % massPoint
-    signalSamples.append(bbSampleName)
-#"WplusHHiggs%1.0ftoTauTau", "WminusHHiggs%1.0ftoTauTau", "ZHHiggs%1.0ftoTauTau", "tthHiggs%1.0ftoTauTau", "vbfHiggs125toTauTau"
-#"Zprime%1.0ftoTauTau", "Wprime%1.0ftoTauNu"
-
-backgroundSamples = [
-"QCDmuEnrichedPt800to1000",
-"TT_powheg",
-"QCDEmEnrichedPt50to80",
-"QCDjetsPt80to120",
-"QCDEmEnrichedPtGt300",
-"QCDmuEnrichedPt120to170",
-"QCDjetsPt300to470",
-"QCDjetsPt2400to3200",
-"QCDjetsPtGt3200",
-"QCDEmEnrichedPt30to50",
-"QCDjetsPt470to600",
-"QCDmuEnrichedPt470to600",
-"QCDmuEnrichedPt170to300",
-"QCDEmEnrichedPt15to20",
-"QCDjetsPt1800to2400",
-"QCDjetsPt30to50",
-"QCDjetsPt170to300",
-# "TTJets",
-"WplusJets_madgraph",
-"QCDmuEnrichedPt20to30",
-"QCDmuEnrichedPt50to80",
-"QCDmuEnrichedPt600to800",
-"QCDEmEnrichedPt120to170",
-"QCDmuEnrichedPt80to120",
-"QCDjetsPt800to1000",
-"QCDmuEnrichedPt30to50",
-"QCDEmEnrichedPt20to30",
-"QCDjetsPt1400to1800",
-"QCDjetsPt120to170",
-"QCDjetsPt600to800",
-"QCDEmEnrichedPt170to300",
-"QCDmuEnrichedPt15to20",
-"QCDjetsPt1000to1400",
-"QCDmuEnrichedPt300to470",
-"QCDEmEnrichedPt80to120",
-]
 
 execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
 
