@@ -13,12 +13,20 @@ class SamplesHandles(object):
             self.samples = SamplesHandles.getSamples16()
         elif self.era == "2017":
             self.samples = SamplesHandles.getSamples17()
+        elif self.era == "2016dR03":
+            self.samples = SamplesHandles.getSamplesdR03_16()
+        elif self.era == "2017PU":
+            self.samples = SamplesHandles.getSamplesPU17()
         else:
             self.samples = {}
 
     def updateSamplesJson(self):
         with open('samples.json', 'wb') as outfile:
             json.dump(data, outfile)
+
+    @staticmethod
+    def getSamplesdR03_16():
+        pass
 
     @staticmethod
     def getSamplesSg16():
@@ -729,6 +737,56 @@ class SamplesHandles(object):
         s = SamplesHandles.getSamplesSg17()
         s.update(SamplesHandles.getSamplesBg17())
         return s
+
+    @staticmethod
+    def getSamplesPU17(key="all"):
+        samplesPU = {
+          "noPU": {
+            'RelValZTT_14TeV_noPU': {
+                            'datasetpath'                        : '/RelValZTT_14TeV/CMSSW_9_3_0_pre4-93X_upgrade2023_realistic_v0_2023D17noPU-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'SignalMC'
+                        },
+            'RelValQCD_Pt-15To7000_Flat_14TeV_noPU': {
+                            'datasetpath'                        : '/RelValQCD_Pt-15To7000_Flat_14TeV/CMSSW_9_3_0_pre4-93X_upgrade2023_realistic_v0_2023D17noPU-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        }
+          },
+          "PU140": {
+            'RelValZTT_14TeV_PU140': {
+                            'datasetpath'                        : '/RelValZTT_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU140-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'SignalMC'
+                        },
+            'RelValQCD_Pt-15To7000_Flat_14TeV_PU140': {
+                            'datasetpath'                        : '/RelValQCD_Pt-15To7000_Flat_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU140-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        }
+          },
+          "PU200": {
+            'RelValZTT_14TeV_PU200': {
+                            'datasetpath'                        : '/RelValZTT_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU200-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'SignalMC'
+                        },
+            'RelValQCD_Pt-15To7000_Flat_14TeV_PU200': {
+                            'datasetpath'                        : '/RelValQCD_Pt-15To7000_Flat_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU200-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        }
+            }
+        }
+        if key == "all": return samplesPU
+        elif key in samplesPU.keys(): return samplesPU[key]
+        else: assert  "no such PU key: " + key
 
     def getDatabeseNames(self):
         datasetnames = []
