@@ -125,6 +125,21 @@ version = decaymodes[DM]["version"]
 inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
 outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_newDM/" % version
 
+#Rewrite to analyse PU samples
+subfolder = "noPU" # for regular runs use empty string
+samples = sh.getSamplesPU17(subfolder)
+for key in samples.keys():
+    if samples[key]['type'] == 'BackgroundMC': backgroundSamples = [key]
+    elif samples[key]['type'] == 'SignalMC': signalSamples = [key]
+
+pp.pprint(signalSamples)
+
+version = subfolder
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/ntuples/" + subfolder + (len(subfolder) > 0 )*"/"
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/%s/trainfilesfinal_newDM" % version + (len(subfolder) > 0 )*"_" + subfolder+ "/"
+
+
+#====================================================NO MANUAL BELOW THIS LINE
 
 # DO NOT process isodR03 and isodR05 together! - different input variables
 # preselection root-files can be shared only if thew follow the same preselection choice (1 of 4)

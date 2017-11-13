@@ -64,6 +64,8 @@
 
 	"commonOtherVariables":
 	[
+		"recTauNphoton",
+		"recTauNphoton_ptGt0.5",
 		"recTauNphoton_ptGt1.0",
         "recTauNphoton_ptGt1.5",
         "photonPtSumOutsideSignalCone_ptGt0.5",

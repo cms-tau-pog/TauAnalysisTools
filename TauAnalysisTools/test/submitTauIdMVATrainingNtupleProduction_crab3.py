@@ -10,7 +10,8 @@ import time
 from samplesHandles import SamplesHandles
 
 sh = SamplesHandles("2017")
-samples = sh.samples
+#samples = sh.samples
+samples = sh.getSamplesPU17()
 
 version = "tauId_v1"
 
@@ -37,7 +38,7 @@ config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = $files_per_job
 config.Data.totalUnits = $total_files
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_PU_moresamples1/'
 config.Data.publication = False
 
 config.section_("Site")
@@ -64,7 +65,7 @@ config.Data.unitsPerJob = $lumis_per_job
 config.Data.totalUnits = $total_lumis
 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
 #config.Data.runRange = '193093-193999' # '193093-194075'
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_PU_moresamples1/'
 config.Data.publication = False
 
 config.section_("Site")

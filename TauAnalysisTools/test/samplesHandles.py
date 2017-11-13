@@ -753,6 +753,18 @@ class SamplesHandles(object):
                             'files_per_job'                      : 1,
                             'total_files'                        : -1,
                             'type'                               : 'BackgroundMC'
+                        },
+            'RelValQCD_Pt-20toInf_MuEnrichedPt15_14TeV_noPU': {
+                            'datasetpath'                        : '/RelValQCD_Pt-20toInf_MuEnrichedPt15_14TeV/CMSSW_9_3_0_pre4-93X_upgrade2023_realistic_v0_2023D17noPU-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        },
+            'RelValTTbar_14TeV_noPU': {
+                            'datasetpath'                        : '/RelValTTbar_14TeV/CMSSW_9_3_0_pre4-93X_upgrade2023_realistic_v0_2023D17noPU-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
                         }
           },
           "PU140": {
@@ -767,6 +779,18 @@ class SamplesHandles(object):
                             'files_per_job'                      : 1,
                             'total_files'                        : -1,
                             'type'                               : 'BackgroundMC'
+                        },
+            'RelValQCD_Pt-20toInf_MuEnrichedPt15_14TeV_PU140': {
+                            'datasetpath'                        : '/RelValQCD_Pt-20toInf_MuEnrichedPt15_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU140-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        },
+            'RelValTTbar_14TeV_PU140': {
+                            'datasetpath'                        : '/RelValTTbar_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU140-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
                         }
           },
           "PU200": {
@@ -778,6 +802,18 @@ class SamplesHandles(object):
                         },
             'RelValQCD_Pt-15To7000_Flat_14TeV_PU200': {
                             'datasetpath'                        : '/RelValQCD_Pt-15To7000_Flat_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU200-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        },
+            'RelValQCD_Pt-20toInf_MuEnrichedPt15_14TeV_PU200': {
+                            'datasetpath'                        : '/RelValQCD_Pt-20toInf_MuEnrichedPt15_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU200-v1/MINIAODSIM',
+                            'files_per_job'                      : 1,
+                            'total_files'                        : -1,
+                            'type'                               : 'BackgroundMC'
+                        },
+            'RelValTTbar_14TeV_PU200': {
+                            'datasetpath'                        : '/RelValTTbar_14TeV/CMSSW_9_3_0_pre4-PU25ns_93X_upgrade2023_realistic_v0_D17PU200-v1/MINIAODSIM',
                             'files_per_job'                      : 1,
                             'total_files'                        : -1,
                             'type'                               : 'BackgroundMC'
