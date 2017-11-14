@@ -59,6 +59,42 @@
 	        "max"                 : 1.5,
 	        "legendEntry"         : "2016 MVA, dRiso 0.5, new DM",
 	        "color"               : 3
+	    },
+	    "CombinedIsolationDeltaBetaCorrRaw3Hits_oldDM" : {
+	        "preselection"        : "preselection_oldDMs",
+	        "discriminator"       : "byCombinedIsolationDeltaBetaCorrRaw3Hits",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "comb. iso. deltabeta, raw",
+	        "color"               : 3
+	    },
+	    "LooseCombinedIsolationDeltaBetaCorr3Hits_oldDM" : {
+	        "preselection"        : "preselection_oldDMs",
+	        "discriminator"       : "byLooseCombinedIsolationDeltaBetaCorr3Hits",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "L.comb. iso. deltabeta",
+	        "color"               : 3
+	    },
+	    "MediumCombinedIsolationDeltaBetaCorr3Hits_oldDM" : {
+	        "preselection"        : "preselection_oldDMs",
+	        "discriminator"       : "byMediumCombinedIsolationDeltaBetaCorr3Hits",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "M.comb. iso. deltabeta",
+	        "color"               : 3
+	    },
+	    "TightCombinedIsolationDeltaBetaCorr3Hits_oldDM" : {
+	        "preselection"        : "preselection_oldDMs",
+	        "discriminator"       : "byTightCombinedIsolationDeltaBetaCorr3Hits",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "T.comb. iso. deltabeta",
+	        "color"               : 3
 	    }
     },
 
@@ -112,7 +148,11 @@
 		"byIsolationMVArun2v1DBoldDMwLTraw",
 		"byIsolationMVArun2v1DBoldDMwLTraw2016",
 		"byIsolationMVArun2v1DBnewDMwLTraw",
-		"byIsolationMVArun2v1DBnewDMwLTraw2016"
+		"byIsolationMVArun2v1DBnewDMwLTraw2016",
+		"byCombinedIsolationDeltaBetaCorrRaw3Hits",
+		"byLooseCombinedIsolationDeltaBetaCorr3Hits",
+		"byMediumCombinedIsolationDeltaBetaCorr3Hits",
+		"byTightCombinedIsolationDeltaBetaCorr3Hits"
 	],
 	
 	"trainings":
