@@ -11,7 +11,7 @@ from samplesHandles import SamplesHandles
 
 sh = SamplesHandles("2017")
 #samples = sh.samples
-samples = sh.getSamplesPU17()
+samples = sh.getSamples17()
 
 version = "tauId_v1"
 
@@ -23,7 +23,7 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = '$ui_working_dir'
-config.General.workArea = 'TauIDMVATraining2017_v1'
+config.General.workArea = 'TauIDMVATraining2017_'
 
 config.section_("User")
 config.User.voGroup = 'dcms'
@@ -38,7 +38,7 @@ config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = $files_per_job
 config.Data.totalUnits = $total_files
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_PU_moresamples1/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_withCutbased/'
 config.Data.publication = False
 
 config.section_("Site")
@@ -65,7 +65,7 @@ config.Data.unitsPerJob = $lumis_per_job
 config.Data.totalUnits = $total_lumis
 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
 #config.Data.runRange = '193093-193999' # '193093-194075'
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_PU_moresamples1/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_withCutbased/'
 config.Data.publication = False
 
 config.section_("Site")
@@ -75,7 +75,7 @@ config.Site.storageSite = 'T2_DE_DESY'
 configFile = "produceTauIdMVATrainingNtupleMiniAOD_cfg.py"
 
 currentDirectory    = os.getcwd()
-#submissionDirectory = os.path.join(currentDirectory, "crab")
+# submissionDirectory = os.path.join(currentDirectory, "Summer17_25ns_withCutbased")
 submissionDirectory = ""
 
 executable_crab = 'crab'
