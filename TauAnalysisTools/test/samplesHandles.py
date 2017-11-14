@@ -17,6 +17,9 @@ class SamplesHandles(object):
             self.samples = SamplesHandles.getSamplesdR03_16()
         elif self.era == "2017PU":
             self.samples = SamplesHandles.getSamplesPU17()
+        elif self.era == "2017MCv2":
+            self.samples = SamplesHandles.getSamples17MCv2()
+
         else:
             self.samples = {}
 
@@ -736,6 +739,88 @@ class SamplesHandles(object):
     def getSamples17():
         s = SamplesHandles.getSamplesSg17()
         s.update(SamplesHandles.getSamplesBg17())
+        return s
+
+ @staticmethod
+    def getSamplesBg17Mcv2():
+        return {
+            'RelValTTbar_13': {
+                'datasetpath'                        : '/RelValTTbar_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValQCD_FlatPt_15_3000HS_13': {
+                'datasetpath'                        : '/RelValQCD_FlatPt_15_3000HS_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValTTbarLepton_13': {
+                'datasetpath'                        : '/RelValTTbarLepton_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            }
+        }
+
+
+ @staticmethod
+    def getSamplesBg17Mcv2():
+        return {
+            'RelValTTbar_13': {
+                'datasetpath'                        : '/RelValTTbar_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValQCD_FlatPt_15_3000HS_13': {
+                'datasetpath'                        : '/RelValQCD_FlatPt_15_3000HS_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValTTbarLepton_13': {
+                'datasetpath'                        : '/RelValTTbarLepton_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            }
+        }
+
+ @staticmethod
+    def getSamplesSg17Mcv2():
+        return {
+            'RelValZpTT_1500_13': {
+                'datasetpath'                        : '/RelValZpTT_1500_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValZTT_13': {
+                'datasetpath'                        : '/RelValZTT_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValHiggs200ChargedTaus_13': {
+                'datasetpath'                        : '/RelValHiggs200ChargedTaus_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+            'RelValTenTau_15_500': {
+                'datasetpath'                        : '/RelValTenTau_15_500/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            }
+        }
+
+    @staticmethod
+    def getSamples17MCv2():
+        s = SamplesHandles.getSamplesSg17MCv2()
+        s.update(SamplesHandles.getSamplesBg17MCv2())
         return s
 
     @staticmethod
