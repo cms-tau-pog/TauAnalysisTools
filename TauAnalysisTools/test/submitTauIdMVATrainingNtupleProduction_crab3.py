@@ -9,10 +9,10 @@ import subprocess
 import time
 from samplesHandles import SamplesHandles
 
-sh = SamplesHandles("2017")
+sh = SamplesHandles("2017MCv2")
 #samples = sh.samples
-samples = sh.getSamples17()
-
+#samples = sh.getSamples17()
+samples = sh.getSamples17MCv2()
 version = "tauId_v1"
 
 submitJobFraction = 1.00
@@ -23,7 +23,7 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = '$ui_working_dir'
-config.General.workArea = 'TauIDMVATraining2017_'
+config.General.workArea = 'TauIDMVATraining2017_2017MCv2RelVal'
 
 config.section_("User")
 config.User.voGroup = 'dcms'
@@ -38,7 +38,7 @@ config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = $files_per_job
 config.Data.totalUnits = $total_files
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_withCutbased/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2RelVal/'
 config.Data.publication = False
 
 config.section_("Site")
