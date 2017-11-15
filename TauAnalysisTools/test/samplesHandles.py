@@ -741,8 +741,9 @@ class SamplesHandles(object):
         s.update(SamplesHandles.getSamplesBg17())
         return s
 
- @staticmethod
-    def getSamplesBg17Mcv2():
+
+    @staticmethod
+    def getSamplesBg17MCv2():
         return {
             'RelValTTbar_13': {
                 'datasetpath'                        : '/RelValTTbar_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
@@ -764,32 +765,8 @@ class SamplesHandles(object):
             }
         }
 
-
- @staticmethod
-    def getSamplesBg17Mcv2():
-        return {
-            'RelValTTbar_13': {
-                'datasetpath'                        : '/RelValTTbar_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
-                'files_per_job'                      : 1,
-                'total_files'                        : -1,
-                'type'                               : 'BackgroundMC'
-            },
-            'RelValQCD_FlatPt_15_3000HS_13': {
-                'datasetpath'                        : '/RelValQCD_FlatPt_15_3000HS_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
-                'files_per_job'                      : 1,
-                'total_files'                        : -1,
-                'type'                               : 'BackgroundMC'
-            },
-            'RelValTTbarLepton_13': {
-                'datasetpath'                        : '/RelValTTbarLepton_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
-                'files_per_job'                      : 1,
-                'total_files'                        : -1,
-                'type'                               : 'BackgroundMC'
-            }
-        }
-
- @staticmethod
-    def getSamplesSg17Mcv2():
+    @staticmethod
+    def getSamplesSg17MCv2():
         return {
             'RelValZpTT_1500_13': {
                 'datasetpath'                        : '/RelValZpTT_1500_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
