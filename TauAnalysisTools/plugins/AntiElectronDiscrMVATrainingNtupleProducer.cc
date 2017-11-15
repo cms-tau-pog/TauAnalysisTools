@@ -734,7 +734,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       const reco::Track* track = (const reco::Track*)((gsfElectron)->gsfTrack().get());  
       assert(track);
       //const reco::HitPattern& p_inner = track->trackerExpectedHitsInner(); 
-      float nHits = track->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
+      float nHits = track->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS);
       float dPhi  = fabs(gsfElectron->deltaPhiSuperClusterTrackAtVtx());
       float dEta  = fabs(gsfElectron->deltaEtaSuperClusterTrackAtVtx());
       float sihih = gsfElectron->sigmaIetaIeta();
