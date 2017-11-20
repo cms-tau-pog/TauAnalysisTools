@@ -118,7 +118,7 @@ process.rerunDiscriminationByIsolationOldDMMVArun2017v1raw = patDiscriminationBy
     Prediscriminants = noPrediscriminants,
     loadMVAfromDB = cms.bool(True),
     mvaName = cms.string("RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v1"),#RecoTauTag_tauIdMVAIsoDBoldDMwLT2016v1 writeTauIdDiscrMVAs
-    mvaOpt = cms.string("DBoldDMwLT"),
+    mvaOpt = cms.string("DBoldDMwLTwGJ"),
     requireDecayMode = cms.bool(True),
     verbosity = cms.int32(0)
 )
