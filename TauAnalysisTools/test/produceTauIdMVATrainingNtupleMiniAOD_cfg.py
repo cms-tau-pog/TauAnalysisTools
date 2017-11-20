@@ -17,6 +17,39 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '92X_upgrade2017_realistic_v10', '')
 
 #process.add_(cms.Service("PrintLoadingPlugins"))
+key = '2017MCv1_ggH'
+test_files = {
+    'RelValQCD_FlatPt_15_3000HS_13_1': {
+        'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/E89C4CD3-CEBB-E711-BF4F-0025905B856C.root',
+        'type' : 'BackgroundMC',
+        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+    },
+    'RelValQCD_FlatPt_15_3000HS_13_2': {
+        'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/EE4BC1EA-CEBB-E711-984B-0CC47A78A418.root',
+        'type' : 'BackgroundMC',
+        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+    },
+    'RelValZTT_13_1': {
+        'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValZTT_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/0A99A363-65BB-E711-A1CF-003048FFD72C.root',
+        'type' : 'SignalMC',
+        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+    },
+    'RelValZTT_13_2': {
+        'file' :'/store/relval/CMSSW_9_4_0_pre3/RelValZTT_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/28E2B54E-65BB-E711-ABDD-0025905A606A.root',
+        'type' : 'SignalMC',
+        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+    },
+    '2017MCv1_DY': {
+        'file' :'/store/mc/RunIISummer17MiniAOD/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10_ext1-v2/10000/00F9D855-E293-E711-B625-02163E014200.root',
+        'type' : 'BackgroundMC',
+        'comment' : "2017 MCv1, with 2016 training, phpt>0.5"
+    },
+    '2017MCv1_ggH': {
+        'file' :'/store/mc/RunIISummer17MiniAOD/SUSYGluGluToHToTauTau_M-2600_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10-v2/50000/04BF6396-8F9C-E711-9BE4-0CC47A1DF620.root',
+        'type' : 'SignalMC',
+        'comment' : "2017 MCv1, with 2016 training, phpt>0.5"
+    }
+}
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -27,13 +60,13 @@ process.source = cms.Source("PoolSource",
         #'root://xrootd.ba.infn.it//store/cmst3/user/ytakahas/CMG/QCD_Pt-15to3000_Tune4C_Flat_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v1/AODSIM/Dynamic95_20150520/aod_1.root'
         #'file:/disk1/MVAonMiniAOD/RelValZTT_8_0_20_PU25ns_MINIAODSIM_1.root',
         #'file:/disk1/MVAonMiniAOD/RelValZTT_8_0_20_PU25ns_MINIAODSIM_2.root'
-        #'/store/mc/RunIISummer17MiniAOD/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10_ext1-v2/10000/00F9D855-E293-E711-B625-02163E014200.root'
-        # '/store/mc/RunIISummer17MiniAOD/SUSYGluGluToHToTauTau_M-2600_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10-v2/50000/04BF6396-8F9C-E711-9BE4-0CC47A1DF620.root'
+        #
 	    #'/store/relval/CMSSW_9_3_0_pre4/RelValZTT_14TeV/MINIAODSIM/93X_upgrade2023_realistic_v0_2023D17noPU-v1/00000/02862BF9-C887-E711-B670-0CC47A7C3604.root'        #2017 - PU study
         # 'root://cms-xrd-global.cern.ch//store/mc/PhaseIFall16MiniAOD/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PhaseIFall16PUFlat20to50_PhaseIFall16_81X_upgrade2017_realistic_v26_ext1-v1/70000/02A37775-A0E9-E611-8E01-0025907B4F2E.root'
         #'file:/disk1/MVAonMiniAOD/DYJetsToLLM50_AMCATNLO_MORIOND17_MINIAODSIM_1.root'
         #'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/00312D7A-FEBD-E611-A713-002590DB923E.root'
-    ),
+        test_files[key]['file']
+),
     ##eventsToProcess = cms.untracked.VEventRange(
     ##    '1:917:1719279',
     ##    '1:1022:1915188'
@@ -50,7 +83,7 @@ process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-type = 'SignalMC'
+type = test_files[key]['type']
 #type = 'BackgroundMC'
 #--------------------------------------------------------------------------------
 
