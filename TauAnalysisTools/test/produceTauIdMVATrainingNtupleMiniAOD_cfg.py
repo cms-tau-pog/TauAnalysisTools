@@ -78,7 +78,48 @@ else:
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
 process.load('RecoTauTag.Configuration.loadRecoTauTagMVAsFromPrepDB_cfi')
 from RecoTauTag.RecoTau.PATTauDiscriminationByMVAIsolationRun2_cff import *
+tauIdDiscrMVA_trainings_run2_2017 = {
+    'tauIdMVAIsoDBoldDMwLT2017' : "tauIdMVAIsoDBoldDMwLT2017",
+}
+tauIdDiscrMVA_WPs_run2_2017 = {
+    'tauIdMVAIsoDBoldDMwLT2017' : {
+        'Eff95' : "DBoldDMwLTEff95",
+        'Eff90' : "DBoldDMwLTEff90",
+        'Eff80' : "DBoldDMwLTEff80",
+        'Eff70' : "DBoldDMwLTEff70",
+        'Eff60' : "DBoldDMwLTEff60",
+        'Eff50' : "DBoldDMwLTEff50",
+        'Eff40' : "DBoldDMwLTEff40"
+    }
+}
+tauIdDiscrMVA_2017_version = "v1"
 
+for training, gbrForestName in tauIdDiscrMVA_trainings_run2_2017.items():
+
+    process.loadRecoTauTagMVAsFromPrepDB.toGet.append(
+        cms.PSet(
+            record = cms.string('GBRWrapperRcd'),
+            tag = cms.string("RecoTauTag_%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version)),
+            label = cms.untracked.string("RecoTauTag_%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version))
+        )
+    )
+
+    for WP in tauIdDiscrMVA_WPs_run2_2017[training].keys():
+        process.loadRecoTauTagMVAsFromPrepDB.toGet.append(
+            cms.PSet(
+                record = cms.string('PhysicsTGraphPayloadRcd'),
+                tag = cms.string("RecoTauTag_%s%s_WP%s" % (gbrForestName, tauIdDiscrMVA_2017_version, WP)),
+                label = cms.untracked.string("RecoTauTag_%s%s_WP%s" % (gbrForestName, tauIdDiscrMVA_2017_version, WP))
+            )
+        )
+
+    process.loadRecoTauTagMVAsFromPrepDB.toGet.append(
+        cms.PSet(
+            record = cms.string('PhysicsTFormulaPayloadRcd'),
+            tag = cms.string("RecoTauTag_%s%s_mvaOutput_normalization" % (gbrForestName, tauIdDiscrMVA_2017_version)),
+            label = cms.untracked.string("RecoTauTag_%s%s_mvaOutput_normalization" % (gbrForestName, tauIdDiscrMVA_2017_version))
+        )
+    )
 
 process.rerunDiscriminationByIsolationOldDMMVArun2017v1raw = patDiscriminationByIsolationMVArun2v1raw.clone(
     PATTauProducer = cms.InputTag('slimmedTaus'),
@@ -344,8 +385,9 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
         byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.string('byLooseCombinedIsolationDeltaBetaCorr3Hits'),
         byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.string('byMediumCombinedIsolationDeltaBetaCorr3Hits'),
         byTightCombinedIsolationDeltaBetaCorr3Hits = cms.string('byTightCombinedIsolationDeltaBetaCorr3Hits'),
-        # 2015 - old DM
-        byVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT"),
+        # standart training - should be 2017 starting from MCv2
+            byVVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVVLooseIsolationMVArun2v1DBoldDMwLT"),
+            byVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT"),
         byLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byLooseIsolationMVArun2v1DBoldDMwLT"),
         byMediumIsolationMVArun2v1DBoldDMwLT = cms.string("byMediumIsolationMVArun2v1DBoldDMwLT"),
         byTightIsolationMVArun2v1DBoldDMwLT = cms.string("byTightIsolationMVArun2v1DBoldDMwLT"),
