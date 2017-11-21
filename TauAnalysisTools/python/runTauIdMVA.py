@@ -90,8 +90,8 @@ class TauIDEmbedder(object):
 	
 	def runTauID(self, name='NewTauIDsEmbedded'):
 		# update the available in DB samples
-		if not self.is_above_cmssw_version(9, 4, 0, self.debug):
-			if self.debug: print "runTauID: not is_above_cmssw_version(9, 4, 0)"
+		if not self.is_above_cmssw_version(10, 0, 0, self.debug):
+			if self.debug: print "runTauID: not is_above_cmssw_version(10, 0, 0)"
 			self.loadMVA_WPs_run2_2017()
 
 		# rerun the seq to obtain the 2017 nom training with 0.5 iso cone, old DM, ptph>1, trained on 2017MCv1
