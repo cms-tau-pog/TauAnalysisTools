@@ -419,7 +419,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
         byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.string('byMediumCombinedIsolationDeltaBetaCorr3Hits'),
         byTightCombinedIsolationDeltaBetaCorr3Hits = cms.string('byTightCombinedIsolationDeltaBetaCorr3Hits'),
         # standart training - should be 2017 starting from MCv2
-            byVVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVVLooseIsolationMVArun2v1DBoldDMwLT"),
+            #byVVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVVLooseIsolationMVArun2v1DBoldDMwLT"),
             byVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT"),
         byLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byLooseIsolationMVArun2v1DBoldDMwLT"),
         byMediumIsolationMVArun2v1DBoldDMwLT = cms.string("byMediumIsolationMVArun2v1DBoldDMwLT"),
