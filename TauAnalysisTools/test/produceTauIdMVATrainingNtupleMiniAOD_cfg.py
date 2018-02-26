@@ -114,7 +114,7 @@ else:
     isSignal = False
 #--------------------------------------------------------------------------------
 
-from runTauIdMVA import *
+from TauAnalysisTools.TauAnalysisTools.runTauIdMVA import *
 na = TauIDEmbedder(process, cms)
 na.runTauID()
 
