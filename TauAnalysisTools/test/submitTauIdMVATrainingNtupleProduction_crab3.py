@@ -40,6 +40,7 @@ config.Data.unitsPerJob = $files_per_job
 config.Data.totalUnits = $total_files
 config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2RelVal/'
 config.Data.publication = False
+config.Data.allowNonValidInputDataset = True
 
 config.section_("Site")
 config.Site.storageSite = 'T2_DE_DESY'
