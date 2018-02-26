@@ -838,7 +838,7 @@ class SamplesHandles(object):
                 'datasetpath'                        : '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10-v1/MINIAODSIM',#! LO
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             },
 
@@ -846,7 +846,7 @@ class SamplesHandles(object):
                 'datasetpath'                        : '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1/MINIAODSIM',#! LO
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             },
 
@@ -854,35 +854,35 @@ class SamplesHandles(object):
                 'datasetpath'                        : '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             },
             'tthHiggs125toTauTau' : {#in production
                 'datasetpath'                        : '/ttHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             },
             'tthHiggs125toInclusiveNonbb' : {#in production
                 'datasetpath'                        : '/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             },
             'vbfHiggs125toTauTau' : {#in production
                 'datasetpath'                        : '/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             },
             'ggHiggs125toTauTau' : {#in production
                 'datasetpath'                        : '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
-                'type'                               : 'SignalMC'.
+                'type'                               : 'SignalMC'
 
             }
         }
@@ -912,7 +912,8 @@ class SamplesHandles(object):
                 'total_files'                        : -1,
                 'type'                               : 'SignalMC'
             }
-         samples["bbA2600toTauTau"] = {
+
+        samples["bbA2600toTauTau"] = {
                 'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-2600_TuneCP5_13TeV-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
