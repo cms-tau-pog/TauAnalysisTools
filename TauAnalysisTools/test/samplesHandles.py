@@ -7,7 +7,7 @@ class SamplesHandles(object):
         self.era = era
         self.samples = {}
         self.setSamples()
-    
+
     def setSamples(self):
         if self.era == "2016":
             self.samples = SamplesHandles.getSamples16()
@@ -19,7 +19,8 @@ class SamplesHandles(object):
             self.samples = SamplesHandles.getSamplesPU17()
         elif self.era == "2017MCv2":
             self.samples = SamplesHandles.getSamples17MCv2()
-
+        elif self.era == "2017MCv2RelVal":
+            self.samples = SamplesHandles.getSamples17MCv2RelVal()
         else:
             self.samples = {}
 
@@ -91,7 +92,7 @@ class SamplesHandles(object):
             samples[ggSampleName] = {
                 'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
                 'files_per_job'                      : 1,
-                'total_files'                        : -1, 
+                'total_files'                        : -1,
                 'type'                               : 'SignalMC'
             }
 
@@ -102,7 +103,7 @@ class SamplesHandles(object):
             samples[bbSampleName] = {
                 'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM' % massPoint,
                 'files_per_job'                      : 1,
-                'total_files'                        : -1, 
+                'total_files'                        : -1,
                 'type'                               : 'SignalMC'
             }
 
@@ -111,7 +112,7 @@ class SamplesHandles(object):
         samples[bbSampleName] = {
             'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-300_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM',
             'files_per_job'                      : 1,
-            'total_files'                        : -1, 
+            'total_files'                        : -1,
             'type'                               : 'SignalMC'
         }
 
@@ -137,7 +138,7 @@ class SamplesHandles(object):
                 'type'                               : 'SignalMC'
             }
 
-        
+
         return samples
 
     @staticmethod
@@ -178,7 +179,7 @@ class SamplesHandles(object):
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
                 'type'                               : 'BackgroundMC'
-            },    
+            },
             'QCDmuEnrichedPt170to300' : {
                 'datasetpath'                        : '/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
                 'files_per_job'                      : 1,
@@ -250,7 +251,7 @@ class SamplesHandles(object):
                 'files_per_job'                      : 1,
                 'total_files'                        : -1,
                 'type'                               : 'BackgroundMC'
-            },        
+            },
             'QCDjetsPt170to300' : {
                 'datasetpath'                        : '/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
                 'files_per_job'                      : 1,
@@ -295,7 +296,7 @@ class SamplesHandles(object):
             },
             'QCDjetsPt1800to2400' : {
                 'datasetpath'                        : '/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
-                'files_per_job'                      : 1,  
+                'files_per_job'                      : 1,
                 'total_files'                        : -1,
                 'type'                               : 'BackgroundMC'
             },
@@ -360,6 +361,7 @@ class SamplesHandles(object):
         s = SamplesHandles.getSamplesSg16()
         s.update(SamplesHandles.getSamplesBg16())
         return s
+
 
     @staticmethod
     def getSamplesSg17():
@@ -744,6 +746,202 @@ class SamplesHandles(object):
 
     @staticmethod
     def getSamplesBg17MCv2():
+        samples = {
+            'TTJets_SingleLeptFromT' : {
+                'datasetpath'                        : '/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+
+            'TTTo2L2Nu' : {
+                'datasetpath'                        : '/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            },
+
+            'TTToHadronic' : {
+                'datasetpath'                        : '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            }
+        }
+
+        QCD_Pt_ranges = ["1000to1400", "1400to1800", "15to30", "170to300", "1800to2400", "2400to3200", "300to470", "30to50", "3200toInf", "470to600", "50to80", "600to800", "80to120"]
+        #missing:
+        for massrange in QCD_Pt_ranges:
+            sampleName = "QCDjetsPt" + massrange
+            samples[sampleName] = {
+                'datasetpath'                        : '/QCD_Pt_'+ massrange + '_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'BackgroundMC'
+            }
+
+        samples["QCDjetsPt2400to3200"] = {
+            'datasetpath'                        : '/QCD_Pt_2400to3200_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+        samples["QCDjetsPt800to1000"] = {
+            'datasetpath'                        : '/QCD_Pt_800to1000_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+
+        samples["WplusJets_mcatnlo"] = {
+            'datasetpath'                        : '/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+
+        samples["Wplus1Jets_mcatnlo"] = {
+            'datasetpath'                        : '/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+
+        samples["Wplus2Jets_mcatnlo"] = {
+            'datasetpath'                        : '/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v3/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+
+        samples["Wplus3Jets_mcatnlo"] = {
+            'datasetpath'                        : '/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v3/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+
+        samples["Wplus4Jets_mcatnlo"] = {
+            'datasetpath'                        : '/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+            'files_per_job'                      : 1,
+            'total_files'                        : -1,
+            'type'                               : 'BackgroundMC'
+        }
+        # I IGNORE FOR NOW /QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM
+        return samples
+
+
+    @staticmethod
+    def getSamplesSg17MCv2():
+        samples = {
+            'ZplusJets_madgraph' : {
+                'datasetpath'                        : '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10-v1/MINIAODSIM',#! LO
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            },
+
+            'ZplusJets_madgraph_ext1' : {
+                'datasetpath'                        : '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1/MINIAODSIM',#! LO
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            },
+
+            'ggHiggs125toTauTau' : {
+                'datasetpath'                        : '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            },
+            'tthHiggs125toTauTau' : {#in production
+                'datasetpath'                        : '/ttHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            },
+            'tthHiggs125toInclusiveNonbb' : {#in production
+                'datasetpath'                        : '/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            },
+            'vbfHiggs125toTauTau' : {#in production
+                'datasetpath'                        : '/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            },
+            'ggHiggs125toTauTau' : {#in production
+                'datasetpath'                        : '/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'.
+
+            }
+        }
+
+        # currently 23 mass points available
+        mssmHiggsMassPoints1 = [80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 600, 700, 800, 900, 1200, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200]
+        # new compared to v1: [80, 90, 100, 110, 120, 130, 1500]
+        # missing compared to v1: [500, 1000, 1400]
+        for massPoint in mssmHiggsMassPoints1:
+            ggSampleName = "ggA%1.0ftoTauTau" % massPoint
+            samples[ggSampleName] = {
+                'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCP5_13TeV-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM' % massPoint,
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'
+            }
+
+        # currently 23 mass points available
+        mssmHiggsMassPoints3 = [80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 600, 700, 800, 900, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2900, 3200]
+        # missing: [500, 1000, 2600]
+        # new: [80, 90, 100, 110, 120, 130, 1500]
+        for massPoint in mssmHiggsMassPoints3:
+            bbSampleName = "bbA%1.0ftoTauTau" % massPoint
+            samples[bbSampleName] = {
+                'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-%1.0f_TuneCP5_13TeV-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM' % massPoint,
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'
+            }
+         samples["bbA2600toTauTau"] = {
+                'datasetpath'                        : '/SUSYGluGluToBBHToTauTau_M-2600_TuneCP5_13TeV-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'
+            }
+
+
+        ZprimeMassPoints = [1000, 1500, 2000, 2500, 3000, 3500, 4000]
+        #missing: [ 500, 750, 1250, 1750]
+        for massPoint in ZprimeMassPoints:
+            sampleName = "Zprime%1.0ftoTauTau" % massPoint
+            samples[sampleName] = {
+                'datasetpath'                        : '/ZprimeToTauTau_M-%1.0f_TuneCP5_13TeV-pythia8-tauola/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM' % massPoint,
+                'files_per_job'                      : 1,
+                'total_files'                        : -1,
+                'type'                               : 'SignalMC'
+            }
+
+        return samples
+
+    @staticmethod
+    def getSamples17MCv2():
+        s = SamplesHandles.getSamplesSg17MCv2()
+        s.update(SamplesHandles.getSamplesBg17MCv2())
+        return s
+
+
+    @staticmethod
+    def getSamplesBg17MCv2RelVal():
         return {
             'RelValTTbar_13': {
                 'datasetpath'                        : '/RelValTTbar_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
@@ -766,7 +964,7 @@ class SamplesHandles(object):
         }
 
     @staticmethod
-    def getSamplesSg17MCv2():
+    def getSamplesSg17MCv2RelVal():
         return {
             'RelValZpTT_1500_13': {
                 'datasetpath'                        : '/RelValZpTT_1500_13/CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1/MINIAODSIM',
@@ -795,10 +993,11 @@ class SamplesHandles(object):
         }
 
     @staticmethod
-    def getSamples17MCv2():
-        s = SamplesHandles.getSamplesSg17MCv2()
-        s.update(SamplesHandles.getSamplesBg17MCv2())
+    def getSamples17MCv2RelVal():
+        s = SamplesHandles.getSamplesSg17MCv2RelVal()
+        s.update(SamplesHandles.getSamplesBg17MCv2RelVal())
         return s
+
 
     @staticmethod
     def getSamplesPU17(key="all"):
