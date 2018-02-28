@@ -8,6 +8,8 @@ import string
 import subprocess
 import time
 from samplesHandles import SamplesHandles
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 sh = SamplesHandles("2017MCv2")
 #samples = sh.samples
@@ -24,6 +26,7 @@ config = Configuration()
 config.section_("General")
 config.General.requestName = '$ui_working_dir'
 config.General.workArea = 'Summer17_25ns_2017MCv2_partial'
+config.General.transferLogs = True
 
 config.section_("User")
 config.User.voGroup = 'dcms'
