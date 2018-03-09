@@ -92,28 +92,30 @@ int main(int argc, char* argv[])
   std::cout << " outputFileName = " << outputFileName << std::endl;
 
   TChain* inputTree = new TChain(inputTreeName.data());
-  for ( vstring::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+  // int testrun_samples_num = 0;
+  for ( vstring::const_iterator inputFileName = inputFiles.files().begin(); inputFileName != inputFiles.files().end(); ++inputFileName )
+  {
     bool matchesSample = false;
-    for ( vstring::const_iterator sample = samples.begin();
-	  sample != samples.end(); ++sample ) {
+    for ( vstring::const_iterator sample = samples.begin(); sample != samples.end(); ++sample )
       if ( inputFileName->find(*sample) != std::string::npos ) matchesSample = true;
-    }
-    if ( matchesSample ) {
+
+    if ( matchesSample )
+    {
       std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
       inputTree->AddFile(inputFileName->data());
+      // testrun_samples_num++;
+      // if (testrun_samples_num == 5) break;
     } 
   }
   
-  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("preselectTreeTauIdMVA") 
-      << "Failed to identify input Tree !!\n";
-  }
+  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) throw cms::Exception("preselectTreeTauIdMVA") << "Failed to identify input Tree !!\n";
 
   // CV: need to call TChain::LoadTree before processing first event 
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
+  std::cout << "Loading Tree...";
   inputTree->LoadTree(0);
+  std::cout << "finished" << std::endl;
 
   vstring branchesToKeep_expressions = inputVariables;
   branchesToKeep_expressions.push_back(branchNameEvtWeight);
@@ -123,10 +125,13 @@ int main(int argc, char* argv[])
   branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), spectatorVariables.begin(), spectatorVariables.end());
   branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), otherVariables.begin(), otherVariables.end());
 
-  if ( keepAllBranches ) {
+  // Create a vector of TBranch* to keep
+  if ( keepAllBranches )
+  {
     TObjArray* branches = inputTree->GetListOfBranches();
     int numBranches = branches->GetEntries();
-    for ( int iBranch = 0; iBranch < numBranches; ++iBranch ) {
+    for ( int iBranch = 0; iBranch < numBranches; ++iBranch )
+    {
       TBranch* branch = dynamic_cast<TBranch*>(branches->At(iBranch));
       assert(branch);
       std::string branchName = branch->GetName();
@@ -137,6 +142,7 @@ int main(int argc, char* argv[])
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
   std::cout << "preselecting Entries: preselection = '" << preselection << "'" << std::endl;
   TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
+  outputFile->cd();
   TTree* outputTree = preselectTree(
     inputTree, outputTreeName, 
     preselection, branchesToKeep_expressions, 
