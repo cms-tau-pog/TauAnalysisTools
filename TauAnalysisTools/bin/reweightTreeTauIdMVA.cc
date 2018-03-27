@@ -38,6 +38,9 @@
 #include <vector>
 #include <assert.h>
 
+
+#include "TMVA/Reader.h"
+
 typedef std::vector<std::string> vstring;
 
 enum { kUndefined, kSaveSignal, kSaveBackground };
@@ -214,9 +217,17 @@ int main(int argc, char* argv[])
   int saveOption = -1;
   if      ( saveOption_string == "signal"     ) saveOption = kSaveSignal;
   else if ( saveOption_string == "background" ) saveOption = kSaveBackground;
-  else throw cms::Exception("reweightTreeTauIdMVA") 
-    << "Invalid Configuration parameter 'save' = " << saveOption_string << " !!\n";
+  else throw cms::Exception("reweightTreeTauIdMVA") << "Invalid Configuration parameter 'save' = " << saveOption_string << " !!\n";
+  // Local training: I ASSUME THERE IS ONLY ONE ADDITIONAL TRAINING TO ADD
+  std::string xmltraining = cfgReweightTreeTauIdMVA.getParameter<std::string>("xmltraining"); //PATH TO THE XML
+  vstring xmlinputVariables = cfgReweightTreeTauIdMVA.getParameter<vstring>("xmlinputVariables");
+  vstring xmlspectatorVariables = cfgReweightTreeTauIdMVA.getParameter<vstring>("xmlspectatorVariables");
+  std::string gbrForestName_ = cfgReweightTreeTauIdMVA.getParameter<std::string>("gbrForestName"); //PATH TO THE XML
+  bool createClassId = cfgReweightTreeTauIdMVA.getParameter<bool>("createClassId");
+  int classId = cfgReweightTreeTauIdMVA.getParameter<int>("classId");
+  //
 
+  //--- Chain input root files
   TChain* inputTree_signal = new TChain(inputTreeName.data());
   TChain* inputTree_background = new TChain(inputTreeName.data());
   for ( vstring::const_iterator inputFileName = inputFiles.files().begin();
@@ -259,8 +270,12 @@ int main(int argc, char* argv[])
   branchesToKeep_expressions.push_back(branchNamePt);
   branchesToKeep_expressions.push_back(branchNameEta);
   branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), spectatorVariables.begin(), spectatorVariables.end());
-
-  if ( keepAllBranches ) {
+  // DONE: ADD A LIST OF BRANCHES TO STORE FOR XML
+  branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), xmlinputVariables.begin(), xmlinputVariables.end());
+  // branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), xmlspectatorVariables.begin(), xmlspectatorVariables.end());
+  //
+  if ( keepAllBranches )
+  {
     TTree* inputTree = 0;
     if      ( saveOption == kSaveSignal     ) inputTree = inputTree_signal;
     else if ( saveOption == kSaveBackground ) inputTree = inputTree_background;
@@ -348,18 +363,24 @@ int main(int argc, char* argv[])
     } 
 
     TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
-    if ( saveOption == kSaveSignal ) {
+
+    if ( saveOption == kSaveSignal )
+    {
       bool reweightSignal = (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin);
       bool applyPtReweighting_signal  = (applyPtReweighting  && reweightSignal);
       bool applyEtaReweighting_signal = (applyEtaReweighting && reweightSignal);
-      TTree* outputTree_signal = preselectTree(
-	inputTree_signal, outputTreeName, 
-	"", branchesToKeep_expressions, 
-	0, branchNamePt, branchNameEta, "",
-	reweight_or_KILL, applyPtReweighting_signal, applyEtaReweighting_signal, histogramLogPt_reweight_signal, histogramAbsEta_reweight_signal, histogramLogPtVsAbsEta_reweight_signal,
-	maxEvents, checkBranchesForNaNs, reportEvery);
-      std::cout << "--> output Tree for signal contains " << outputTree_signal->GetEntries() << " Entries." << std::endl;
 
+      TTree* outputTree_signal = preselectTree(
+      	inputTree_signal, outputTreeName, 
+      	"", branchesToKeep_expressions, 
+      	0, branchNamePt, branchNameEta, "",
+      	reweight_or_KILL, applyPtReweighting_signal, applyEtaReweighting_signal, histogramLogPt_reweight_signal, histogramAbsEta_reweight_signal, histogramLogPtVsAbsEta_reweight_signal,
+      	maxEvents, checkBranchesForNaNs, reportEvery,
+        false, false,
+        xmltraining, xmlinputVariables, xmlspectatorVariables, gbrForestName_, createClassId, classId);
+
+
+      std::cout << "--> output Tree for signal contains " << outputTree_signal->GetEntries() << " Entries." << std::endl;
       //std::cout << "output Tree:" << std::endl;
       //outputTree_signal->Print();
       //outputTree_signal->Scan("*", "", "", 20, 0);
@@ -369,18 +390,22 @@ int main(int argc, char* argv[])
                                   //    (unless Tree is written to file explicitely, some entries may be missing, 
                                   //     which happened to be the most interesting high Pt events that were processed at the end of the job !!)
     }
-    if ( saveOption == kSaveBackground ) {
+
+    if ( saveOption == kSaveBackground )
+    {
       bool reweightBackground = (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin);
       bool applyPtReweighting_background  = (applyPtReweighting  && reweightBackground);
       bool applyEtaReweighting_background = (applyEtaReweighting && reweightBackground);
       TTree* outputTree_background = preselectTree(
-	inputTree_background, outputTreeName, 
-	"", branchesToKeep_expressions, 
-	0, branchNamePt, branchNameEta, "",
-	reweight_or_KILL, applyPtReweighting_background, applyEtaReweighting_background, histogramLogPt_reweight_background, histogramAbsEta_reweight_background, histogramLogPtVsAbsEta_reweight_background,
-	maxEvents, checkBranchesForNaNs, reportEvery);
+      	inputTree_background, outputTreeName, 
+      	"", branchesToKeep_expressions, 
+      	0, branchNamePt, branchNameEta, "",
+      	reweight_or_KILL, applyPtReweighting_background, applyEtaReweighting_background, histogramLogPt_reweight_background, histogramAbsEta_reweight_background, histogramLogPtVsAbsEta_reweight_background,
+      	maxEvents, checkBranchesForNaNs, reportEvery,
+        false, false,
+        xmltraining, xmlinputVariables, xmlspectatorVariables, gbrForestName_, createClassId, classId);
+
       std::cout << "--> output Tree for background contains " << outputTree_background->GetEntries() << " Entries." << std::endl;
-  
       //std::cout << "output Tree:" << std::endl;
       //outputTree_background->Print();
       //outputTree_background->Scan("*", "", "", 20, 0);
