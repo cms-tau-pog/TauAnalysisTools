@@ -6,7 +6,7 @@ class TauIDEmbedder(object):
 	"""class to rerun the tau seq and acces trainings from the database"""
 
 	def __init__(self, process, cms, debug = False,
-		toKeep = ["2016old", "2016new"],
+		toKeep = ["2016v1", "newDM2016v1"],
 		tauIdDiscrMVA_trainings_run2_2017 = {
 			'tauIdMVAIsoDBoldDMwLT2017' : "tauIdMVAIsoDBoldDMwLT2017",
 		},
@@ -444,7 +444,7 @@ class TauIDEmbedder(object):
 		# )
 
 		# 2016 training strategy(v1), trained on 2016MC, old DM
-		if "2016old" in self.toKeep:
+		if "2016v1" in self.toKeep:
 			self.process.rerunDiscriminationByIsolationOldDMMVArun2v1raw = patDiscriminationByIsolationMVArun2v1raw.clone(
 				PATTauProducer = self.cms.InputTag('slimmedTaus'),
 				Prediscriminants = noPrediscriminants,
@@ -501,7 +501,7 @@ class TauIDEmbedder(object):
 			tauIDSources.byVVTightIsolationMVArun2v1DBoldDMwLT2016 = self.cms.InputTag('rerunDiscriminationByIsolationOldDMMVArun2v1VVTight')
 
 		# 2016 training strategy(v1), trained on 2016MC, new DM
-		if "2016new" in self.toKeep:
+		if "newDM2016v1" in self.toKeep:
 			self.process.rerunDiscriminationByIsolationNewDMMVArun2v1raw = patDiscriminationByIsolationMVArun2v1raw.clone(
 				PATTauProducer = self.cms.InputTag('slimmedTaus'),
 				Prediscriminants = noPrediscriminants,
