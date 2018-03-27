@@ -251,7 +251,7 @@ for discriminator in mvaDiscriminators.keys():
     preselectTreeTauIdMVA_configFileNames[discriminator] = {}
     preselectTreeTauIdMVA_outputFileNames[discriminator] = {}
     preselectTreeTauIdMVA_logFileNames[discriminator]    = {}
-    for sample in [ "signal", "background" ]:
+    for sample in [ "signal"]:
         outputFileName = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s.root" % (discriminator, sample))
         print " outputFileName = '%s'" % outputFileName
         preselectTreeTauIdMVA_outputFileNames[discriminator][sample] = outputFileName
@@ -293,6 +293,52 @@ for discriminator in mvaDiscriminators.keys():
 
         logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
         preselectTreeTauIdMVA_logFileNames[discriminator][sample] = logFileName
+
+    # Background preselections
+    preselectTreeTauIdMVA_outputFileNames[discriminator]["background"] = []
+    preselectTreeTauIdMVA_configFileNames[discriminator]["background"] = []
+    preselectTreeTauIdMVA_logFileNames[discriminator]["background"] = []
+    merged_preselected_root[discriminator] = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s.root" % (discriminator, "background"))
+    preselected_roots[discriminator] = []
+    for proc in backgroundSamples:
+        sample = "background"
+        outputFileName = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s_%s.root" % (discriminator, sample, proc))
+        preselected_roots[discriminator].append(outputFileName)
+        print " outputFileName = '%s'" % outputFileName
+        preselectTreeTauIdMVA_outputFileNames[discriminator][sample].append(outputFileName)
+
+        cfgFileName_original = configFile_preselectTreeTauIdMVA
+        cfgFile_original = open(cfgFileName_original, "r")
+        cfg_original = cfgFile_original.read()
+        cfgFile_original.close()
+        cfg_modified  = cfg_original
+        cfg_modified += "\n"
+        cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
+        for inputFileName in inputFileNames:
+            cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % inputFileName
+        cfg_modified += "\n"
+        eventPruningLevel = None
+        ptDependentPruning = None
+        cfg_modified += "process.preselectTreeTauIdMVA.samples = cms.vstring(%s)\n" % [proc]
+        eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruningBackground']
+        ptDependentPruning = mvaDiscriminators[discriminator]['applyPtDependentPruningBackground']
+        cfg_modified += "process.preselectTreeTauIdMVA.inputTreeName = cms.string('%s')\n" % "tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD"
+        cfg_modified += "process.preselectTreeTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
+        cfg_modified += "process.preselectTreeTauIdMVA.applyEventPruning = cms.int32(%i)\n" % eventPruningLevel
+        cfg_modified += "process.preselectTreeTauIdMVA.applyPtDependentPruning = cms.bool(%s)\n" % ptDependentPruning
+        cfg_modified += "process.preselectTreeTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.otherVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['otherVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
+        cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_%s_%s_cfg.py" % (discriminator, sample, proc)))
+        print " cfgFileName_modified = '%s'" % cfgFileName_modified
+        cfgFile_modified = open(cfgFileName_modified, "w")
+        cfgFile_modified.write(cfg_modified)
+        cfgFile_modified.close()
+        preselectTreeTauIdMVA_configFileNames[discriminator][sample].append(cfgFileName_modified)
+
+        logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
+        preselectTreeTauIdMVA_logFileNames[discriminator][sample].append(logFileName)
     #----------------------------------------------------------------------------
     
     #----------------------------------------------------------------------------
@@ -313,7 +359,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "\n"
         cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n" 
         cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['signal']
-        cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['background']
+        cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % merged_preselected_root[discriminator]
         cfg_modified += "\n"
         cfg_modified += "process.reweightTreeTauIdMVA.signalSamples = cms.vstring('signal')\n"
         cfg_modified += "process.reweightTreeTauIdMVA.backgroundSamples = cms.vstring('background')\n"
@@ -627,7 +673,10 @@ makeFile.write("\n")
 outputFileNames = []
 for discriminator in trainTauIdMVA_outputFileNames.keys():
     for sample in [ "signal", "background" ]:
-        outputFileNames.append(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])
+        if sample == "signal":
+            outputFileNames.append(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])
+        else:
+            outputFileNames += preselectTreeTauIdMVA_outputFileNames[discriminator][sample]
         outputFileNames.append(reweightTreeTauIdMVA_outputFileNames[discriminator][sample])
     outputFileNames.append(trainTauIdMVA_outputFileNames[discriminator])
 for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
@@ -636,20 +685,35 @@ for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
 outputFileNames.append(hadd_outputFileName)    
 for plot in showROCcurvesTauIdMVA_outputFileNames.keys():
     outputFileNames.append(showROCcurvesTauIdMVA_outputFileNames[plot])
+pp.pprint(outputFileNames)
 makeFile.write("all: %s\n" % make_MakeFile_vstring(outputFileNames))
 makeFile.write("\techo 'Finished tau ID MVA training.'\n")
 makeFile.write("\n")
 for discriminator in trainTauIdMVA_outputFileNames.keys():
     for sample in [ "signal", "background" ]:
-        makeFile.write("%s:\n" %
-          (preselectTreeTauIdMVA_outputFileNames[discriminator][sample]))
-        makeFile.write("\t%s%s %s &> %s\n" %
-          (nice, executable_preselectTreeTauIdMVA,
-           preselectTreeTauIdMVA_configFileNames[discriminator][sample],
-           preselectTreeTauIdMVA_logFileNames[discriminator][sample]))
+        if sample == "signal":
+            makeFile.write("%s:\n" %
+              (preselectTreeTauIdMVA_outputFileNames[discriminator][sample]))
+            makeFile.write("\t%s%s %s &> %s\n" %
+              (nice, executable_preselectTreeTauIdMVA,
+               preselectTreeTauIdMVA_configFileNames[discriminator][sample],
+               preselectTreeTauIdMVA_logFileNames[discriminator][sample]))
+        else:
+            command = "hadd " + merged_preselected_root[discriminator] + " "
+            for proc_i in range(0, len(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])):
+                makeFile.write("%s:\n" %
+                  (preselectTreeTauIdMVA_outputFileNames[discriminator][sample][proc_i]))
+                makeFile.write("\t%s%s %s &> %s\n" %
+                  (nice, executable_preselectTreeTauIdMVA,
+                   preselectTreeTauIdMVA_configFileNames[discriminator][sample][proc_i],
+                   preselectTreeTauIdMVA_logFileNames[discriminator][sample][proc_i]))
+                command += preselected_roots[discriminator][proc_i]
+            print command
+            makeFile.write(command)
+
         makeFile.write("%s: %s\n" %
           (reweightTreeTauIdMVA_outputFileNames[discriminator][sample],
-           make_MakeFile_vstring([ preselectTreeTauIdMVA_outputFileNames[discriminator]['signal'], preselectTreeTauIdMVA_outputFileNames[discriminator]['background'] ])))
+           make_MakeFile_vstring([ preselectTreeTauIdMVA_outputFileNames[discriminator]['signal']] + preselectTreeTauIdMVA_outputFileNames[discriminator]['background'])))
         makeFile.write("\t%s%s %s &> %s\n" %
           (nice, executable_reweightTreeTauIdMVA,
            reweightTreeTauIdMVA_configFileNames[discriminator][sample],
