@@ -10,8 +10,7 @@
 
 	"cutDiscriminators":
 	{
-		"rawMVAoldDMdR03wLT" :
-		{
+		"rawMVAoldDMdR03wLT" : {
 	        "preselection"        : "preselection_dR03_oldDMs",
 	        "discriminator"       : "byIsolationMVArun2v1DBdR03oldDMwLTraw",
 	        "numBins"             : 30000,
@@ -21,8 +20,7 @@
 	        "color"               : 3
 	    },
 
-	    "rawMVAoldDMwLT" :
-	    {
+	    "rawMVAoldDMwLT" : {
 	        "preselection"        : "preselection_oldDMs",
 	        "discriminator"       : "byIsolationMVArun2v1DBoldDMwLTraw",
 	        "numBins"             : 30000,
@@ -31,8 +29,7 @@
 	        "legendEntry"         : "2015 MVA, dRiso 0.5, old DM",
 	        "color"               : 15
     	},
-		"rawMVAoldDMwLT2016" :
-		{
+		"rawMVAoldDMwLT2016" : {
 			"preselection"        : "preselection_oldDMs",
 			"discriminator"       : "byIsolationMVArun2v1DBoldDMwLTraw2016",
 			"numBins"             : 30000,
@@ -40,6 +37,16 @@
 			"max"                 : 1.5,
 			"legendEntry"         : "2016 MVA, dRiso 0.5, old DM",
 			"color"               : 3
+		},
+
+		"rawMVAoldDMwLT2017v1" : {
+			"preselection"        : "preselection_oldDMs",
+			"discriminator"       : "byIsolationMVArun2017v1DBoldDMwLTraw2017",
+			"numBins"             : 30000,
+			"min"                 : -1.5,
+			"max"                 : 1.5,
+			"legendEntry"         : "2017 MVAv1, dRiso 0.5, old DM",
+			"color"                : 14
 		},
 
 		"rawMVAnewDMwLT" : {
@@ -51,6 +58,7 @@
 	        "legendEntry"         : "2015 MVA, dRiso 0.5, new DM",
 	        "color"               : 2
 	    },
+
 	    "rawMVAnewDMwLT2016" : {
 	        "preselection"        : "preselection_newDMs",
 	        "discriminator"       : "byIsolationMVArun2v1DBnewDMwLTraw2016",
@@ -60,6 +68,7 @@
 	        "legendEntry"         : "2016 MVA, dRiso 0.5, new DM",
 	        "color"               : 3
 	    },
+
 	    "CombinedIsolationDeltaBetaCorrRaw3Hits_oldDM" : {
 	        "preselection"        : "preselection_oldDMs",
 	        "discriminator"       : "byCombinedIsolationDeltaBetaCorrRaw3Hits",
@@ -101,37 +110,27 @@
 	"commonOtherVariables":
 	[
 		"recTauNphoton",
-		"recTauNphoton_ptGt0.5",
 		"recTauNphoton_ptGt1.0",
         "recTauNphoton_ptGt1.5",
-        "photonPtSumOutsideSignalCone_ptGt0.5",
         "photonPtSumOutsideSignalCone_ptGt1.0",
         "photonPtSumOutsideSignalCone_ptGt1.5",
-        "photonPtSumOutsideSignalConedRgt0p1_ptGt0.5",
         "photonPtSumOutsideSignalConedRgt0p1_ptGt1.0",
         "photonPtSumOutsideSignalConedRgt0p1_ptGt1.5",
-        "neutralIsoPtSum_ptGt0.5",
         "neutralIsoPtSum_ptGt1.0",
         "neutralIsoPtSum_ptGt1.5",
-        "recTauPtWeightedDetaStrip_ptGt0.5",
         "recTauPtWeightedDetaStrip_ptGt1.0",
         "recTauPtWeightedDetaStrip_ptGt1.5",
-        "recTauPtWeightedDphiStrip_ptGt0.5",
         "recTauPtWeightedDphiStrip_ptGt1.0",
         "recTauPtWeightedDphiStrip_ptGt1.5",
-        "recTauPtWeightedDrSignal_ptGt0.5",
         "recTauPtWeightedDrSignal_ptGt1.0",
         "recTauPtWeightedDrSignal_ptGt1.5",
-        "recTauPtWeightedDrIsolation_ptGt0.5",
         "recTauPtWeightedDrIsolation_ptGt1.0",
         "recTauPtWeightedDrIsolation_ptGt1.5",
 
         "chargedIsoPtSumdR03",
         "neutralIsoPtSumdR03",
-		"neutralIsoPtSum_IsoConeR0p3_ptGt0.5",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt1.0",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt1.5",
-		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt0.5",
 		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.0",
 		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.5"
     ],
@@ -143,10 +142,10 @@
 		"numOfflinePrimaryVertices/I",
 		"genVisTauPt/F",
 		"genTauPt/F",
-		"recTauLeadingTrackChi2",
 		"byIsolationMVArun2v1DBdR03oldDMwLTraw",
 		"byIsolationMVArun2v1DBoldDMwLTraw",
 		"byIsolationMVArun2v1DBoldDMwLTraw2016",
+		"byIsolationMVArun2017v1DBoldDMwLTraw2017",
 		"byIsolationMVArun2v1DBnewDMwLTraw",
 		"byIsolationMVArun2v1DBnewDMwLTraw2016",
 		"byCombinedIsolationDeltaBetaCorrRaw3Hits",
@@ -165,7 +164,7 @@
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
-	        "applyPtDependentPruningBackground" : false,
+	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
@@ -196,9 +195,7 @@
 	            "commonSpectatorVariables",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
-	        "otherVariables" : [
-	        	"commonOtherVariables"
-	        ],
+	        "otherVariables" : [],
 	        "legendEntry"         : "MVA isodR03, 2016 strategy",
 	        "_comment"			  : "strategy 2016, iso cone 0.3",
 	        "color"               : 1
@@ -260,7 +257,7 @@
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
-	        "applyPtDependentPruningBackground" : false,
+	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"	  : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
@@ -291,9 +288,7 @@
 	            "commonSpectatorVariables",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
-	        "otherVariables" : [
-	            "commonOtherVariables"
-	        ],
+	        "otherVariables" : [],
 	        "legendEntry"         : "MVA isodR03, 2017 strategy",
 	        "_comment"			  : "strategy 2017, iso cone 0.3, for 2016 MC",
 	        "color"               : 2
@@ -352,7 +347,7 @@
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
-	        "applyPtDependentPruningBackground" : false,
+	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
@@ -383,9 +378,7 @@
 	            "commonSpectatorVariables",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
-	        "otherVariables" : [
-	            "commonOtherVariables"
-	        ],
+	        "otherVariables" : [],
 	        "legendEntry"         : "nominal 2017 tr., pt>1",
 	        "_comment"			  : "WIP 03isdoCone 2016, strategy 2017, iso cone 0.3, photon pt>1.0",
 	        "color"               : 4
@@ -446,7 +439,7 @@
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : false,
+	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -492,8 +485,8 @@
 	        "applyEtaReweighting" : true,
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
-	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : false,
+	        "applyEventPruningBackground" : 3,
+	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -524,13 +517,11 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 	            "byIsolationMVArun2v1DBnewDMwLTraw",
-				"byIsolationMVArun2v1DBnewDMwLTraw2016"
+				"byIsolationMVArun2v1DBnewDMwLTraw2016",
 	        ],
-	        "otherVariables" : [
-	            "commonOtherVariables"
-	        ],
+	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., phpt>1, new DM",
-	        "_comment"			  : "WIP 05isoCone strategy 2017 for MC16, new DM, phpt>1, from runTauIdMVATrainingMiniAOD_deltaBeta_dR03_oldDM_2017trainingstrategy.py",
+	        "_comment"			  : "byIsolationMVArun2017v1DBnewDMwLTraw2017 was not uploaded; WIP 05isoCone strategy 2017 for MC16, new DM, phpt>1, from runTauIdMVATrainingMiniAOD_deltaBeta_dR03_oldDM_2017trainingstrategy.py",
 	        "color"               : 4
 	    },
 	    "mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5" : {
@@ -539,8 +530,8 @@
 	        "applyEtaReweighting" : true,
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
-	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : false,
+	        "applyEventPruningBackground" : 2,
+	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -571,11 +562,10 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 	            "byIsolationMVArun2v1DBnewDMwLTraw",
-				"byIsolationMVArun2v1DBnewDMwLTraw2016"
+				"byIsolationMVArun2v1DBnewDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
-	        "otherVariables" : [
-	            "commonOtherVariables"
-	        ],
+	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., phpt>1.5, new DM",
 	        "_comment"			  : "WIP 05isoCone strategy 2017 for MC16, new DM, phpt>1.5, from runTauIdMVATrainingMiniAOD_deltaBeta_dR03_oldDM_2017trainingstrategy.py",
 	        "color"               : 4
@@ -621,7 +611,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -636,7 +627,7 @@
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : false,
+	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -667,7 +658,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -683,7 +675,7 @@
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : false,
+	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -714,12 +706,11 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
-	        "otherVariables" : [
-	            "commonOtherVariables"
-	        ],
-	        "legendEntry"         : "nom.2017 tr., phpt>1, old DM, MC16",
+	        "otherVariables" : [],
+	        "legendEntry"         : "nom.2017 tr., dRiso 0.5, old DM",
 	        "_comment"			  : "05isoCone, strategy 2017 for MC16, old DM, phpt>1",
 	        "color"               : 4
 	    },
@@ -730,7 +721,7 @@
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : false,
+	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -761,11 +752,10 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
-	        "otherVariables" : [
-	            "commonOtherVariables"
-	        ],
+	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., phpt>1.5, old DM, MC16",
 	        "_comment"			  : "05isoCone, strategy 2017 for MC16, old DM, phpt>1.5",
 	        "color"               : 4
@@ -809,7 +799,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -855,7 +846,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -901,7 +893,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -948,7 +941,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -994,7 +988,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1040,7 +1035,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1082,7 +1078,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1123,7 +1120,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1164,7 +1162,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	        "recTauNphoton_ptGt1.0",
@@ -1228,7 +1227,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1269,7 +1269,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -1310,7 +1311,8 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
-				"byIsolationMVArun2v1DBoldDMwLTraw2016"
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
