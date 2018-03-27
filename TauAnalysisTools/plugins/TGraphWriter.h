@@ -18,12 +18,12 @@
 #include <vector>
 #include <string>
 
-class TGraphWriter : public edm::EDAnalyzer 
+class TGraphWriter : public edm::EDAnalyzer
 {
  public:
   TGraphWriter(const edm::ParameterSet&);
   ~TGraphWriter();
-  
+
  private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
 
@@ -35,20 +35,24 @@ class TGraphWriter : public edm::EDAnalyzer
   {
     jobEntryType(const edm::ParameterSet& cfg)
     {
-      if ( cfg.existsAs<edm::FileInPath>("inputFileName") ) {
-	edm::FileInPath inputFileName_fip = cfg.getParameter<edm::FileInPath>("inputFileName");
-	if ( inputFileName_fip.location()!=edm::FileInPath::Local)
-	  throw cms::Exception("TGraphWriter") 
-	    << " Failed to find File = " << inputFileName_fip << " !!\n";
-	inputFileName_ = inputFileName_fip.fullPath();
-      } else if ( cfg.existsAs<std::string>("inputFileName") ) {
-	inputFileName_ = cfg.getParameter<std::string>("inputFileName");
-      } else throw cms::Exception("TGraphWriter") 
-	  << " Undefined Configuration Parameter 'inputFileName !!\n";
+      if ( cfg.existsAs<edm::FileInPath>("inputFileName") )
+      {
+        edm::FileInPath inputFileName_fip = cfg.getParameter<edm::FileInPath>("inputFileName");
+
+        if ( inputFileName_fip.location()!=edm::FileInPath::Local)
+          throw cms::Exception("TGraphWriter") << " Failed to find File = " << inputFileName_fip << " !!\n";
+
+        inputFileName_ = inputFileName_fip.fullPath();
+      }
+      else if ( cfg.existsAs<std::string>("inputFileName") )
+        inputFileName_ = cfg.getParameter<std::string>("inputFileName");
+      else throw cms::Exception("TGraphWriter") << " Undefined Configuration Parameter 'inputFileName !!\n";
       graphName_ = cfg.getParameter<std::string>("graphName");
       outputRecord_ = cfg.getParameter<std::string>("outputRecord");
     }
+
     ~jobEntryType() {}
+
     std::string inputFileName_;
     std::string graphName_;
     std::string outputRecord_;
