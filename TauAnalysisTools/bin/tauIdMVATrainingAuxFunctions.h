@@ -56,11 +56,11 @@ void saveGBRForest(GBRForest* gbr, const std::string& mvaName, const std::string
 void saveAsGBRForest(TMVA::IMethod* mva, const std::string& mvaName, const std::string& outputFileName)
 {
   TMVA::MethodBDT* bdt = dynamic_cast<TMVA::MethodBDT*>(mva);
-  if ( !bdt ) 
-    throw cms::Exception("saveAsGBRForest") 
+  if ( !bdt )
+    throw cms::Exception("saveAsGBRForest")
       << "MVA object passed as function argument needs to be of type 'BDTG' !!\n";
 
-  GBRForest* gbr = new GBRForest(bdt);  
+  GBRForest* gbr = new GBRForest(bdt);
 
   saveGBRForest(gbr, mvaName, outputFileName);
 
@@ -160,47 +160,55 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
     bool isBranchToKeep = false;
     for ( std::vector<std::string>::const_iterator branchToKeep = branchesToKeep_expressions.begin(); branchToKeep != branchesToKeep_expressions.end(); ++branchToKeep )
     {
-      if ( (*branchToKeep) == "" ) continue;     
+      if ( (*branchToKeep) == "" ) continue;
       if ( branchToKeep->find(branch->GetName()) != std::string::npos )
       {
-      	std::string branchToKeep_substring(*branchToKeep, branchToKeep->find(branch->GetName()));
-      	std::string pattern = std::string(branch->GetName()).append("[a-zA-Z0-9]+").append(".*");
-      	TPRegexp regexp(pattern.data());
-      	if ( regexp.Match(branchToKeep_substring.data()) == 0 )
+        std::string branchToKeep_substring(*branchToKeep, branchToKeep->find(branch->GetName()));
+        std::string pattern = std::string(branch->GetName()).append("[a-zA-Z0-9]+").append(".*");
+        TPRegexp regexp(pattern.data());
+        if ( regexp.Match(branchToKeep_substring.data()) == 0 )
         { // CV: veto "accidental" matches, e.g. branchName 'recTauP' in expression 'TMath::Log(recTauPt)'
-      	  isBranchToKeep = true;
-      	  break;
-      	}
+          if (debug)
+            std::cout << "\tmatched regex of substring: " << branchToKeep_substring  << std::endl;
+          isBranchToKeep = true;
+          break;
+        }
       }
-    } 
+    }
 
     if ( isBranchToKeep )
     {
+      if (debug) std::cout << "\tbranch to keep " << std::endl;
       branchEntryType* branchEntry = new branchEntryType();
       branchEntry->branchName_ = branch->GetName();
-      branchEntry->branchName_and_Type_ = branch->GetTitle();      
+      branchEntry->branchName_and_Type_ = branch->GetTitle();
       unsigned int idx = branchEntry->branchName_and_Type_.find_last_of("/");
+
       if ( idx == (branchEntry->branchName_and_Type_.length() - 2) )
       {
-      	branchEntry->branchType_ = branchEntry->branchName_and_Type_[idx + 1];
-      	if ( branchEntry->branchType_ == 'F' )
+        branchEntry->branchType_ = branchEntry->branchName_and_Type_[idx + 1];
+
+        if ( branchEntry->branchType_ == 'F' )
         {
-      	  inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueF_);
-      	  outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueF_, branchEntry->branchName_and_Type_.data());
-      	}
+          std::cout << "\t branchEntry->branchType_ == F"  << std::endl;
+          inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueF_);
+          outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueF_, branchEntry->branchName_and_Type_.data());
+        }
         else if ( branchEntry->branchType_ == 'I' )
         {
-      	  inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueI_);
-      	  outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueI_, branchEntry->branchName_and_Type_.data());
-      	}
+          inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueI_);
+          outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueI_, branchEntry->branchName_and_Type_.data());
+        }
         else if ( branchEntry->branchType_ == 'l' )
         {
-      	  inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueL_);
-      	  outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueL_, branchEntry->branchName_and_Type_.data());
+          inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueL_);
+          outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueL_, branchEntry->branchName_and_Type_.data());
+
         }
-        else
-      	  throw cms::Exception("preselectTree") << "Branch = " << branchEntry->branchName_ << " is of unsupported Type = " << branchEntry->branchName_and_Type_ << " !!\n";
+        else throw cms::Exception("preselectTree") << "Branch = " << branchEntry->branchName_ << " is of unsupported Type = " << branchEntry->branchName_and_Type_ << " !!\n";
       }
+
+      if (debug) std::cout << "\t pushed back branch to keep : branch->GetName(): " << branch->GetName() << " branchEntry: " << branchEntry->branchName_ << std::endl;
       branchesToKeep.push_back(branchEntry);
       branchesToKeep_namesstr.push_back(branchEntry->branchName_);
     }
@@ -287,7 +295,7 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
   }
 
   int currentTreeNumber = inputTree->GetTreeNumber();
-  
+
   int numEntries = inputTree->GetEntries();
   int selectedEntries = 0;
   // outputTree->cd();
@@ -322,9 +330,10 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
       // CV: need to call TTreeFormula::UpdateFormulaLeaves whenever input files changes in TChain
       //     in order to prevent ROOT causing a segmentation violation,
       //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=481
-      if ( inputTree->GetTreeNumber() != currentTreeNumber ) {
-    	inputTreePreselection->UpdateFormulaLeaves();
-    	currentTreeNumber = inputTree->GetTreeNumber();
+      if ( inputTree->GetTreeNumber() != currentTreeNumber )
+      {
+        inputTreePreselection->UpdateFormulaLeaves();
+        currentTreeNumber = inputTree->GetTreeNumber();
       }
 
       if ( !(inputTreePreselection->EvalInstance() > 0.5) ) continue;
@@ -412,8 +421,8 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
       double u = rnd.Rndm();
       if ( u > ptVsEtaReweight )
       {
-      	//std::cout << "u = " << u << " --> skipping event." << std::endl;
-      	skipEvent = true;
+        //std::cout << "u = " << u << " --> skipping event." << std::endl;
+        skipEvent = true;
       }
       ptVsEtaReweight = 1.0;
     }
@@ -425,10 +434,8 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
 
   delete inputTreePreselection;
 
-  for ( std::vector<branchEntryType*>::const_iterator it = branchesToKeep.begin();
-	it != branchesToKeep.end(); ++it ) {
+  for ( std::vector<branchEntryType*>::const_iterator it = branchesToKeep.begin(); it != branchesToKeep.end(); ++it )
     delete (*it);
-  }
 
   return outputTree;
 }
