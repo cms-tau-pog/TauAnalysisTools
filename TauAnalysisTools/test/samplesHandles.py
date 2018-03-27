@@ -6,23 +6,43 @@ class SamplesHandles(object):
 		super(SamplesHandles, self).__init__()
 		self.era = era
 		self.samples = {}
+		self.samples_sg = {}
+		self.samples_bg = {}
 		self.setSamples()
 
 	def setSamples(self):
 		if self.era == "2016":
 			self.samples = SamplesHandles.getSamples16()
+			self.samples_sg = SamplesHandles.getSamplesSg16()
+			self.samples_bg = SamplesHandles.getSamplesBg16()
 		elif self.era == "2017":
 			self.samples = SamplesHandles.getSamples17()
+			self.samples_sg = SamplesHandles.getSamplesSg17()
+			self.samples_bg = SamplesHandles.getSamplesBg17()
 		elif self.era == "2016dR03":
 			self.samples = SamplesHandles.getSamplesdR03_16()
+			self.samples_sg = {}
+			self.samples_bg = {}
 		elif self.era == "2017PU":
 			self.samples = SamplesHandles.getSamplesPU17()
+			self.samples_sg = {} # this study has been stopped
+			self.samples_bg = {}
 		elif self.era == "2017MCv2":
 			self.samples = SamplesHandles.getSamples17MCv2()
+			self.samples_sg = SamplesHandles.getSamplesSg17MCv2()
+			self.samples_bg = SamplesHandles.getSamplesBg17MCv2()
+		elif self.era == "2017MCv2dR0p3":
+			self.samples = SamplesHandles.getSamples17MCv2dR0p3()
+			self.samples_sg = SamplesHandles.getSamplesSg17MCv2dR0p3()
+			self.samples_bg = SamplesHandles.getSamplesBg17MCv2dR0p3()
 		elif self.era == "2017MCv2RelVal":
 			self.samples = SamplesHandles.getSamples17MCv2RelVal()
+			self.samples_sg = SamplesHandles.getSamplesSg17MCv2RelVal()
+			self.samples_bg = SamplesHandles.getSamplesBg17MCv2RelVal()
 		else:
 			self.samples = {}
+			self.samples_sg = {}
+			self.samples_bg = {}
 
 	def updateSamplesJson(self):
 		with open('samples.json', 'wb') as outfile:
@@ -838,7 +858,6 @@ class SamplesHandles(object):
 		# I IGNORE FOR NOW /QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM
 		return samples
 
-
 	@staticmethod
 	def getSamplesSg17MCv2():
 		samples = {
@@ -939,6 +958,60 @@ class SamplesHandles(object):
 	def getSamples17MCv2():
 		s = SamplesHandles.getSamplesSg17MCv2()
 		s.update(SamplesHandles.getSamplesBg17MCv2())
+		return s
+
+
+	@staticmethod
+	def getSamplesSg17MCv2dR0p3():
+		samples = {
+			'tthHiggs125toTauTau' : {#in production
+				'datasetpath'                        : '/ttHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
+				'files_per_job'                      : 1,
+				'total_files'                        : -1,
+				'type'                               : 'SignalMC'
+
+			}
+		}
+		return samples
+
+	@staticmethod
+	def getSamplesBg17MCv2dR0p3():
+		'''
+		We don't use other Bg because we want to learn to descriminate against the bg events in very dense invironment.
+		In other Bgs it's not the case.
+		Fully leptonic TT events with jet->tau fakes are actually a relevant background in the ttH analysis and
+		the generator level matching that is applied in the training should take care of splitting the events
+		into genuine hadronic taus ("signal") and jet->tau fakes ("background").
+		'''
+		samples = {
+			'TTJets_SingleLeptFromT' : {
+				'datasetpath'                        : '/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+				'files_per_job'                      : 1,
+				'total_files'                        : -1,
+				'type'                               : 'BackgroundMC'
+			},
+
+			'TTTo2L2Nu' : {
+				'datasetpath'                        : '/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+				'files_per_job'                      : 1,
+				'total_files'                        : -1,
+				'type'                               : 'BackgroundMC'
+			},
+
+			'TTToHadronic' : {
+				'datasetpath'                        : '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+				'files_per_job'                      : 1,
+				'total_files'                        : -1,
+				'type'                               : 'BackgroundMC'
+			}
+		}
+
+		return samples
+
+	@staticmethod
+	def getSamples17MCv2dR0p3():
+		s = SamplesHandles.getSamplesSg17MCv2dR0p3()
+		s.update(SamplesHandles.getSamplesBg17MCv2dR0p3())
 		return s
 
 
