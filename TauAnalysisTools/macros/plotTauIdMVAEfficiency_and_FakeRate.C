@@ -27,6 +27,11 @@
 #include <math.h>
 #include <limits>
 
+#include <sys/types.h>
+#include <dirent.h>
+#include <errno.h>
+#include <sys/stat.h>
+
 enum { kTauPt, kLogTauPt };
 enum { kTauEta, kTauAbsEta };
 
@@ -461,6 +466,7 @@ void showDistribution(const TString& title, double canvasSizeX, double canvasSiz
 
 TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, double Efficiency_or_FakeRate)
 {
+	std::cout << "compMVAcut: Efficiency_or_FakeRate: " << Efficiency_or_FakeRate << std::endl;
 	const TAxis* xAxis = histogramMVAoutput_vs_Pt->GetXaxis();
 	int numBinsX = xAxis->GetNbins();
 
@@ -483,6 +489,7 @@ TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, 
 		TAxis *axis = const_cast<TAxis *>(histogramPt->GetXaxis());
 		axis->SetRange(binLowIndex, binUpIndex);
 
+		//std::cout << "Report: bin @ x = GetBinCenter " << xAxis->GetBinCenter(iBinX) << " vs GetMean " << histogramPt->GetMean() << " vs GetBinContent " << histogramPt->GetBinContent(iBinX) << " has statistics (#entries = " << histogramPt->GetEntries() << ") ptMin and ptMax " << ptMin << " " << ptMax << std::endl;
 		// CV: skip bins of low statistics
 		if (histogramPt->GetEntries() < 100)
 		{
@@ -494,12 +501,15 @@ TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, 
 
 		double normalization = 0.;
 		for (int iBinY = numBinsY; iBinY >= 1; --iBinY)
+		{
 			normalization += histogramMVAoutput_vs_Pt->GetBinContent(iBinX, iBinY);
+			// std::cout << "\tnormalisation(iBinX, iBinY) = (" << iBinX << ", " << iBinY << ") += " << histogramMVAoutput_vs_Pt->GetBinContent(iBinX, iBinY) << std::endl;
+		}
 
 		// CV: skip bins of low statistics
 		if (normalization < 1.e-6)
 		{
-			std::cout << "Warning: bin @ x = " << xAxis->GetBinCenter(iBinX) << " has low statistics (normalization = " << normalization << ") --> skipping !!" << std::endl;
+			std::cout << "Warning: bin @ x = " << xAxis->GetBinCenter(iBinX) << " has low statistics (normalization = " << normalization << ") (#entries = " << histogramPt->GetEntries() << " --> skipping !!" << std::endl;
 			continue;
 		}
 	
@@ -512,7 +522,7 @@ TGraph* compMVAcut(const TH2* histogramMVAoutput_vs_Pt, const TH1* histogramPt, 
 
 			if ((runningSum + binContent_normalized) >= Efficiency_or_FakeRate)
 			{
-				y = yAxis->GetBinUpEdge(iBinY) - ((Efficiency_or_FakeRate - runningSum)/binContent_normalized)*yAxis->GetBinWidth(iBinY);
+				y = yAxis->GetBinUpEdge(iBinY) - ((Efficiency_or_FakeRate - runningSum) / binContent_normalized) * yAxis->GetBinWidth(iBinY);
 				const double epsilon = 1.e-6;
 				assert(y >= (yAxis->GetBinLowEdge(iBinY) - epsilon));
 				break;
@@ -653,7 +663,7 @@ void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
 
 
 void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
-		std::vector< std::pair<TGraph*, const std::string&> > v,
+		std::vector< std::pair<TGraph*, std::string> > v,
 		double xMin, double xMax, unsigned numBinsX, const std::string& xAxisTitle, double xAxisOffset,
 		double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
 		double legendX0, double legendY0,
@@ -691,7 +701,7 @@ void showGraphs(const TString& title, double canvasSizeX, double canvasSizeY,
 
 	for (int i = 0; i < v.size(); i++)
 	{
-		v.at(i).first->SetLineColor(colors.at(0));
+		v.at(i).first->SetLineColor(colors.at(i));
 		v.at(i).first->SetLineWidth(2);
 		v.at(i).first->Draw("L");
 		legend->AddEntry(v.at(i).first, v.at(i).second.data(), "l");
@@ -816,7 +826,7 @@ void fillPlots(const std::string& inputFileName, const std::string& treeName, pl
 				 double mvaCut,
 				 int tauPtMode, int tauEtaMode,
 				 TFormula* mvaOutput_normalization,
-				 const std::string& inputFileDirs = "")
+				 const std::string& inputFileDirs = "", bool checkBinsEntries = false)
 {
 	int classId_signal     = 0;
 	int classId_background = 1;
@@ -871,17 +881,60 @@ void fillPlots(const std::string& inputFileName, const std::string& treeName, pl
 
 	double normalization_signal = 0.;
 	double normalization_background = 0.;
+	static const float arr[] = {20, 22.5, 25, 27.5, 30, 32.5, 35, 37.5, 40, 45, 50, 55, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500};
+	static const int zerros[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	std::vector<float> bins(arr, arr + sizeof(arr) / sizeof(arr[0]) );
+	std::vector<long> vSg(zerros, zerros + sizeof(zerros) / sizeof(zerros[0]) );
+	std::vector<long> vBg(zerros, zerros + sizeof(zerros) / sizeof(zerros[0]) );
 	for (int iEntry = 0; iEntry < numEntries && (iEntry < maxEvents || maxEvents == -1); ++iEntry)
 	{
 		if (iEntry > 0 && (iEntry % 10000) == 0)
-			std::cout << "processing Entry " << iEntry << std::endl;
+			std::cout << "processing Entry " << iEntry << " out of " << numEntries << "\n";
 	
 		tree->GetEntry(iEntry);
 
-		if (classId == classId_signal) normalization_signal += evtWeight;
-		else if (classId == classId_background) normalization_background += evtWeight;
+		if (classId == classId_signal)
+		{
+			if (checkBinsEntries)
+				for (int i = 0; i < bins.size(); ++i)
+				{
+					if (TMath::Exp(recLogTauPt) < bins.at(0)) break;
+					if ((i == bins.size() - 1 && TMath::Exp(recLogTauPt) > bins.at(i)) || (TMath::Exp(recLogTauPt) < bins.at(i+1) && TMath::Exp(recLogTauPt) > bins.at(i)))
+	    			{
+	    				if (i == bins.size() - 1) std::cout << " sg last bin " << bins.at(i) << " out " << TMath::Exp(recLogTauPt) << "\n";
+	    				vSg.at(i)++;
+	    				break;
+	    			}
+	    		}
+
+			normalization_signal += evtWeight;
+		}
+		else if (classId == classId_background)
+		{
+			if (checkBinsEntries)
+				for (int i = 0; i < bins.size(); ++i)
+				{
+					if (TMath::Exp(recLogTauPt) < bins.at(0)) break;
+					if ((i == bins.size() - 1 && TMath::Exp(recLogTauPt) > bins.at(i)) || (TMath::Exp(recLogTauPt) < bins.at(i+1) && TMath::Exp(recLogTauPt) > bins.at(i)))
+	    			{
+	    				if (i == bins.size() - 1) std::cout << "bg last bin " << bins.at(i) << " out " << TMath::Exp(recLogTauPt) << "\n";
+	    				vBg.at(i)++;
+	    				break;
+			    	}
+			    }
+
+			normalization_background += evtWeight;
+		}
 	}
 	std::cout << "normalization: signal = " << normalization_signal << ", background = " << normalization_background << std::endl;
+	if (checkBinsEntries)
+	{
+		for (auto i = vSg.begin(); i != vSg.end(); ++i)
+	    	std::cout << *i << ' ';
+	    std::cout << "\n";
+		for (auto i = vBg.begin(); i != vBg.end(); ++i)
+	    	std::cout << *i << ' ';
+	}
 
 	mvaOutput_normalization->SetParameter(0, normalization_signal);
 	mvaOutput_normalization->SetParameter(1, normalization_background);
@@ -973,27 +1026,44 @@ void plotTauIdMVAEfficiency_and_FakeRate()
 		//mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTDB.root", "isoDBR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
 		//mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/anayak/CMS/Ntuple_Spring15TauID/MVAIsoTraining/tauId_v2_15/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt4aLTPuWeight.root", "isoPWR03oldDMwLT",  0.80, kLogTauPt, kTauAbsEta));
 	*/
-	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut/tauId_v3_0/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0.root", "tauIdMVAIsoDBoldDMwLT_2017_pt_0p1",  0.80, kLogTauPt, kTauAbsEta, "dataset/"));
-	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_2017strategy/tauId_v3_0/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0.root", "tauIdMVAIsoDBoldDMwLT_2016_pt_0p1",  0.80, kLogTauPt, kTauAbsEta, ""));
+	//2017v1
+	//mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut/tauId_v3_0/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0.root", "tauIdMVAIsoDBoldDMwLT_2017_pt_0p1",  0.80, kLogTauPt, kTauAbsEta, "dataset/"));
+		// bins entries sg: 488608 483337 469425 447812 418449 380706 323013 258571 378761 255683 178147 129098 177190 117527 82467 59409 90252 47638 28646 19100 25309 17743 18914 10280 6350 3810 2417 3067 1835 1805 3022 
+		// bins entries bg: 503665 498956 482170 459079 430062 390417 330815 265539 387885 262218 183226 132306 181462 120774 84385 60801 92787 49109 29200 19380 26013 17961 19640 10727 6481 3828 2468 3057 1818 1906 3124 
+	//mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_2017strategy/tauId_v3_0/trainfilesfinal_v1/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0.root", "tauIdMVAIsoDBoldDMwLT_2016_pt_0p1",  0.80, kLogTauPt, kTauAbsEta, ""));
+	// 2017v2
+	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/tauId_dR05_old_v2/trainfilesfinal_multiple_presel_bg_files/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_1p0_CORRECT.root", "tauIdMVAIsoDBoldDMwLT2017v2",  0.80, kLogTauPt, kTauAbsEta, "dataset/"));
+		// bins entries sg: 246219 241264 233268 220705 205976 187517 161292 133765 201549 139411 98668 71372 96118 60829 40287 27839 39661 21472 13716 9727 13424 9919 11852 7220 5021 3410 2065 2042 767 464 484 
+		// bins entries bg: 1430173 1402096 1356360 1284470 1197664 1090421 939569 778940 1175399 812854 573727 414066 558229 355081 234754 160788 231471 124988 80698 55697 79055 58562 68961 41635 30005 19710 11908 12117
+	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/tauId_dR03_old_v2/trainfilesfinal_WIP1_attempt2/trainTauIdMVA_mvaIsolation3HitsDeltaR03opt2aLTDB.root", "tauIdMVAIsoDBoldDMdR0p3wLT2017v2",  0.80, kLogTauPt, kTauAbsEta, "dataset/"));
+	mvaEntries.push_back(new mvaEntryType("/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/tauId_dR05_new_v2/trainfilesfinal_multiple_presel_bg_files_Prunning3/trainTauIdMVA_mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0.root", "tauIdMVAIsoDBnewDMwLT2017v2",  0.80, kLogTauPt, kTauAbsEta, "dataset/"));
 
+	// Check if plots dir exist
+	{
+		DIR* dir = opendir("plots/");
+		if (!dir && (ENOENT == errno))
+		{
+			int status;
+			status = mkdir("plots", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+		}
+	}
 
-
-	for (std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin();	mvaEntry != mvaEntries.end(); ++mvaEntry)
+	for (std::vector<mvaEntryType*>::iterator mvaEntry = mvaEntries.begin(); mvaEntry != mvaEntries.end(); ++mvaEntry)
 	{
 		std::cout << "processing " << (*mvaEntry)->legendEntry_ << std::endl;
-		fillPlots((*mvaEntry)->inputFileName_, "TrainTree", (*mvaEntry)->plots_signal_, (*mvaEntry)->plots_background_,
-				(*mvaEntry)->mvaCut_,
-				(*mvaEntry)->tauPtMode_, (*mvaEntry)->tauEtaMode_,
-				(*mvaEntry)->mvaOutput_normalization_,
-				(*mvaEntry)->inputFileDirs_);
-
 		fillPlots((*mvaEntry)->inputFileName_, "TestTree", (*mvaEntry)->plots_signal_, (*mvaEntry)->plots_background_,
 				(*mvaEntry)->mvaCut_,
 				(*mvaEntry)->tauPtMode_, (*mvaEntry)->tauEtaMode_,
 				(*mvaEntry)->mvaOutput_normalization_,
 				(*mvaEntry)->inputFileDirs_);
+
+		fillPlots((*mvaEntry)->inputFileName_, "TrainTree", (*mvaEntry)->plots_signal_, (*mvaEntry)->plots_background_,
+				(*mvaEntry)->mvaCut_,
+				(*mvaEntry)->tauPtMode_, (*mvaEntry)->tauEtaMode_,
+				(*mvaEntry)->mvaOutput_normalization_,
+				(*mvaEntry)->inputFileDirs_);
 	}
-	/*
+	/* manual showEfficiency for eff and fake rate
 		showEfficiency("", 800, 600,
 			 mvaEntries[0]->plots_signal_->histogramPt_numerator_, mvaEntries[0]->plots_signal_->histogramPt_denominator_, mvaEntries[0]->legendEntry_,
 			 mvaEntries[1]->plots_signal_->histogramPt_numerator_, mvaEntries[1]->plots_signal_->histogramPt_denominator_, mvaEntries[1]->legendEntry_,
@@ -1028,7 +1098,7 @@ void plotTauIdMVAEfficiency_and_FakeRate()
 			 0.61, 0.165,
 			 "plots/plotTauIdMVAEfficiency_vs_Nvtx.png");
 	
-			showEfficiency("", 800, 600,
+		showEfficiency("", 800, 600,
 			 mvaEntries[0]->plots_background_->histogramPt_numerator_, mvaEntries[0]->plots_background_->histogramPt_denominator_, mvaEntries[0]->legendEntry_,
 			 mvaEntries[1]->plots_background_->histogramPt_numerator_, mvaEntries[1]->plots_background_->histogramPt_denominator_, mvaEntries[1]->legendEntry_,
 			 mvaEntries[2]->plots_background_->histogramPt_numerator_, mvaEntries[2]->plots_background_->histogramPt_denominator_, mvaEntries[2]->legendEntry_,
@@ -1187,7 +1257,7 @@ void plotTauIdMVAEfficiency_and_FakeRate()
 		TGraph* graphFakeRateEq020percent = compMVAcut((*mvaEntry)->plots_background_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_background_->histogramPt_, 0.020);
 		TGraph* graphFakeRateEq050percent = compMVAcut((*mvaEntry)->plots_background_->histogramMVAoutput_vs_Pt_, (*mvaEntry)->plots_background_->histogramPt_, 0.050);
 
-		std::vector< std::pair<TGraph*, const std::string&> > v = {
+		std::vector< std::pair<TGraph*, std::string> > fake_rates = {
 			{graphFakeRateEq050percent, "5%"},
 			{graphFakeRateEq020percent, "2%"},
 			{graphFakeRateEq010percent, "1%"},
@@ -1196,7 +1266,7 @@ void plotTauIdMVAEfficiency_and_FakeRate()
 			{graphFakeRateEq001percent, "0.1%"}
 		};
 
-		showGraphs("#tau_{had} Fake-rate", 800, 600, v,
+		showGraphs("#tau_{had} Fake-rate", 800, 600, fake_rates,
 			0., 2500., 10, "P_{T} / GeV", 1.2,
 			0.0, 1.0, "MVA_{cut}", 1.35,
 			0.69, 0.145,
