@@ -150,6 +150,13 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
     const TBranch* branch = dynamic_cast<const TBranch*>(branches->At(iBranch));
     assert(branch);
 
+    if (debug) std::cout << "\nConsidering : branch->GetName(): " << branch->GetName() ;
+    if (std::find(branchesToKeep_namesstr.begin(), branchesToKeep_namesstr.end(), branch->GetName()) != branchesToKeep_namesstr.end())
+    {
+      if (debug) std::cout << "\tOMMITED SINCE OLREADY INF THE LIST " << std::endl;
+      continue;
+    }
+
     bool isBranchToKeep = false;
     for ( std::vector<std::string>::const_iterator branchToKeep = branchesToKeep_expressions.begin(); branchToKeep != branchesToKeep_expressions.end(); ++branchToKeep )
     {
