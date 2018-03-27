@@ -22,7 +22,7 @@ class TauIDEmbedder(object):
 			}
 		},
 		tauIdDiscrMVA_2017_version = "v1",
-		conditionDB = ""
+		conditionDB = "" # preparational DB: 'frontier://FrontierPrep/CMS_CONDITIONS'
 		):
 		super(TauIDEmbedder, self).__init__()
 		self.process = process
