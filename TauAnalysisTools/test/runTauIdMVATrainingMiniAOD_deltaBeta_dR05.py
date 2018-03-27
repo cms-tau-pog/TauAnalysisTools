@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+'''
+In this file as for the dR0p5 cone you can make a choice of training with new or old DM
+as well as the choice of the campaighn
+'''
 from samplesHandles import SamplesHandles
 import os
 import json
@@ -37,11 +41,12 @@ def _decode_dict(data):
     return rv
 
 DM = "new"
+samples_key = "2017MCv2"
 train_option = 'optaDBAll'
 
-sh = SamplesHandles("2017")
-signalSamples = sh.getSamplesSg17().keys()
-backgroundSamples = sh.getSamplesBg17().keys()
+sh = SamplesHandles(samples_key)
+signalSamples = sh.samples_sg.keys()
+backgroundSamples = sh.samples_bg.keys()
 
 with open('trainingsets.json') as f:
     ff = json.load(f, object_hook=_decode_dict)
@@ -65,25 +70,24 @@ for tval in trainings.values():
 decaymodes = {
     "new": {
         "mvaDiscriminators": {
-            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'], # this one should have different presel input file
-            # 'mvaIsolation3HitsDeltaR05opt1aLTDB': trainings['mvaIsolation3HitsDeltaR05opt1aLTDB'], # only untill will be possible to lead the trainings
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5'],
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0'],
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5']},
+            #'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5'], # set in v2 to 1.0
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0']#,
+            #'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5']
+        },
         "cutDiscriminators": {
             'rawMVAnewDMwLT': cutDiscriminatorsAll['rawMVAnewDMwLT'],
-            'rawMVAnewDMwLT2016': cutDiscriminatorsAll['rawMVAnewDMwLT2016']
+            'rawMVAnewDMwLT2016': cutDiscriminatorsAll['rawMVAnewDMwLT2016'],
+            'rawMVAoldDMwLT2017v1': cutDiscriminatorsAll['rawMVAoldDMwLT2017v1']
         },
         "plots": {
             'mvaIsolation_optDeltaR05BDeltaBeta_newDM' : {
                 'graphs' : [
-                    # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0',
-                    # 'mvaIsolation3HitsDeltaR05opt1aLTDB',
-                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5',
+                    #'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_0p5', # set in v2 to 1.0
                     'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0',
-                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5',
+                    #'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5',
                     'rawMVAnewDMwLT',
-                    'rawMVAnewDMwLT2016'
+                    'rawMVAnewDMwLT2016',
+                    'rawMVAoldDMwLT2017v1'
                 ]
             }
         },
@@ -93,21 +97,24 @@ decaymodes = {
         "mvaDiscriminators": {
             # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'], # this one should have different presel input file
             # 'mvaIsolation3HitsDeltaR05opt1aLTDB': trainings['mvaIsolation3HitsDeltaR05opt1aLTDB'], # only untill will be possible to lead the trainings
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_0p5'],
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'],
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p5']},
+            #'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_0p5'], # set in v2 to 1.0
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0']#,
+            #'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p5']
+        },
         "cutDiscriminators": {
             'rawMVAoldDMwLT': cutDiscriminatorsAll['rawMVAoldDMwLT'],
-            'rawMVAoldDMwLT2016': cutDiscriminatorsAll['rawMVAoldDMwLT2016']
+            'rawMVAoldDMwLT2016': cutDiscriminatorsAll['rawMVAoldDMwLT2016'],
+            'rawMVAoldDMwLT2017v1': cutDiscriminatorsAll['rawMVAoldDMwLT2017v1']
         },
         "plots": {
             'mvaIsolation_optDeltaR05BDeltaBeta_oldDM' : {
                 'graphs' : [
-                    'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5',
+                    #'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5', # set in v2 to 1.0
                     'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0',
-                    'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5',
+                    #'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5',
                     'rawMVAoldDMwLT',
-                    'rawMVAoldDMwLT2016'
+                    'rawMVAoldDMwLT2016',
+                    'rawMVAoldDMwLT2017v1'
                 ]
             }
         },
@@ -115,29 +122,28 @@ decaymodes = {
     }
 }
 
-
 # Set this to true if you want to compute ROC curves for additional
 # discriminators for comparisons on ALL events available in the ntuples
 # NB: if pt-dependent pruning is used, this will not result in an
 # apples-to-apples comparison!
 computeROConAllEvents = False
 version = decaymodes[DM]["version"]
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_newDM/" % version
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples/"
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/%s/trainfilesfinal_multiple_presel_bg_files_Prunning3/" % version
 
-#Rewrite to analyse PU samples
-subfolder = "noPU" # for regular runs use empty string
-samples = sh.getSamplesPU17(subfolder)
-for key in samples.keys():
-    if samples[key]['type'] == 'BackgroundMC': backgroundSamples = [key]
-    elif samples[key]['type'] == 'SignalMC': signalSamples = [key]
+if samples_key == "2017PU":
+    #Rewrite to analyse PU samples
+    subfolder = "noPU" # for regular runs use empty string
+    samples = sh.getSamplesPU17(subfolder)
+    for key in samples.keys():
+        if samples[key]['type'] == 'BackgroundMC': backgroundSamples = [key]
+        elif samples[key]['type'] == 'SignalMC': signalSamples = [key]
 
-pp.pprint(signalSamples)
+    pp.pprint(signalSamples)
 
-version = subfolder
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/ntuples/" + subfolder + (len(subfolder) > 0 )*"/"
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/%s/trainfilesfinal_newDM" % version + (len(subfolder) > 0 )*"_" + subfolder+ "/"
-
+    version = subfolder
+    inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/ntuples/" + subfolder + (len(subfolder) > 0 )*"/"
+    outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/%s/trainfilesfinal_newDM" % version + (len(subfolder) > 0 )*"_" + subfolder+ "/"
 
 #====================================================NO MANUAL BELOW THIS LINE
 
@@ -146,8 +152,10 @@ outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns
 mvaDiscriminators = decaymodes[DM]["mvaDiscriminators"]
 
 # to ensure the final reweighting root files will be suitable for larger spectra of trainings
+'''
 for value in mvaDiscriminators.values():
     value["spectatorVariables"] += commonsDict['commonOtherVariables']
+'''
 
 cutDiscriminators = decaymodes[DM]["cutDiscriminators"]
 plots = decaymodes[DM]["plots"]
@@ -232,6 +240,8 @@ reweightTreeTauIdMVA_logFileNames         = {} # key = discriminator, "signal" o
 trainTauIdMVA_configFileNames             = {} # key = discriminator
 trainTauIdMVA_outputFileNames             = {} # key = discriminator
 trainTauIdMVA_logFileNames                = {} # key = discriminator
+merged_preselected_root                   = {} # key = discriminator
+preselected_roots                   = {} # key = discriminator
 for discriminator in mvaDiscriminators.keys():
 
     print "processing discriminator = %s" % discriminator

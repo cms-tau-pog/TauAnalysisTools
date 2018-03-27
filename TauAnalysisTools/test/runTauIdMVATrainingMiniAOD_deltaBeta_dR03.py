@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+'''
+In this file as for the dR0p3 cone you can make a choice of training with new or old DM
+as well as the choice of the campaighn
+
+for sg and bg only the "tthHiggs%1.0ftoTauTau" and TT_powheg samples are used, through
+manipulating of the SamplesHandles class
+'''
+from samplesHandles import SamplesHandles
 import os
 import json
 import pprint
@@ -35,18 +43,13 @@ def _decode_dict(data):
         rv[key] = value
     return rv
 
-version = 'tauId_dR03'#'tauId_v3_0'
+DM = "old"  # New DM not used for 0.3 cone training
+samples_key = "2017MCv2dR0p3"
 train_option = 'optaDBAll'
 
-# Set this to true if you want to compute ROC curves for additional
-# discriminators for comparisons on ALL events available in the ntuples
-# NB: if pt-dependent pruning is used, this will not result in an
-# apples-to-apples comparison!
-computeROConAllEvents = False
-
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1_allPhotonsCut_allIsoCones/ntuples/"
-
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2016/Summer16_25ns_V1_allPhotonsCut_allIsoCones/%s/trainfilesfinal_WIP1/" % version
+sh = SamplesHandles(samples_key)
+signalSamples = sh.samples_sg.keys()
+backgroundSamples = sh.samples_bg.keys()
 
 with open('trainingsets.json') as f:
     ff = json.load(f, object_hook=_decode_dict)
@@ -67,42 +70,69 @@ for tval in trainings.values():
     replaceCommomns('commonOtherVariables', commonsDict['commonOtherVariables'], tval["otherVariables"])
     replaceCommomns('commonSpectatorVariables', commonsDict['commonSpectatorVariables'], tval["spectatorVariables"])
 
-# DO NOT process isodR03 and isodR05 together! - different input variables
-mvaDiscriminators = {
-    'mvaIsolation3HitsDeltaR03opt1aLTDB': trainings['mvaIsolation3HitsDeltaR03opt1aLTDB'],
-    'mvaIsolation3HitsDeltaR03opt2aLTDB': trainings['mvaIsolation3HitsDeltaR03opt2aLTDB'],
-    'mvaIsolation3HitsDeltaR03opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR03opt2aLTDB_1p0']
-}
-
-cutDiscriminators = {
-    'rawMVAoldDMdR03wLT': cutDiscriminatorsAll['rawMVAoldDMdR03wLT']
-}
-
-plots = {
-    'mvaIsolation_optDeltaR03BDeltaBeta' : {
-        'graphs' : [
-            'mvaIsolation3HitsDeltaR03opt1aLTDB',
-            'mvaIsolation3HitsDeltaR03opt2aLTDB',
-            'mvaIsolation3HitsDeltaR03opt2aLTDB_1p0',
-            'rawMVAoldDMdR03wLT'
-        ]
+decaymodes = {
+    "old": {
+        "mvaDiscriminators": {
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'], # this one should have different presel input file
+            # 'mvaIsolation3HitsDeltaR05opt1aLTDB': trainings['mvaIsolation3HitsDeltaR05opt1aLTDB'], # only untill will be possible to lead the trainings
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_0p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_0p5'],
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p0'],
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_1p5']},
+            'mvaIsolation3HitsDeltaR03opt1aLTDB': trainings['mvaIsolation3HitsDeltaR03opt1aLTDB'],
+            'mvaIsolation3HitsDeltaR03opt2aLTDB': trainings['mvaIsolation3HitsDeltaR03opt2aLTDB']
+            #'mvaIsolation3HitsDeltaR03opt2aLTDB_1p0': trainings['mvaIsolation3HitsDeltaR03opt2aLTDB_1p0'] - no need after 17v2
+        },
+        "cutDiscriminators": {
+            # 'rawMVAoldDMwLT': cutDiscriminatorsAll['rawMVAoldDMwLT'],
+            # 'rawMVAoldDMwLT2016': cutDiscriminatorsAll['rawMVAoldDMwLT2016']
+            'rawMVAoldDMdR03wLT': cutDiscriminatorsAll['rawMVAoldDMdR03wLT']
+        },
+        "plots": { # Here you list all the selections(trained or cut-based) that are compared on the plot
+            'mvaIsolation_optDeltaR03BDeltaBeta' : {
+                'graphs' : [
+                    'mvaIsolation3HitsDeltaR03opt1aLTDB',
+                    'mvaIsolation3HitsDeltaR03opt2aLTDB',
+                    #'mvaIsolation3HitsDeltaR03opt2aLTDB_1p0',
+                    'rawMVAoldDMdR03wLT'
+                ]
+            }
+        },
+        "version": 'tauId_dR03_old_v2'
     }
 }
+
+
+# Set this to true if you want to compute ROC curves for additional
+# discriminators for comparisons on ALL events available in the ntuples
+# NB: if pt-dependent pruning is used, this will not result in an
+# apples-to-apples comparison!
+computeROConAllEvents = False
+version = decaymodes[DM]["version"] #version = 'tauId_dR03' #'tauId_v3_0'
+inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples/"
+outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/%s/trainfilesfinal_WIP1_attempt2/" % version
+
+#====================================================NO MANUAL BELOW THIS LINE
+
+# DO NOT process isodR03 and isodR05 together! - different input variables
+# preselection root-files can be shared only if thew follow the same preselection choice (1 of 4)
+
+mvaDiscriminators = decaymodes[DM]["mvaDiscriminators"]
+
+# to ensure the final reweighting root files will be suitable for larger spectra of trainings
+for value in mvaDiscriminators.values():
+    value["spectatorVariables"] += commonsDict['commonOtherVariables']
+
+cutDiscriminators = decaymodes[DM]["cutDiscriminators"]
+
+plots = decaymodes[DM]["plots"]
 
 allDiscriminators = {}
 allDiscriminators.update(mvaDiscriminators)
 allDiscriminators.update(cutDiscriminators)
 
-signalSamples = []
 
-smHiggsMassPoints = [ 120, 125, 130 ]
-for massPoint in smHiggsMassPoints:
-    tthSampleName = "tthHiggs%1.0ftoTauTau" % massPoint
-    signalSamples.append(tthSampleName)
+#====================================================NO SETTINGS BELOW THIS LINE
 
-backgroundSamples = [
-    "TT_powheg"
-]
 
 execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
 
@@ -335,7 +365,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "\n"    
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
-        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('%s')\n" % tree
+        cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('dataset/%s')\n" % tree
         ##cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
         cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('')\n"
         cfg_modified += "process.makeROCcurveTauIdMVA.classId_signal = cms.int32(0)\n"
@@ -441,7 +471,7 @@ else:
                 cfg_modified += "\n"
                 cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
                 cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
-                cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('%s')\n" % tree
+                cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('dataset/%s')\n" % tree
                 cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('')\n"
                 cfg_modified += "process.makeROCcurveTauIdMVA.classId_signal = cms.int32(0)\n"
                 cfg_modified += "process.makeROCcurveTauIdMVA.classId_background = cms.int32(1)\n"
