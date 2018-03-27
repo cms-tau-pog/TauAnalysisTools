@@ -9,15 +9,15 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 # generic path to dCache where ntuples are stored
-inputPath = "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial"
-version = "tauId_v1"
+inputPath = "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial_withraw15"
+version = "tauId_v2"
 subfolder = "" # for regular runs use empty string
 sh = SamplesHandles("2017MCv2")
 samples = sh.samples
 # samples = sh.getSamplesPU17(subfolder)
 
 # generic path to NFS where we want to copy ntuples to
-outputPath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples/" + subfolder + (len(subfolder) > 0 )*"/"
+outputPath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples2/" + subfolder + (len(subfolder) > 0 )*"/"
 
 # loop through dictionary, create directories according to sampleName
 # and copy corresponding ntuples to the directory
