@@ -7,6 +7,12 @@
 
 #include "TMVA/IMethod.h"
 #include "TMVA/MethodBDT.h"
+#include "TMVA/ClassifierFactory.h"
+#include "TMVA/Event.h"
+#include "TMVA/Factory.h"
+#include "TMVA/MethodBase.h"
+#include "TMVA/Reader.h"
+#include "TMVA/Tools.h"
 
 //#include "Cintex/Cintex.h"
 
@@ -26,6 +32,7 @@
 
 #include <string>
 #include <math.h>
+#include <algorithm>
 
 enum { kSignal, kBackground };
 
@@ -105,11 +112,12 @@ bool isPrunedEventByLevel(int eventPruningLevel)
   return false;
 }
 
-TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName, 
-		     const std::string& preselection, const std::vector<std::string>& branchesToKeep_expressions,
-		     int applyEventPruning, const std::string& branchNamePt, const std::string& branchNameEta, const std::string& branchNameNumMatches, 
-		     int reweight_or_KILL, bool applyPtReweighting, bool applyEtaReweighting, TH1* histogramLogPt, TH1* histogramAbsEta, TH2* histogramLogPtVsAbsEta,
-		     int maxEvents, bool checkForNaNs, unsigned reportEvery, bool applyPtDependentPruning=false)
+TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
+             const std::string& preselection, const std::vector<std::string>& branchesToKeep_expressions,
+             int applyEventPruning, const std::string& branchNamePt, const std::string& branchNameEta, const std::string& branchNameNumMatches,
+             int reweight_or_KILL, bool applyPtReweighting, bool applyEtaReweighting, TH1* histogramLogPt, TH1* histogramAbsEta, TH2* histogramLogPtVsAbsEta,
+             int maxEvents, bool checkForNaNs, unsigned reportEvery, bool applyPtDependentPruning=false, bool debug=false,
+         std::string xmltraining="", std::vector<std::string> xmlinputVariables = std::vector<std::string>(), std::vector<std::string> xmlspectatorVariables = std::vector<std::string>(), std::string gbrForestName_="BDTG", bool createClassId=false, int classId=-1)//"BDT::BDTG"
 {
   std::cout << "<preselectTree>:" << std::endl;
 
@@ -120,10 +128,23 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
   std::vector<branchEntryType*> branchesToKeep;
+  std::vector<std::string> branchesToKeep_namesstr;
 
   TObjArray* branches = inputTree->GetListOfBranches();
 
+  // ADD BRANCH FOR NEW TRAINING - TO ACCES FOR MVA
+  TMVA::Tools::Instance();
+  TMVA::Reader* mvaReader = new TMVA::Reader();// "!V:!Silent"
+  // std::cout <<"\nxmlinputVariables: ";
+  // for (auto i = xmlinputVariables.begin(); i != xmlinputVariables.end(); ++i)
+  //       std::cout << *i << ' ';
+  // std::cout <<"\nxmlspectatorVariables: ";
+  // for (auto i = xmlspectatorVariables.begin(); i != xmlspectatorVariables.end(); ++i)
+  //       std::cout << *i << ' ';
+  // std::cout << "\n";
+
   int numBranches = branches->GetEntries();
+  std::vector<Float_t> intVariables;
   for ( int iBranch = 0; iBranch < numBranches; ++iBranch )
   {
     const TBranch* branch = dynamic_cast<const TBranch*>(branches->At(iBranch));
@@ -174,8 +195,35 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
       	  throw cms::Exception("preselectTree") << "Branch = " << branchEntry->branchName_ << " is of unsupported Type = " << branchEntry->branchName_and_Type_ << " !!\n";
       }
       branchesToKeep.push_back(branchEntry);
+      branchesToKeep_namesstr.push_back(branchEntry->branchName_);
     }
   }
+
+  // TODO: ADD THE SUPPORT OF ALTERNATIVE TRAININGS NOT ONLY 0.5 OLD DM!!!
+  float mvaInput_[23] = {0};
+  float mvaSpectators_[41] = {0};
+  // if ( mvaOpt_ == "kDBoldDMwLTwGJ" || mvaOpt_ == "kDBnewDMwLTwGJ" ) // <==== https://github.com/cms-tau-pog/cmssw/blob/CMSSW_10_0_X_tau-pog/RecoTauTag/RecoTau/plugins/PATTauDiscriminationByMVAIsolationRun2.cc#L301
+
+  for (unsigned int i = 0; i != xmlinputVariables.size(); ++i)
+  {
+    unsigned int idx = xmlinputVariables.at(i).find_last_of("/");
+    if ( idx == (xmlinputVariables.at(i).length() - 2) )
+    {
+      std::string inputVariableName = std::string(xmlinputVariables.at(i), 0, idx);
+      std::cout << "inputVariableName:" << inputVariableName << "\n";
+      mvaReader->AddVariable(inputVariableName, &mvaInput_[i]);
+    }
+    else throw cms::Exception("preselectTree") << "Failed to determine name & type for inputVariable = " << (xmlinputVariables.at(i)) << " !!\n";
+
+  }
+
+  for (unsigned int i = 0; i != xmlspectatorVariables.size(); ++i)
+  {
+    std::cout << "xmlspectatorVariables.at(i):" << xmlspectatorVariables.at(i) << "\n";
+    mvaReader->AddSpectator(xmlspectatorVariables.at(i), &mvaSpectators_[i]);
+  }
+
+  if (mvaReader != NULL && xmltraining.length() != 0) mvaReader->BookMVA(gbrForestName_, xmltraining);
 
   std::cout << "keeping branches:" << std::endl;
   for ( std::vector<branchEntryType*>::const_iterator branchEntry = branchesToKeep.begin(); branchEntry != branchesToKeep.end(); ++branchEntry )
@@ -189,11 +237,12 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
     std::cout << " " << weightVariable << " (type = F)" << std::endl;
     outputTree->Branch(weightVariable.data(), &ptVsEtaReweight, Form("%s/F", weightVariable.data()));
   }
-  
+
   TTreeFormula* inputTreePreselection = 0;
   if ( preselection != "" )
     inputTreePreselection = new TTreeFormula("inputTreePreselection", preselection.data(), inputTree);
 
+  // remember the observation branches which are kept
   const branchEntryType* branchEntryPt         = 0;
   const branchEntryType* branchEntryEta        = 0;
   const branchEntryType* branchEntryNumMatches = 0;
@@ -238,12 +287,19 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
   std::cout << " gDirectory->pwd(): "; gDirectory->pwd();
   std::cout << "TTree::GetDirectory: " << outputTree->GetDirectory()->GetName() << std::endl;
 
+  // Add the local training if any
+  Float_t xml_value = 0;
+  if (mvaReader != NULL && xmltraining.length() != 0) outputTree->Branch(gbrForestName_.data(), &xml_value, Form("%s/F", gbrForestName_.data()));
+  if (createClassId) outputTree->Branch("classID", &classId, Form("%s/I", "classID"));
+
   // outputTree->SetDirectory(outputFile)
   for ( int iEntry = 0; iEntry < numEntries && (maxEvents == -1 || selectedEntries < maxEvents); ++iEntry )
   {
     if ( iEntry > 0 && (iEntry % reportEvery) == 0 )
-      std::cout << "processing Entry " << iEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
-    
+    {
+      std::cout << "processing Entry " << iEntry << " (" << selectedEntries << " Entries selected) out of " << (maxEvents == -1 || selectedEntries < maxEvents) << std::endl;
+      if (createClassId) std::cout << "classId " << classId << std::endl;
+    }
     inputTree->GetEntry(iEntry);
 
     Float_t pt       = ( branchEntryPt         ) ? branchEntryPt->valueF_         : 0.;
@@ -273,14 +329,63 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
       bool isNaN = false;
       for ( std::vector<branchEntryType*>::const_iterator branchEntry = branchesToKeep.begin(); branchEntry != branchesToKeep.end(); ++branchEntry )
       {
-      	if ( (*branchEntry)->branchType_ == 'F' && !std::isfinite((*branchEntry)->valueF_) )
+        if ( (*branchEntry)->branchType_ == 'F' && !std::isfinite((*branchEntry)->valueF_) )
         {
-      	  std::cerr << "Entry #" << iEntry << ": Branch = " << (*branchEntry)->branchName_ << " contains NaN --> skipping !!" << std::endl;
-      	  isNaN = true;
-      	}
+          std::cerr << "Entry #" << iEntry << ": Branch = " << (*branchEntry)->branchName_ << " contains NaN --> skipping !!" << std::endl;
+          isNaN = true;
+          break;
+        }
+        // std::cout << iEntry << ") " << (*branchEntry)->branchName_ << " / " << (*branchEntry)->branchType_
+        //   << ":\n\t (Float_t)(*branchEntry)->valueI_ =  " << (Float_t)(*branchEntry)->valueI_
+        //   << ";\n\t (*branchEntry)->valueF_ = " << (*branchEntry)->valueF_
+        //   << ";\n\t (*branchEntry)->valueI_ = " << (*branchEntry)->valueI_
+        //   << ";\n\t (Float_t)(*branchEntry)->valueI_ = " << (Float_t)(*branchEntry)->valueI_
+        //   << ";\n\t (Float_t)((*branchEntry)->valueI_)" << (Float_t)((*branchEntry)->valueI_)
+        //   << std::endl;
+        // if ((Float_t)(*branchEntry)->valueI_ != (*branchEntry)->valueF_) exit(1);
+
+        // if ( (*branchEntry)->branchType_ == 'I' )
+        // {
+        //   bool ex = false;
+        //   if ((*branchEntry)->valueF_ != 0 ) ex = true;
+        //   std::cout << "\before reasignmentt (*branchEntry)->valueF_: " << (*branchEntry)->valueF_ << std::endl;
+        //   (*branchEntry)->valueF_ = (Float_t)(*branchEntry)->valueI_;
+        //   std::cout << "\tafter reasignmentt (*branchEntry)->valueF_: " << (*branchEntry)->valueF_ << std::endl;
+        //   if (ex) exit(1);
+        // }
+
+        if (mvaReader != NULL && xmltraining.length() != 0) // if Old DM 0.5
+        {
+            if ((*branchEntry)->branchName_ == "recTauPt") mvaInput_[0]  = std::log(std::max(1.f, (*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "recTauEta") mvaInput_[1]  = std::abs((*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "chargedIsoPtSum") mvaInput_[2]  = std::log(std::max(1.e-2f, (*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "neutralIsoPtSum_ptGt1") mvaInput_[3]  = std::log(std::max(1.e-2f, (*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "puCorrPtSum") mvaInput_[4]  = std::log(std::max(1.e-2f, (*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "photonPtSumOutsideSignalCone_ptGt1.0") mvaInput_[5]  = std::log(std::max(1.e-2f, (*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "recTauDecayMode") mvaInput_[6]  = (Float_t)(*branchEntry)->valueI_;
+            if ((*branchEntry)->branchName_ == "recTauNphoton_ptGt1.0") mvaInput_[7]  = std::min(30.f, (Float_t)(*branchEntry)->valueI_);
+            if ((*branchEntry)->branchName_ == "recTauPtWeightedDetaStrip_ptGt1.0") mvaInput_[8]  = std::min(0.5f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recTauPtWeightedDphiStrip_ptGt1.0") mvaInput_[9]  = std::min(0.5f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recTauPtWeightedDrSignal_ptGt1.0") mvaInput_[10] = std::min(0.5f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recTauPtWeightedDrIsolation_ptGt1.0") mvaInput_[11] = std::min(0.5f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recTauEratio") mvaInput_[12] = std::min(1.f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recImpactParam") mvaInput_[13]  = std::copysign(+1.f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recImpactParam") mvaInput_[14]  = std::sqrt(std::min(1.f, std::abs((*branchEntry)->valueF_)));
+            if ((*branchEntry)->branchName_ == "recImpactParamSign") mvaInput_[15]  = std::min(10.f, std::abs((*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "recImpactParamSign") mvaInput_[16]  = std::copysign(+1.f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recImpactParam3D") mvaInput_[17]  = std::sqrt(std::min(1.f, std::abs((*branchEntry)->valueF_)));
+            if ((*branchEntry)->branchName_ == "recImpactParamSign3D") mvaInput_[18]  = std::min(10.f, std::abs((*branchEntry)->valueF_));
+            if ((*branchEntry)->branchName_ == "hasRecDecayVertex") mvaInput_[19]  = ( (*branchEntry)->valueI_ ) ? 1. : 0.;
+            if ((*branchEntry)->branchName_ == "recDecayDistMag") mvaInput_[20] = std::sqrt((*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recDecayDistSign") mvaInput_[21] = std::min(10.f, (*branchEntry)->valueF_);
+            if ((*branchEntry)->branchName_ == "recTauGJangleDiff") mvaInput_[22] = std::max(-1.f, (*branchEntry)->valueF_);
+        }
       }
+
       if ( isNaN ) continue;
     }
+
+    if (mvaReader != NULL && xmltraining.length() != 0) xml_value = mvaReader->EvaluateMVA(gbrForestName_);
 
     Float_t absEta = TMath::Abs(eta);
     Float_t logPt = TMath::Log(TMath::Max((Float_t)1., pt));
