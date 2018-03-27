@@ -114,8 +114,7 @@ int main(int argc, char* argv[])
 
   TChain* tree_signal = new TChain(treeName.data());
   TChain* tree_background = new TChain(treeName.data());
-  for ( vstring::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+  for ( vstring::const_iterator inputFileName = inputFiles.files().begin(); inputFileName != inputFiles.files().end(); ++inputFileName ) {
     bool matchesSample_signal = false;
     for ( vstring::const_iterator signal = signalSamples.begin();
 	  signal != signalSamples.end(); ++signal ) {
@@ -128,7 +127,7 @@ int main(int argc, char* argv[])
     }
     if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) ) {
       throw cms::Exception("trainTauIdMVA") 
-	<< "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
+	 << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
     }
     if ( matchesSample_signal ) {
       std::cout << "signal Tree: adding file = " << (*inputFileName) << std::endl;
@@ -163,6 +162,12 @@ int main(int argc, char* argv[])
   tree_background->Print();
   tree_background->Scan("*", "", "", 20, 0);
 
+  // Testing with less events
+  // std::cout << "Info: This is a test training" << std::endl;
+  // TTree * t_mini_sg = tree_signal->GetTree()->CloneTree(1000);
+  // TTree * t_mini_bg = tree_background->GetTree()->CloneTree(1000);
+  // std::cout << "minisignal Tree contains " << t_mini_sg->GetEntries() << " " << t_mini_bg->GetEntries() <<  " Entries in " << std::endl;
+
 //--- train MVA
   std::string mvaName = cfgTrainTauIdMVA.getParameter<std::string>("mvaName");
   std::string mvaMethodType = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodType");
@@ -178,17 +183,16 @@ int main(int argc, char* argv[])
   dataloader->AddSignalTree(tree_signal);
   dataloader->AddBackgroundTree(tree_background);
 
-  for ( vstring::const_iterator inputVariable = inputVariables.begin();
-	inputVariable != inputVariables.end(); ++inputVariable ) {
+  for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
+  {
     unsigned int idx = inputVariable->find_last_of("/");
-    if ( idx == (inputVariable->length() - 2) ) {
+    if ( idx == (inputVariable->length() - 2) )
+    {
       std::string inputVariableName = std::string(*inputVariable, 0, idx);      
       char inputVariableType = (*inputVariable)[idx + 1];
       dataloader->AddVariable(inputVariableName.data(), inputVariableType);
-    } else {
-      throw cms::Exception("trainTauIdMVA") 
-	<< "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
     }
+    else throw cms::Exception("trainTauIdMVA") << "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
   }
   for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin();
 	spectatorVariable != spectatorVariables.end(); ++spectatorVariable ) {
@@ -239,6 +243,9 @@ int main(int argc, char* argv[])
 
   delete tree_signal;
   delete tree_background;
+  // Testing with less events
+  // delete tree_signal_mini;
+  // delete tree_background_mini;
 
   std::cout << "Info: converting MVA to GBRForest format" << std::endl;
   TMVA::Tools::Instance();
