@@ -12,10 +12,11 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 sh = SamplesHandles("2017MCv2")
-#samples = sh.samples
-#samples = sh.getSamples17()
-samples = sh.getSamples17MCv2()
-version = "tauId_v1"
+samples = sh.samples
+version = "tauId_v2" # appears in ... grid
+#samples = {"ggA180toTauTau":samples["ggA180toTauTau"], "QCDjetsPt2400to3200v1":samples["QCDjetsPt2400to3200v1"]}
+suffix = "_full_v2" # appears in .sh name
+#pp.pprint(samples["ggA180toTauTau"])
 
 submitJobFraction = 1.00
 
@@ -25,7 +26,7 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = '$ui_working_dir'
-config.General.workArea = 'Summer17_25ns_2017MCv2_partial'
+config.General.workArea = 'Summer17_25ns_2017MCv2_partial_withraw15'
 config.General.transferLogs = True
 
 config.section_("User")
@@ -41,7 +42,7 @@ config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = $files_per_job
 config.Data.totalUnits = $total_files
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial_withraw15/'
 config.Data.publication = False
 config.Data.allowNonValidInputDataset = True
 
@@ -69,7 +70,7 @@ config.Data.unitsPerJob = $lumis_per_job
 config.Data.totalUnits = $total_lumis
 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
 #config.Data.runRange = '193093-193999' # '193093-194075'
-config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/'
+config.Data.outLFNDirBase = '/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial_withraw15/'
 config.Data.publication = False
 
 config.section_("Site")
@@ -170,7 +171,7 @@ for sampleName, sampleOption in samples.items():
     crabCommands_create_and_submit.append('%s submit %s' % (executable_crab, crabFileName_full)) #not needed any more
 
 
-shellFileName_create_and_submit = "tauIdMVATrainingNtupleProduction_crab_create_and_submit.sh"
+shellFileName_create_and_submit = "tauIdMVATrainingNtupleProduction_crab_create_and_submit" + suffix + ".sh"
 shellFile_create_and_submit = open(shellFileName_create_and_submit, "w")
 for crabCommand in crabCommands_create_and_submit:
     shellFile_create_and_submit.write("%s\n" % crabCommand)
