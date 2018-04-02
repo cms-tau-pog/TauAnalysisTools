@@ -119,7 +119,7 @@ else:
 from TauAnalysisTools.TauAnalysisTools.runTauIdMVA import *
 na = TauIDEmbedder(process, cms,
     debug=True,
-    toKeep = ["2017v2", "newDM2017v2", "dR0p32017v2", "2016v1", "newDM2016v1"]
+    toKeep = ["2017v1", "2017v2", "newDM2017v2", "dR0p32017v2", "2016v1", "newDM2016v1"]
 )
 na.runTauID()
 
