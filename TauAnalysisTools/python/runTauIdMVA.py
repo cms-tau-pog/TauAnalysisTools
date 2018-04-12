@@ -373,6 +373,10 @@ class TauIDEmbedder(object):
 				mvaName = self.cms.string("RecoTauTag_tauIdMVAIsoDBoldDMdR0p3wLT2017v2"),
 				mvaOpt = self.cms.string("DBoldDMwLTwGJ"),
 				requireDecayMode = self.cms.bool(True),
+				srcChargedIsoPtSum = cms.string('chargedIsoPtSumdR03'),
+				srcFootprintCorrection = cms.string('footprintCorrectiondR03'),
+				srcNeutralIsoPtSum = cms.string('neutralIsoPtSumdR03'),
+				srcPhotonPtSumOutsideSignalCone = cms.string('photonPtSumOutsideSignalConedR03'),
 				verbosity = self.cms.int32(0)
 			)
 
