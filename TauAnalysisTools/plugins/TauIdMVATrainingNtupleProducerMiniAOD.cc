@@ -25,6 +25,7 @@
 #include <TObjString.h>
 #include <TString.h>
 #include <TMath.h>
+#include <TROOT.h>
 
 #include <iostream>
 #include <fstream>
@@ -319,6 +320,14 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	addBranchI("genQuarkOrGluonPdgId");
 	addBranchF("evtWeight");
 
+	// Needed for maxLiklyhood
+	addBranchVF("recTau_isolationChargedHadrCands_dz");
+	addBranchVF("recTau_isolationChargedHadrCands_pt");
+	addBranchVF("recTau_isolationChargedHadrCands_dxy");
+	addBranchVF("recTau_isolationChargedHadrCands_dRs");
+	// addBranchI("recTau_isolationGammaCands_size"); -> recTauNphotonIso
+	addBranchVF("recTau_isolationGammaCands_pt");
+	addBranchVF("recTau_isolationGammaCands_dR");
 }
 
 namespace
@@ -1287,9 +1296,26 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 			setValueF("evtWeight", evtWeight);
 			setValueF("genEvtWeight", weightevt);
 
-//--- fill all computed quantities into TTree
+			// Needed for maxLiklyhood METHOD
+			if (verbosity_) std::cout<< "produce::maxLike \n";
+			maxLike(*recTau);// const pat::TauRef& rectau
+			/*
+				branchMap::iterator branch = branches_.find("recTau_isolationChargedHadrCands_dz");
+				std::cout<< "produce::before Fill: "; std::cout << branch->second.valueVFloat_.size() << "; " << branch->second.valueVFloat_.back() << std::endl;
+				if (branch->second.valueVFloat_.size() != 0)
+				{
+					std::cout << branch->second.pvalueVFloat_->size() << "; " << branch->second.pvalueVFloat_->back() << std::endl;
+					if (branch->second.valueVFloat_.size() != branch->second.pvalueVFloat_->size())
+						exit(0);
+				}
+				std::cout<< "produce::before Fill: 3\n";
+			*/
+
+			//--- fill all computed quantities into TTree
 			assert(ntuple_);
+			if (verbosity_) std::cout<< "produce::before fill\n";
 			ntuple_->Fill();
+			if (verbosity_) std::cout<< "produce::end\n\n";
 		}
 	}
 }
@@ -1308,6 +1334,22 @@ void TauIdMVATrainingNtupleProducerMiniAOD::addBranchI(const std::string& name)
 	ntuple_->Branch(name.c_str(), &branches_[name].valueI_, name_and_format.c_str());
 }
 
+
+void TauIdMVATrainingNtupleProducerMiniAOD::addBranchVF(const std::string& name)
+{
+	assert(branches_.count(name) == 0);
+	std::string name_and_format = name;
+
+	//https://root-forum.cern.ch/t/vector-in-branch/12796/4
+	gROOT->ProcessLine("#include <vector>");
+	ntuple_->Branch(name.c_str(), &(branches_[name].valueVFloat_));
+	ntuple_->SetBranchAddress(name.c_str(), &(branches_[name].pvalueVFloat_));
+
+	// std::cout << "addBranchVF:"<< std::endl;
+	// ntuple_->Print();
+	// exit(1);
+}
+
 void TauIdMVATrainingNtupleProducerMiniAOD::printBranches(std::ostream& stream)
 {
 	stream << "<TauIdMVATrainingNtupleProducerMiniAOD::printBranches>:" << std::endl;
@@ -1323,12 +1365,49 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setValueF(const std::string& name, d
 {
 	if ( verbosity_ ) std::cout << "branch = " << name << ": value = " << value << std::endl;
 	branchMap::iterator branch = branches_.find(name);
-	if ( branch != branches_.end() ) {
-		branch->second.valueF_ = value;
-	} else {
-		throw cms::Exception("InvalidParameter")
-		<< "No branch with name = " << name << " defined !!\n";
+
+	if (branch != branches_.end()) branch->second.valueF_ = value;
+	else throw cms::Exception("InvalidParameter") << "No branch with name = " << name << " defined !!\n";
+}
+
+void TauIdMVATrainingNtupleProducerMiniAOD::tempSetValueVF(const std::string& name, const std::vector<Float_t>& value = {})
+{
+	if (verbosity_) std::cout << "tempSetValueVF;\n";
+	// std::cout << "temp::" << name << " " << value.size() << "; ";
+	// std::cout << "temp::" << value.back() << std::endl;branchMap::iterator branch = branches_.find(name);
+
+	branchMap::iterator branch = branches_.find(name);
+	if (branch != branches_.end())
+	{
+		if (verbosity_) std::cout << "\n\t\tsetting...\n" << std::endl;
+		branch->second.valueVFloat_ = std::vector<Float_t>();
+		branch->second.pvalueVFloat_ = &(branch->second.valueVFloat_);
+		if (verbosity_) std::cout << "\t\tsett\n" << std::endl;
 	}
+	else throw cms::Exception("InvalidParameter") << "No branch with name = " << name << " defined !!\n";
+
+	if (verbosity_) std::cout << "\tend tempSetValueVF\n";
+}
+
+void TauIdMVATrainingNtupleProducerMiniAOD::setValueVF(const std::string& name, const std::vector<Float_t>& value = {})
+{
+	std::cout << "\tsetValueVF; ";
+	// if (verbosity_) std::cout << "branch = " << name << ": value = " << value << std::endl;
+	std::cout << name << " " << value.size() << "; ";
+	std::cout << value.back() << std::endl;
+
+	branchMap::iterator branch = branches_.find(name);
+
+	if (branch != branches_.end())
+	{
+		std::cout << "\n\t\tsetting...\n" << std::endl;
+		branch->second.valueVFloat_ = value;
+		branch->second.pvalueVFloat_ = &(branch->second.valueVFloat_);
+		std::cout << "\t\tsett\n" << std::endl;
+	}
+	else throw cms::Exception("InvalidParameter") << "No branch with name = " << name << " defined !!\n";
+
+	std::cout << "\tend setValueVF\n";
 }
 
 void TauIdMVATrainingNtupleProducerMiniAOD::setValueI(const std::string& name, int value)
@@ -1478,6 +1557,70 @@ void TauIdMVATrainingNtupleProducerMiniAOD::setValue_piZero(const std::string& n
 	setValueI(std::string(name).append("NumPFElectrons"), nElectron);
 	setValueF(std::string(name).append("MaxDeltaEta"), maxDEta);
 	setValueF(std::string(name).append("MaxDeltaPhi"), maxDPhi);
+}
+
+void TauIdMVATrainingNtupleProducerMiniAOD::maxLike(const pat::Tau& recTau)
+{
+	if (verbosity_) std::cout<< "maxLike begin \n";
+	std::vector<Float_t> recTau_isolationChargedHadrCands_dz = {};
+	std::vector<Float_t> recTau_isolationChargedHadrCands_pt = {};
+	std::vector<Float_t> recTau_isolationChargedHadrCands_dxy = {};
+	std::vector<Float_t> recTau_isolationChargedHadrCands_dRs = {};
+	std::vector<Float_t> recTau_isolationGammaCands_pt = {};
+	std::vector<Float_t> recTau_isolationGammaCands_dR = {};
+
+	const auto cands = recTau.isolationChargedHadrCands();
+	for(const auto& charged_hadr_cands : cands)
+	{
+		recTau_isolationChargedHadrCands_dz.push_back(recTau.leadChargedHadrCand()->bestTrack()->dz(charged_hadr_cands->vertex()));
+		recTau_isolationChargedHadrCands_pt.push_back(charged_hadr_cands->pt());
+		recTau_isolationChargedHadrCands_dxy.push_back(recTau.leadChargedHadrCand()->bestTrack()->dxy(charged_hadr_cands->vertex()));
+		recTau_isolationChargedHadrCands_dRs.push_back(reco::deltaR(*charged_hadr_cands, recTau));//float dr = reco::deltaR(*cand, tau);
+	}
+
+	const auto candsgamma = recTau.isolationGammaCands();
+	for(const auto& iso_gamma_cands : candsgamma)
+	{
+		recTau_isolationGammaCands_pt.push_back(iso_gamma_cands->pt());
+		recTau_isolationGammaCands_dR.push_back(reco::deltaR(*iso_gamma_cands, recTau));
+	}
+
+	if (recTau_isolationChargedHadrCands_dz.size() != 0)
+	{
+		setValueVF("recTau_isolationChargedHadrCands_dz", recTau_isolationChargedHadrCands_dz);
+		setValueVF("recTau_isolationChargedHadrCands_pt", recTau_isolationChargedHadrCands_pt);
+		setValueVF("recTau_isolationChargedHadrCands_dxy", recTau_isolationChargedHadrCands_dxy);
+		setValueVF("recTau_isolationChargedHadrCands_dRs", recTau_isolationChargedHadrCands_dRs);
+	}
+	else
+	{
+		tempSetValueVF("recTau_isolationChargedHadrCands_dz");
+		tempSetValueVF("recTau_isolationChargedHadrCands_dxy");
+		tempSetValueVF("recTau_isolationChargedHadrCands_pt");
+		tempSetValueVF("recTau_isolationChargedHadrCands_dRs");
+	}
+
+	if (recTau_isolationGammaCands_pt.size() != 0)
+	{
+		setValueVF("recTau_isolationGammaCands_pt", recTau_isolationGammaCands_pt);
+		setValueVF("recTau_isolationGammaCands_dR", recTau_isolationGammaCands_dR);
+	}
+	else
+	{
+		tempSetValueVF("recTau_isolationGammaCands_pt");
+		tempSetValueVF("recTau_isolationGammaCands_dR");
+	}
+
+	/*
+		std::cout<< "Chech on propper storing" << std::endl;
+		branchMap::iterator branch = branches_.find("recTau_isolationChargedHadrCands_dz");
+		std::cout<< "\tmaxLike: " << branch->second.valueVFloat_.size() << "; " << branch->second.valueVFloat_.back() << std::endl;
+		std::cout<< "\tmaxLike: "; 
+		if (branch->second.valueVFloat_.size() != 0)
+		std::cout << branch->second.pvalueVFloat_->size() << "; " << branch->second.pvalueVFloat_->back() << std::endl;
+	 
+	
+	if (verbosity_) std::cout<< "maxLike end \n";
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

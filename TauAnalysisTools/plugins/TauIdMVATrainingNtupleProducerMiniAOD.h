@@ -62,6 +62,7 @@ private:
 
 	void addBranchF(const std::string&);
 	void addBranchI(const std::string&);
+	void addBranchVF(const std::string&);
 
 	void addBranch_EnPxPyPz(const std::string&);
 	void addBranch_XYZ(const std::string&);
@@ -73,6 +74,8 @@ private:
 
 	void setValueF(const std::string&, double);
 	void setValueI(const std::string&, int);
+	void setValueVF(const std::string&, const std::vector<Float_t>&);
+	void tempSetValueVF(const std::string&, const std::vector<Float_t>&);
 
 	void setValue_EnPxPyPz(const std::string&, const reco::Candidate::LorentzVector&);
 	template <typename T>
@@ -80,7 +83,7 @@ private:
 	void setValue_Cov(const std::string&, const pat::tau::TauPFEssential::CovMatrix&);
 	void setValue_chargedHadron(const std::string&, const reco::CandidatePtr);
 	void setValue_piZero(const std::string&, const reco::CandidatePtrVector);
-
+	void maxLike(const pat::Tau&);
 	std::string moduleLabel_;
 
 	edm::InputTag srcRecTaus_;
@@ -186,16 +189,18 @@ private:
 	std::vector<std::string> ptMin_photonPtSumOutsideSignalCone;
 	std::vector<std::string> ptMin_photonPtSumOutsideSignalConedRgt0p1;
 
-	struct branchEntryType
-	{
-		branchEntryType()
-		: valueF_(0.),
-		  valueI_(0.)
-		{}
+	struct branchEntryType {
+
+		branchEntryType(): valueF_(0.), valueI_(0.), valueVFloat_(std::vector<Float_t>()), pvalueVFloat_(0) {}
+
 		~branchEntryType() {}
+
 		Float_t valueF_;
 		Int_t valueI_;
+		std::vector<Float_t> valueVFloat_;
+		std::vector<Float_t> * pvalueVFloat_;
 	};
+
 	typedef std::map<std::string, branchEntryType> branchMap; // key = branch name
 	branchMap branches_;
 
