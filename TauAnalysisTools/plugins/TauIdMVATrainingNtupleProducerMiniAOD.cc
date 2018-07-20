@@ -1641,9 +1641,10 @@ void TauIdMVATrainingNtupleProducerMiniAOD::maxLike(const pat::Tau& recTau)
 	const auto cands = recTau.isolationChargedHadrCands();
 	for(const auto& charged_hadr_cands : cands)
 	{
+		// wrong: float b = ((pat::PackedCandidate*)(recTau.leadChargedHadrCand()))->dz(charged_hadr_cands->vertex());
 		recTau_isolationChargedHadrCands_dz.push_back(recTau.leadChargedHadrCand()->bestTrack()->dz(charged_hadr_cands->vertex()));
-		recTau_isolationChargedHadrCands_pt.push_back(charged_hadr_cands->pt());
 		recTau_isolationChargedHadrCands_dxy.push_back(recTau.leadChargedHadrCand()->bestTrack()->dxy(charged_hadr_cands->vertex()));
+		recTau_isolationChargedHadrCands_pt.push_back(charged_hadr_cands->pt());
 		recTau_isolationChargedHadrCands_dRs.push_back(reco::deltaR(*charged_hadr_cands, recTau));//float dr = reco::deltaR(*cand, tau);
 	}
 
