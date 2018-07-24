@@ -170,6 +170,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 	ptMin_photonPtSumOutsideSignalConedRgt0p1 = cfg.getParameter<std::vector<std::string> >("ptMin_photonPtSumOutsideSignalConedRgt0p1");
 
 	verbosity_ = (cfg.exists("verbosity")) ? cfg.getParameter<int>("verbosity") : 0;
+	std::cout << "verbosity_:" << verbosity_<< "\n";
 
 	STIP = new SignedTransverseImpactParameter();
 }
@@ -1283,14 +1284,18 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 			const pat::PackedGenParticle* genElectron_matched_for_cleaning = findMatchingGenParticle(recTau->p4(), *packedGenParticles, ptCleanMin_, pdgIdsGenElectron_, dRClean_);
 			const pat::PackedGenParticle* genMuon_matched_for_cleaning = findMatchingGenParticle(recTau->p4(), *packedGenParticles, ptCleanMin_, pdgIdsGenMuon_, dRClean_);
 
-			if (isSignal_ && !genTau_matched_for_cleaning) continue; // pass only if recTau matches genTauJet within deltaR cone specified in config file
+			if ( isSignal_ )
+			{
+				// pass only if recTau matches genTauJet within deltaR cone specified in config file
+				if ( !genTau_matched_for_cleaning ) continue;
+			}
 			else
 			{
 				// pass only if recTau matches none of the following objects within deltaR cone specified in config file
 				// - generated electrons
 				// - generated muons
 				// - genTauJets
-				if (genTau_matched_for_cleaning || genElectron_matched_for_cleaning || genMuon_matched_for_cleaning) continue;
+				if ( genTau_matched_for_cleaning || genElectron_matched_for_cleaning || genMuon_matched_for_cleaning ) continue;
 			}
 
 			// need to find the closest reconstructed jet manually
