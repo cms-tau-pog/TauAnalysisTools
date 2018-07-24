@@ -32,6 +32,9 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
+
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
 #include <TTree.h>
 #include <TMatrixD.h>
 #include <TString.h>
