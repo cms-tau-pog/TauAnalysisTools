@@ -1,27 +1,27 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("produceAntiElectronDiscrMVATrainingNtuple")
+#from RecoEgamma.ElectronIdentification.data import *
 
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-print "Use GeometryRecoDB and condDBv2"
+from Configuration.StandardSequences.Eras import eras
+process = cms.Process("produceAntiElectronDiscrMVATrainingNtuple",eras.Run2_2017,eras.run2_nanoAOD_94XMiniAODv2)
+
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
-globalTag = "MCRUN2_74_V9"
+globalTag = "94X_mc2017_realistic_v14"
 process.GlobalTag.globaltag = cms.string(globalTag)
 print "GlobalTag:", process.GlobalTag.globaltag
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'root://xrootd.unl.edu//store/mc/RunIISpring15DR74/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/AODSIM/Asympt25ns_MCRUN2_74_V9-v3/10000/002F7FDD-BA13-E511-AA63-0026189437F5.root'
-    )
+        'root://xrootd.unl.edu///store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/70000/F2283B5C-6044-E811-B61D-0025905B859A.root'
+     )
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
+    #input = cms.untracked.int32(-1)
 )
 
 #--------------------------------------------------------------------------------
@@ -48,125 +48,26 @@ process.produceAntiElectronDiscrMVATrainingNtupleSequence = cms.Sequence()
 
 #--------------------------------------------------------------------------------
 # rerun tau reconstruction with latest tags
+# MB: removed, if needed it should be done when MiniAOD samples are prepared
 
-process.load("RecoTauTag/Configuration/RecoPFTauTag_cff")
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.PFTau
-
-##process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
-##process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.selectPrimaryVertex
-
-##process.dumpPFTaus = cms.EDAnalyzer("DumpPFTaus",
-##    src = cms.InputTag('hpsPFTauProducer'),
-##    srcTauRef = cms.InputTag('hpsPFTauProducer'),
-##    srcTauRefDiscriminators = cms.VInputTag('hpsPFTauDiscriminationByDecayModeFinding'),
-##    srcVertex = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum')
-##)
-##process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.dumpPFTaus
-
-process.tausForAntiElectronDiscrMVATraining = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag('hpsPFTauProducer'),
-    discriminators = cms.VPSet(
-        cms.PSet(
-            discriminator = cms.InputTag('hpsPFTauDiscriminationByDecayModeFindingNewDMs'),
-            selectionCut = cms.double(0.5)
-        )
-    ),
-    cut = cms.string("pt > 18. & abs(eta) < 2.4")
-)
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.tausForAntiElectronDiscrMVATraining
-
-process.tausForAntiElectronDiscrMVATrainingDiscriminationByDecayModeFinding = process.hpsPFTauDiscriminationByDecayModeFindingNewDMs.clone(
-    PFTauProducer = cms.InputTag('tausForAntiElectronDiscrMVATraining')
-)
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.tausForAntiElectronDiscrMVATrainingDiscriminationByDecayModeFinding
-
-process.tausForAntiElectronDiscrMVATrainingPrimaryVertexProducer = process.hpsPFTauPrimaryVertexProducer.clone(
-    PFTauTag = cms.InputTag("tausForAntiElectronDiscrMVATraining"),
-    discriminators = cms.VPSet(),
-    cut = cms.string('')
-)
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.tausForAntiElectronDiscrMVATrainingPrimaryVertexProducer
-process.tausForAntiElectronDiscrMVATrainingSecondaryVertexProducer = process.hpsPFTauSecondaryVertexProducer.clone(
-    PFTauTag = cms.InputTag("tausForAntiElectronDiscrMVATraining")
-)
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.tausForAntiElectronDiscrMVATrainingSecondaryVertexProducer
-process.tausForAntiElectronDiscrMVATrainingTransverseImpactParameters = process.hpsPFTauTransverseImpactParameters.clone(
-    PFTauTag =  cms.InputTag("tausForAntiElectronDiscrMVATraining"),
-    PFTauPVATag = cms.InputTag("tausForAntiElectronDiscrMVATrainingPrimaryVertexProducer"),
-    PFTauSVATag = cms.InputTag("tausForAntiElectronDiscrMVATrainingSecondaryVertexProducer")
-)    
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.tausForAntiElectronDiscrMVATrainingTransverseImpactParameters
-
-tauIdDiscriminatorsToReRun = [
-    "hpsPFTauDiscriminationByDecayModeFindingNewDMs",
-    "hpsPFTauDiscriminationByDecayModeFindingOldDMs",
-    "hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr",
-    "hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr",
-    "hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr",
-    "hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits",
-    "hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits",
-    "hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits",
-    "hpsPFTauDiscriminationByLooseElectronRejection",
-    "hpsPFTauDiscriminationByMediumElectronRejection",
-    "hpsPFTauDiscriminationByTightElectronRejection",
-    "hpsPFTauDiscriminationByMVA5rawElectronRejection",
-    "hpsPFTauDiscriminationByMVA5LooseElectronRejection",
-    "hpsPFTauDiscriminationByMVA5MediumElectronRejection",
-    "hpsPFTauDiscriminationByMVA5TightElectronRejection",
-    "hpsPFTauDiscriminationByMVA5VTightElectronRejection",
-]
-for tauIdDiscriminator in tauIdDiscriminatorsToReRun:
-    moduleToClone = getattr(process, tauIdDiscriminator)
-    module = moduleToClone.clone(
-        PFTauProducer = cms.InputTag('tausForAntiElectronDiscrMVATraining')
-    )
-    if hasattr(module, "Prediscriminants") and hasattr(module.Prediscriminants, "decayMode"):
-        module.Prediscriminants.decayMode.Producer = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByDecayModeFinding')
-    # CV: handle MVA working-point discriminators that are based on cutting on the raw MVA output stored in another discriminator
-    if hasattr(module, "key"):
-        module.key = cms.InputTag(module.key.getModuleLabel().replace("hpsPFTau", "tausForAntiElectronDiscrMVATraining"),  module.key.getProductInstanceLabel())
-    if hasattr(module, "toMultiplex"):
-        module.toMultiplex = cms.InputTag(module.toMultiplex.getModuleLabel().replace("hpsPFTau", "tausForAntiElectronDiscrMVATraining"), module.toMultiplex.getProductInstanceLabel())
-    if hasattr(module, "srcTauTransverseImpactParameters"):
-        module.srcTauTransverseImpactParameters = cms.InputTag('tausForAntiElectronDiscrMVATrainingTransverseImpactParameters')
-    for srcIsolation in [ "srcChargedIsoPtSum", "srcNeutralIsoPtSum", "srcPUcorrPtSum" ]:
-        if hasattr(module, srcIsolation):
-            moduleAttr = getattr(module, srcIsolation)
-            moduleAttr = cms.InputTag(moduleAttr.getModuleLabel().replace("hpsPFTau", "tausForAntiElectronDiscrMVATraining"), moduleAttr.getProductInstanceLabel())
-            setattr(module, srcIsolation, moduleAttr)    
-    moduleName = tauIdDiscriminator.replace("hpsPFTau", "tausForAntiElectronDiscrMVATraining")
-    setattr(process, moduleName, module)
-    process.produceAntiElectronDiscrMVATrainingNtupleSequence += module
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# select "good" reconstructed vertices
-#
-# CV: cut on ndof >= 4 if using 'offlinePrimaryVertices',
-#                 >= 7 if using 'offlinePrimaryVerticesWithBS' as input
-#
 process.selectedOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
-    src = cms.InputTag('offlinePrimaryVertices'),
+    src = cms.InputTag('offlineSlimmedPrimaryVertices'),
     cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2."),
-    filter = cms.bool(False)                                          
+    filter = cms.bool(False)					      
 )
 process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.selectedOfflinePrimaryVertices
 
-process.selectedOfflinePrimaryVerticesWithBS = process.selectedOfflinePrimaryVertices.clone(
-    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
-    cut = cms.string("isValid & ndof >= 7 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2.")
-)
-process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.selectedOfflinePrimaryVerticesWithBS
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # select generator level hadronic tau decays,
-# veto jets overlapping with electrons or muons
+# and prompt electrons
 
 process.prePFTauSequence = cms.Sequence()
 
 if type == 'SignalMC' or type == 'BackgroundMC':
     process.load("PhysicsTools.JetMCAlgos.TauGenJets_cfi")
+    process.tauGenJets.GenParticles = cms.InputTag('prunedGenParticles')
     process.prePFTauSequence += process.tauGenJets
     process.load("PhysicsTools.JetMCAlgos.TauGenJetsDecayModeSelectorAllHadrons_cfi")
     process.tauGenJetsSelectorAllHadrons.select = cms.vstring(
@@ -182,109 +83,142 @@ if type == 'SignalMC' or type == 'BackgroundMC':
     process.prePFTauSequence += process.tauGenJetsSelectorAllHadrons
 
     process.genElectrons = cms.EDFilter("GenParticleSelector",
-        src = cms.InputTag("genParticles"),
-        cut = cms.string('abs(pdgId) = 11 & pt > 10.'),
+        src = cms.InputTag("prunedGenParticles"),
+        cut = cms.string('abs(pdgId) = 11 & pt > 10.& (statusFlags().isPrompt() || statusFlags().isDirectPromptTauDecayProduct())'),
         stableOnly = cms.bool(True),
         filter = cms.bool(False)
     )
     process.prePFTauSequence += process.genElectrons
 
-    jetCollection = None
-    if type == 'SignalMC':
-        process.tauGenJetsSelectorAllHadrons.filter = cms.bool(True)
+# Run MVAIso (use sequences from NanoAOD)
+process.load('PhysicsTools.NanoAOD.taus_updatedMVAIds_cff')
+#MB: use correct era in process definition
+process.prePFTauSequence += process.patTauMVAIDsSeq
 
-        process.genTauMatchedPFJets = cms.EDFilter("PFJetAntiOverlapSelector",
-            src = cms.InputTag('ak4PFJets'),
-            srcNotToBeFiltered = cms.VInputTag(
-                'tauGenJetsSelectorAllHadrons'
-            ),
-            dRmin = cms.double(0.3),
-            invert = cms.bool(True),
-            filter = cms.bool(False)                                                          
-        )
-        process.prePFTauSequence += process.genTauMatchedPFJets
-        jetCollection = "genTauMatchedPFJets"
-    elif type == 'BackgroundMC':
-        process.genElectrons.filter = cms.bool(True)
-        
-        process.genElectronMatchedPFJets = cms.EDFilter("PFJetAntiOverlapSelector",
-            src = cms.InputTag('ak4PFJets'),
-            srcNotToBeFiltered = cms.VInputTag(
-                'genElectrons'
-            ),
-            dRmin = cms.double(0.3),
-            invert = cms.bool(True),
-            filter = cms.bool(False)                                                          
-        )
-        process.prePFTauSequence += process.genElectronMatchedPFJets
-        jetCollection = "genElectronMatchedPFJets"
-    if not jetCollection:
-        raise ValueError("Invalid Parameter 'jetCollection' = None !!")    
-    process.ak4PFJetTracksAssociatorAtVertex.jets = cms.InputTag(jetCollection)
-    process.ak4PFJetsLegacyHPSPiZeros.jetSrc = cms.InputTag(jetCollection)
-    process.recoTauAK4PFJets08Region.src = cms.InputTag(jetCollection)
-    process.ak4PFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag(jetCollection)
-    process.combinatoricRecoTaus.jetSrc = cms.InputTag(jetCollection)
+process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.prePFTauSequence
 
-process.produceAntiElectronDiscrMVATrainingNtupleSequence.replace(process.PFTau, process.prePFTauSequence + process.PFTau)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# compute event weights for pile-up reweighting
-# (Summer'12 MC to 2012 run ABCD data)
 
-srcWeights = []
-#if isMC:
-    #from TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi import vertexMultiplicityReweight
-    #process.vertexMultiplicityReweight3d2012RunABCD = vertexMultiplicityReweight.clone(
-        #inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/expPUpoissonMean_runs190456to208686_Mu17_Mu8.root"),
-        #type = cms.string("gen3d"),
-        #mcPeriod = cms.string("Summer12_S10")
-    #)
-    #process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.vertexMultiplicityReweight3d2012RunABCD
-    #srcWeights.extend([ 'vertexMultiplicityReweight3d2012RunABCD' ])
-#--------------------------------------------------------------------------------
+# Load tools and function definitions
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+
+process.load("RecoEgamma.ElectronIdentification.ElectronMVAValueMapProducer_cfi")
+#process.load("RecoEgamma.ElectronIdentification.ElectronRegressionValueMapProducer_cfi")
+
+#**********************
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+#**********************
+
+process.load("RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cfi")
+# overwrite a default parameter: for miniAOD, the collection name is a slimmed one
+process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
+
+from PhysicsTools.SelectorUtils.centralIDRegistry import central_id_registry
+process.egmGsfElectronIDSequence = cms.Sequence(process.egmGsfElectronIDs)
+
+# Define which IDs we want to produce
+my_id_modules = [
+    'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff',    # both 25 and 50 ns cutbased ids produced
+    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff', # will not be produced for 50 ns
+    #'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_Trig_V1_cff',    # 25 ns trig
+    #'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_50ns_Trig_V1_cff',    # 50 ns trig
+    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff',   #Spring16
+    #'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff',   #Spring16 HZZ
+    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff'
+
+] 
+#Add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+    
+egmMod = 'egmGsfElectronIDs'
+mvaMod = 'electronMVAValueMapProducer'
+regMod = 'electronRegressionValueMapProducer'
+setattr(process,egmMod,process.egmGsfElectronIDs.clone())
+setattr(process,mvaMod,process.electronMVAValueMapProducer.clone())
+setattr(process,regMod,process.electronRegressionValueMapProducer.clone())
+process.electrons = cms.Sequence(getattr(process,mvaMod)*getattr(process,egmMod)*getattr(process,regMod))
+    
+    
+process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.electrons
 
 process.antiElectronDiscrMVATrainingNtupleProducer = cms.EDAnalyzer("AntiElectronDiscrMVATrainingNtupleProducer",
-    srcPFTaus = cms.InputTag('tausForAntiElectronDiscrMVATraining'),
-    tauIdDiscriminators = cms.PSet(
-        DecayModeFindingNewDMs = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByDecayModeFindingNewDMs'),
-        DecayModeFindingOldDMs = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByDecayModeFindingOldDMs'),
-        LooseCombIso = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByLooseCombinedIsolationDBSumPtCorr'),
-        MediumCombIso = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMediumCombinedIsolationDBSumPtCorr'),
-        TightCombIso = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByTightCombinedIsolationDBSumPtCorr'),
-        LooseComb3HitsIso = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits'),
-        MediumComb3HitsIso = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits'),
-        TightComb3HitsIso = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits'),
-        AntiELoose = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByLooseElectronRejection'),
-        AntiEMedium = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMediumElectronRejection'),
-        AntiETight = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByTightElectronRejection'),
-        AntiEMVA5raw = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5rawElectronRejection'),
-        AntiEMVA5category = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5rawElectronRejection:category'),
-        AntiELooseMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5LooseElectronRejection'),
-        AntiEMediumMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5MediumElectronRejection'),
-        AntiETightMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5TightElectronRejection'),
-        AntiEVTightMVA5 = cms.InputTag('tausForAntiElectronDiscrMVATrainingDiscriminationByMVA5VTightElectronRejection'),                                                               
+    srcPFTaus = cms.InputTag('slimmedTausUpdated'),
+    tauIdDiscriminators = cms.vstring(
+        #DM finding
+        "decayModeFindingNewDMs",
+        "decayModeFinding",
+        #Cut-based iso
+        "photonPtSumOutsideSignalCone",
+        "byCombinedIsolationDeltaBetaCorrRaw3Hits",
+        "byLooseCombinedIsolationDeltaBetaCorr3Hits",
+        "byMediumCombinedIsolationDeltaBetaCorr3Hits",
+        "byTightCombinedIsolationDeltaBetaCorr3Hits",
+        #MVAIso 2015
+        "byIsolationMVArun2v1DBnewDMwLTraw",
+        "byVLooseIsolationMVArun2v1DBnewDMwLT",
+        "byLooseIsolationMVArun2v1DBnewDMwLT",
+        "byMediumIsolationMVArun2v1DBnewDMwLT",
+        "byTightIsolationMVArun2v1DBnewDMwLT",
+        "byVTightIsolationMVArun2v1DBnewDMwLT",
+        #MVAIso 2017v2
+        "byIsolationMVArun2v1DBnewDMwLTraw2017v2", 
+        "byVLooseIsolationMVArun2v1DBnewDMwLT2017v2",
+        "byLooseIsolationMVArun2v1DBnewDMwLT2017v2",
+        "byMediumIsolationMVArun2v1DBnewDMwLT2017v2",
+        "byTightIsolationMVArun2v1DBnewDMwLT2017v2",
+        "byVTightIsolationMVArun2v1DBnewDMwLT2017v2",
+        #Anti-e MVA6 (2015 training)
+        "againstElectronMVA6Raw",
+        "againstElectronMVA6category",
+        "againstElectronVLooseMVA6",
+        "againstElectronLooseMVA6",
+        "againstElectronMediumMVA6",
+        "againstElectronTightMVA6",
+        "againstElectronVTightMVA6",
+        #Anti-mu cut based
+        "againstMuonLoose3",
+        "againstMuonTight3",
     ),
-    srcGsfElectrons = cms.InputTag('gedGsfElectrons'),
-    srcPrimaryVertex = cms.InputTag('selectedOfflinePrimaryVertices'),
+    srcGsfElectrons = cms.InputTag('slimmedElectrons'),
+    conversionsMiniAOD = cms.InputTag('reducedEgamma:reducedConversions'),
+    srcPrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
     srcGenElectrons = cms.InputTag('genElectrons'),
     srcGenTaus = cms.InputTag('tauGenJetsSelectorAllHadrons'),
     srcGenJets = cms.InputTag("genJetsAntiOverlapWithLeptonsVeto"),
-    srcWeights = cms.VInputTag(srcWeights),
-    verbosity = cms.int32(0)
+    verbosity = cms.int32(0),
+    #effAreasConfigFile = cms.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
+    #MB: Use "Spring15 25ns cut-based "Veto" ID" as in 2nd ele veto the HTT analysis https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorking2017#Baseline%20$e\tau_{h}$ even if new tunes exist...     
+    electronIdVeto = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-veto"), #MB: This ID is used if set correctly and present in patElectrons, otherwise use custom one from eleTightIdMap
+    eleTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"), #MB: To be used in case custom/new ID not in pat. To activate it one should set a dummy value to electronIdVeto argument
+    #MB: ... one can also considered tighter selection for 3rd lepton veto i.e. "MVA ID 90% efficiency WP" (egmGsfElectronIDs:mvaEleID-Fall17-noIso-V1-wp90)
+    #electronIdVeto = cms.string("mvaEleID-Fall17-noIso-V1-wp90"),
+    #eleTightIdMap = cms.InputTag("egmGsfElectronIDs:mvaEleID-Fall17-noIso-V1-wp90"),
 )
 process.produceAntiElectronDiscrMVATrainingNtupleSequence += process.antiElectronDiscrMVATrainingNtupleProducer
 
 process.p = cms.Path(process.produceAntiElectronDiscrMVATrainingNtupleSequence)
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("antiElectronDiscrMVATrainingNtuple.root")
+    fileName = cms.string("antiElectronDiscrMVATrainingNtupleFromMiniAOD.root")
 )
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True)
+    wantSummary = cms.untracked.bool(True)#,
+    #SkipEvent = cms.untracked.vstring('ProductNotFound')
 )
 
-processDumpFile = open('produceAntiElectronDiscrMVATrainingNtuple.dump', 'w')
-print >> processDumpFile, process.dumpPython()
+process.load('FWCore.MessageLogger.MessageLogger_cfi')
+if process.maxEvents.input.value()>10:
+     process.MessageLogger.cerr.FwkReport.reportEvery = process.maxEvents.input.value()//10
+if process.maxEvents.input.value()>10000 or process.maxEvents.input.value()<0:
+     process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
+
+#Uncomment to dump plain configuration for debugging
+#processDumpFile = open('produceAntiElectronDiscrMVATrainingNtupleFromMiniAOD.dump', 'w')
+#print >> processDumpFile, process.dumpPython()
+

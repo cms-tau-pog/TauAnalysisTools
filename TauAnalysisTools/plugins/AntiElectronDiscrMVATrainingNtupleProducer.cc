@@ -20,25 +20,21 @@
 
 AntiElectronDiscrMVATrainingNtupleProducer::AntiElectronDiscrMVATrainingNtupleProducer(const edm::ParameterSet& cfg)// :
 //_effectiveAreas( ((cfg.getParameter<edm::FileInPath>("effAreasConfigFile")).fullPath()) )//,
-//eleTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleTightIdMap")))
-//electronTightIdMapToken_
 {
   tauToken_ = consumes<pat::TauCollection>(cfg.getParameter<edm::InputTag>("srcPFTaus"));
   electronToken_ = consumes<pat::ElectronCollection>(cfg.getParameter<edm::InputTag>("srcGsfElectrons"));
-  electronToken2_ = consumes<edm::View<pat::Electron> >(cfg.getParameter<edm::InputTag>("srcGsfElectrons"));
   genElectronToken_ = consumes<edm::View<reco::Candidate> >(cfg.getParameter<edm::InputTag>("srcGenElectrons"));
   genTauToken_ = consumes<edm::View<reco::Candidate> >(cfg.getParameter<edm::InputTag>("srcGenTaus"));
   vertexToken_ = consumes<reco::VertexCollection>(cfg.getParameter<edm::InputTag>("srcPrimaryVertex"));
   electronTightIdMapToken_ = consumes<edm::ValueMap<bool> >(cfg.getParameter<edm::InputTag>("eleTightIdMap"));
+  eleIdVetoName_ =  cfg.getParameter<std::string>("electronIdVeto");
 
-  edm::ParameterSet tauIdDiscriminators = cfg.getParameter<edm::ParameterSet>("tauIdDiscriminators");
   typedef std::vector<std::string> vstring;
-  vstring tauIdDiscriminatorNames = tauIdDiscriminators.getParameterNamesForType<edm::InputTag>();
+  vstring tauIdDiscriminatorNames = cfg.getParameter<vstring>("tauIdDiscriminators");
   for ( vstring::const_iterator name = tauIdDiscriminatorNames.begin();
 	name != tauIdDiscriminatorNames.end(); ++name ) {
-    edm::InputTag src = tauIdDiscriminators.getParameter<edm::InputTag>(*name);
-    std::cout << "tauIdDiscriminators "<< *name << " " << src <<std::endl;
-    tauIdDiscrEntries_.push_back(tauIdDiscrEntryType(*name, src));
+    std::cout << "tauIdDiscriminators "<< *name <<std::endl;
+    tauIdDiscrEntries_.push_back(tauIdDiscrEntryType(*name));
   }
 
   verbosity_ = ( cfg.exists("verbosity") ) ?
@@ -201,11 +197,6 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
   edm::Handle<pat::ElectronCollection> gsfElectrons;
   evt.getByToken(electronToken_,gsfElectrons);
   
-  // same as lines before needed for elec veto
-  //edm::Handle<edm::View<reco::GsfElectron> > electrons;
-  edm::Handle<edm::View<pat::Electron> > electrons;
-  evt.getByToken(electronToken2_,electrons);
-
   edm::Handle<pat::TauCollection> taus;
   evt.getByToken(tauToken_, taus);
 
@@ -229,16 +220,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
   edm::Handle<edm::ValueMap<bool> > tight_id_decisions2;
   evt.getByToken(electronTightIdMapToken_,tight_id_decisions2);
   //-----------------------------------------------------------------------------
-     //FR
-    //for ( reco::CandidateView::const_iterator genElectron = genElectrons->begin();
-    // 	  genElectron != genElectrons->end(); ++genElectron )
-    //  {
     GenEle_Eta_ = -99. ;
     GenEle_Pt_  = -99. ;
-
-    //FR
-    //GenEle_Eta_ = genElectron->eta() ;
-    //GenEle_Pt_ = genElectron->pt() ;
 
     Tau_GsfEleMatch_ = 0;
 
@@ -373,19 +356,13 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     {
       const pat::Tau& tau = taus->at(idxPFTau);
 
-    //TBU
-    //if ( std::abs(tau.eta()) > 2.4 || tau.pt() < 18. || tau.tauID("decayModeFindingNewDMs")<0.5 ) continue;
-
-    //For FR plots only, FR vs gen electron...
-    //if ( deltaR(tau.eta(), tau.phi(), genElectron->eta(), genElectron->phi()) < 0.2 )
-     //{
+    //MB: not mandatory as it is MiniAOD selection, but kept for completness
+    if ( tau.pt() < 18. || tau.tauID("decayModeFindingNewDMs")<0.5 ) continue;
 
     //
     int matchedElectronIdx = -1;
     int nEle = gsfElectrons->size();
-
-    for (int ie = 0; ie < nEle; ie++)
-    {
+    for (int ie = 0; ie < nEle; ie++) {
       const pat::Electron& el = gsfElectrons->at(ie);
       if ( deltaR(tau.p4(), el.p4()) < 0.2 && el.pt() > 10. &&
 	   (matchedElectronIdx == -1 || (matchedElectronIdx > -1 && el.pt() > gsfElectrons->at(matchedElectronIdx).pt())) ) {
@@ -783,10 +760,15 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 
     for ( std::vector<tauIdDiscrEntryType>::iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
 	  tauIdDiscriminator != tauIdDiscrEntries_.end(); ++tauIdDiscriminator ) {
-      tauIdDiscriminator->value_ = tau.tauID(tauIdDiscriminator->branchName_);
+      if( tau.isTauIDAvailable(tauIdDiscriminator->branchName_) )
+	tauIdDiscriminator->value_ = tau.tauID(tauIdDiscriminator->branchName_);
+      else {
+	tauIdDiscriminator->value_ = -99;
+	if ( verbosity_ ) {
+	  std::cout << "TauID called "<<tauIdDiscriminator->branchName_ << " is not present" << std::endl;
+	}
+      }
     }
-
-
 
     Tau_DecayMode_ = tau.decayMode();
 
@@ -858,7 +840,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     //std::cout <<" safety " << nEle << " " << electrons->size() << std::endl;
     for(int ie=0;ie<nEle;ie++) {
        if(gsfElectrons->at(ie).gsfTrack().isNonnull()) {
-	 float nHits = gsfElectrons->at(ie).gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS);
+	 int nHits = gsfElectrons->at(ie).gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS);
 	 float dxy = 99;
 	 float dz  = 99;
 	 const reco::Vertex* vertex = 0;
@@ -876,20 +858,24 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 
 	 double ElePt = gsfElectrons->at(ie).pt();
 	 if (ElePt> 0.) iso = iso/ElePt;
-	 const auto ele = electrons->ptrAt(ie);
-	 int  isEleID90  = (*tight_id_decisions2)[ele];
+	 int isEleIDVeto = 0;
+	 if(gsfElectrons->at(ie).isElectronIDAvailable(eleIdVetoName_))
+	   isEleIDVeto = gsfElectrons->at(ie).electronID(eleIdVetoName_);
+	 else if(tight_id_decisions2.isValid())
+	   isEleIDVeto = (*tight_id_decisions2)[edm::Ptr<pat::Electron>(gsfElectrons,ie)];
 
-	 //std::cout << nHits << " " << std::abs(gsfElectrons->at(ie).eta())<<" "<< ElePt<<" " << dxy<<" " << dz <<" "<< passConversionVeto<< " " << iso << " " << isEleID90 << std::endl;
+	 //std::cout << nHits << " " << std::abs(gsfElectrons->at(ie).eta())<<" "<< ElePt<<" " << dxy<<" " << dz <<" "<< passConversionVeto<< " " << iso << " " << isEleIDVeto << std::endl;
 	 
 	 bool ElectronPassCutsVeto = false;
-	 if ( nHits <= 1 &&
+	 //MB: some cuts below look redundant with isEleIdVeto
+	 if ( nHits <= 10 && //MB: used explicitely only in 3rd lepton veto (<=1), a cut-based ID for 2nd electron veto already cuts on this (<=2/3 EB/EE), so dummy cut here
 	      std::abs(gsfElectrons->at(ie).eta()) < 2.5 &&
 	      ElePt >10. &&
 	      std::abs(dxy) < 0.045 &&
 	      std::abs(dz) < 0.2 &&
-	      passConversionVeto == true &&
+	      passConversionVeto == true && //looks redundant with cut based vetoes
 	      iso < 0.3 &&
-	      isEleID90 == 1 ) ElectronPassCutsVeto = true;
+	      isEleIDVeto == 1 ) ElectronPassCutsVeto = true;
 
 	 if ( (deltaR(tau.eta(), tau.phi(), gsfElectrons->at(ie).eta(), gsfElectrons->at(ie).phi()) < 0.2) && ElectronPassCutsVeto ) {
 	   matchElectronCutsVeto = true;
@@ -910,14 +896,10 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 
     ++NumPFTaus_;
 
-    //for FR plots only, FR vs gen electron...
-    //}//if tau matched
     }//end loop over taus
 
     tree_->Fill();
 
-    //for FR plots only, FR vs gen electron...
-    //}//end loop over gen elec
 }
 
 AntiElectronDiscrMVATrainingNtupleProducer::~AntiElectronDiscrMVATrainingNtupleProducer()

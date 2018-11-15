@@ -62,35 +62,30 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
 
   edm::EDGetTokenT<pat::TauCollection> tauToken_;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken_;
-  edm::EDGetTokenT<edm::View<pat::Electron> > electronToken2_;
   edm::EDGetTokenT<edm::View<reco::Candidate> > genElectronToken_;
   edm::EDGetTokenT<edm::View<reco::Candidate> > genTauToken_;
   edm::EDGetTokenT<reco::VertexCollection> vertexToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
+  std::string eleIdVetoName_;
 
   //EffectiveAreas _effectiveAreas;
 
   struct tauIdDiscrEntryType
   {
-    tauIdDiscrEntryType(const std::string& name, const edm::InputTag& src)
-      : src_(src)
-    {
-      branchName_ = name;
-    }
+    tauIdDiscrEntryType(const std::string& name)
+      : branchName_(name)
+    {}
     ~tauIdDiscrEntryType() {}
-    edm::InputTag src_;
     std::string branchName_;
     float value_;
-    //edm::EDGetTokenT<reco::PFTauDiscriminator> srcToken_;
   };
 
   std::vector<tauIdDiscrEntryType> tauIdDiscrEntries_;
 
+  /*
   typedef std::vector<edm::InputTag> vInputTag;
-  //vInputTag srcWeights_;
-  
-  typedef std::vector<std::string> vstring;
-  vstring vTauID;
+  vInputTag srcWeights_;
+  */  
 
   int verbosity_;
   
