@@ -18,14 +18,18 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
 
-
-AntiElectronDiscrMVATrainingNtupleProducer::AntiElectronDiscrMVATrainingNtupleProducer(const edm::ParameterSet& cfg)
-{ 
-  srcPFTaus_ = cfg.getParameter<edm::InputTag>("srcPFTaus");
-  srcGsfElectrons_ = cfg.getParameter<edm::InputTag>("srcGsfElectrons");
-  srcPrimaryVertex_ = cfg.getParameter<edm::InputTag>("srcPrimaryVertex");
-  srcGenElectrons_ = cfg.getParameter<edm::InputTag>("srcGenElectrons");
-  srcGenTaus_ = cfg.getParameter<edm::InputTag>("srcGenTaus");
+AntiElectronDiscrMVATrainingNtupleProducer::AntiElectronDiscrMVATrainingNtupleProducer(const edm::ParameterSet& cfg)// :
+//_effectiveAreas( ((cfg.getParameter<edm::FileInPath>("effAreasConfigFile")).fullPath()) )//,
+//eleTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleTightIdMap")))
+//electronTightIdMapToken_
+{
+  tauToken_ = consumes<pat::TauCollection>(cfg.getParameter<edm::InputTag>("srcPFTaus"));
+  electronToken_ = consumes<pat::ElectronCollection>(cfg.getParameter<edm::InputTag>("srcGsfElectrons"));
+  electronToken2_ = consumes<edm::View<pat::Electron> >(cfg.getParameter<edm::InputTag>("srcGsfElectrons"));
+  genElectronToken_ = consumes<edm::View<reco::Candidate> >(cfg.getParameter<edm::InputTag>("srcGenElectrons"));
+  genTauToken_ = consumes<edm::View<reco::Candidate> >(cfg.getParameter<edm::InputTag>("srcGenTaus"));
+  vertexToken_ = consumes<reco::VertexCollection>(cfg.getParameter<edm::InputTag>("srcPrimaryVertex"));
+  electronTightIdMapToken_ = consumes<edm::ValueMap<bool> >(cfg.getParameter<edm::InputTag>("eleTightIdMap"));
 
   edm::ParameterSet tauIdDiscriminators = cfg.getParameter<edm::ParameterSet>("tauIdDiscriminators");
   typedef std::vector<std::string> vstring;
@@ -33,13 +37,14 @@ AntiElectronDiscrMVATrainingNtupleProducer::AntiElectronDiscrMVATrainingNtuplePr
   for ( vstring::const_iterator name = tauIdDiscriminatorNames.begin();
 	name != tauIdDiscriminatorNames.end(); ++name ) {
     edm::InputTag src = tauIdDiscriminators.getParameter<edm::InputTag>(*name);
+    std::cout << "tauIdDiscriminators "<< *name << " " << src <<std::endl;
     tauIdDiscrEntries_.push_back(tauIdDiscrEntryType(*name, src));
   }
 
-  srcWeights_ = cfg.getParameter<vInputTag>("srcWeights");
-
   verbosity_ = ( cfg.exists("verbosity") ) ?
     cfg.getParameter<int>("verbosity") : 0;
+
+  //edm::InputTag rhoTag = edm::InputTag("fixedGridRhoFastjetAll","");
 } 
 
 void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
@@ -79,6 +84,9 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Elec_MvaInDeltaEta", &Elec_MvaInDeltaEta_, "Elec_MvaInDeltaEta/F");
   tree_->Branch("Elec_MvaInNClusterOutMustache", &Elec_MvaInNClusterOutMustache_, "Elec_MvaInNClusterOutMustache/I");
   tree_->Branch("Elec_MvaInEtOutMustache", &Elec_MvaInEtOutMustache_, "Elec_MvaInEtOutMustache/F");
+  tree_->Branch("Elec_Iso", &Elec_Iso_, "Elec_Iso/F");
+  tree_->Branch("Elec_IsoRel", &Elec_IsoRel_, "Elec_IsoRel/F");
+
   tree_->Branch("Elec_SigmaEtaEta", &Elec_SigmaEtaEta_, "Elec_SigmaEtaEta/F");
   tree_->Branch("Elec_SigmaEtaEta_full5x5", &Elec_SigmaEtaEta_full5x5_, "Elec_SigmaEtaEta_full5x5/F");
   tree_->Branch("Elec_HoHplusE", &Elec_HoHplusE_, "Elec_HoHplusE/F");
@@ -86,6 +94,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Elec_Eecal", &Elec_Eecal_, "Elec_Eecal/F");
   tree_->Branch("Elec_DeltaEta", &Elec_DeltaEta_, "Elec_DeltaEta/F");
   tree_->Branch("Elec_DeltaPhi", &Elec_DeltaPhi_, "Elec_DeltaPhi/F"); 
+  tree_->Branch("Elec_DeltaEtaAtVtx", &Elec_DeltaEtaAtVtx_, "Elec_DeltaEtaAtVtx/F");
+  tree_->Branch("Elec_DeltaPhiAtVtx", &Elec_DeltaPhiAtVtx_, "Elec_DeltaPhiAtVtx/F");
   tree_->Branch("Elec_HasKF", &Elec_HasKF_, "Elec_HasKF/I");
   tree_->Branch("Elec_Chi2KF",&Elec_Chi2KF_,"Elec_Chi2KF/F");
   tree_->Branch("Elec_Chi2NormKF",&Elec_Chi2NormKF_,"Elec_Chi2NormKF/F");
@@ -111,6 +121,9 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("ElecVeto_Phi", &ElecVeto_Phi_, "ElecVeto_Phi/F");
 
   // PFTau variables
+  tree_->Branch("Tau_GenEle_Pt", &Tau_GenEle_Pt_, "Tau_GenEle_Pt/F");
+  tree_->Branch("Tau_GenEle_Eta", &Tau_GenEle_Eta_, "Tau_GenEle_Eta/F");
+
   tree_->Branch("Tau_GsfEleMatch", &Tau_GsfEleMatch_, "Tau_GsfEleMatch/I");
   tree_->Branch("Tau_GenEleMatch", &Tau_GenEleMatch_, "Tau_GenEleMatch/I");
   tree_->Branch("Tau_GenHadMatch", &Tau_GenHadMatch_, "Tau_GenHadMatch/I");
@@ -145,6 +158,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Tau_KFTracklnPt", &Tau_KFTracklnPt_, "Tau_KFTracklnPt/F");
   tree_->Branch("Tau_KFTrackEta", &Tau_KFTrackEta_, "Tau_KFTrackEta/F");
   tree_->Branch("Tau_EmFraction", &Tau_EmFraction_, "Tau_EmFraction/F");
+  tree_->Branch("Tau_EmFraction_PFCharged", &Tau_EmFraction_PFCharged_, "Tau_EmFraction_PFCharged/F");
   tree_->Branch("Tau_NumChargedCands", &Tau_NumChargedCands_, "Tau_NumChargedCands/I");
   tree_->Branch("Tau_NumGammaCandsIn", &Tau_NumGammaCandsIn_, "Tau_NumGammaCandsIn/I");
   tree_->Branch("Tau_NumGammaCandsOut", &Tau_NumGammaCandsOut_, "Tau_NumGammaCandsOut/I");
@@ -160,16 +174,22 @@ void AntiElectronDiscrMVATrainingNtupleProducer::beginJob()
   tree_->Branch("Tau_GammaEnFracOut", &Tau_GammaEnFracOut_, "Tau_GammaEnFracOut/F");
   tree_->Branch("Tau_HadrMvaOut", &Tau_HadrMvaOut_, "Tau_HadrMvaOut/F");
   tree_->Branch("Tau_HadrMvaOutIsolated", &Tau_HadrMvaOutIsolated_, "Tau_HadrMvaOutIsolated/F");
+
   for ( std::vector<tauIdDiscrEntryType>::iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
 	tauIdDiscriminator != tauIdDiscrEntries_.end(); ++tauIdDiscriminator ) {
     tree_->Branch(Form("Tau_%s", tauIdDiscriminator->branchName_.data()), &tauIdDiscriminator->value_, Form("Tau_%s/F", tauIdDiscriminator->branchName_.data()));
+  std::cout <<"branch "  << tauIdDiscriminator->branchName_.data() << std::endl;
   }
+
   tree_->Branch("Tau_DecayMode", &Tau_DecayMode_, "Tau_DecayMode/I");
   tree_->Branch("Tau_MatchElePassVeto", &Tau_MatchElePassVeto_, "Tau_MatchElePassVeto/I");
   tree_->Branch("Tau_VtxZ", &Tau_VtxZ_, "Tau_VtxZ/F");
   tree_->Branch("Tau_zImpact", &Tau_zImpact_, "Tau_zImpact/F");
 
   tree_->Branch("evtWeight", &evtWeight_, "evtWeight/F");
+
+  tree_->Branch("GenEle_Pt",&GenEle_Pt_,"GenEle_Pt/F");
+  tree_->Branch("GenEle_Eta",&GenEle_Eta_,"GenEle_Eta/F");
 }
 
 void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, const edm::EventSetup& es)
@@ -177,53 +197,50 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
   run_ = evt.run();
   event_ = (evt.eventAuxiliary()).event();
   lumi_ = evt.luminosityBlock();
-  
-  edm::Handle<reco::GsfElectronCollection> gsfElectrons;
-  evt.getByLabel(srcGsfElectrons_, gsfElectrons);
 
-  edm::Handle<reco::PFTauCollection> pfTaus;
-  evt.getByLabel(srcPFTaus_, pfTaus);
+  edm::Handle<pat::ElectronCollection> gsfElectrons;
+  evt.getByToken(electronToken_,gsfElectrons);
+  
+  // same as lines before needed for elec veto
+  //edm::Handle<edm::View<reco::GsfElectron> > electrons;
+  edm::Handle<edm::View<pat::Electron> > electrons;
+  evt.getByToken(electronToken2_,electrons);
+
+  edm::Handle<pat::TauCollection> taus;
+  evt.getByToken(tauToken_, taus);
 
   typedef edm::View<reco::Candidate> CandidateView;
   edm::Handle<CandidateView> genElectrons;
-  evt.getByLabel(srcGenElectrons_, genElectrons);
+  evt.getByToken(genElectronToken_, genElectrons);
 
   edm::Handle<CandidateView> genTaus;
-  evt.getByLabel(srcGenTaus_, genTaus);
+  evt.getByToken(genTauToken_, genTaus);
 
   edm::Handle<reco::VertexCollection> vertices;
-  evt.getByLabel(srcPrimaryVertex_, vertices);
+  evt.getByToken(vertexToken_, vertices);
   NumPV_ = vertices->size();
 
   evtWeight_ = 1.0;
-  for ( vInputTag::const_iterator srcWeight = srcWeights_.begin();
-	srcWeight != srcWeights_.end(); ++srcWeight ) {
-    edm::Handle<double> weight;
-    evt.getByLabel(*srcWeight, weight);
-    evtWeight_ *= (*weight);
-  }
 
+  //edm::Handle< double > rhoHandle;
+  //edm::InputTag rhoTag = edm::InputTag("fixedGridRhoFastjetAll","");
+  //evt.getByLabel(rhoTag,rhoHandle);
+
+  edm::Handle<edm::ValueMap<bool> > tight_id_decisions2;
+  evt.getByToken(electronTightIdMapToken_,tight_id_decisions2);
   //-----------------------------------------------------------------------------
-  // PFTau variables
-  //-----------------------------------------------------------------------------
+     //FR
+    //for ( reco::CandidateView::const_iterator genElectron = genElectrons->begin();
+    // 	  genElectron != genElectrons->end(); ++genElectron )
+    //  {
+    GenEle_Eta_ = -99. ;
+    GenEle_Pt_  = -99. ;
 
-  NumPFTaus_ = 0;
-  NumGsfEle_ = 0;
-
-  size_t numPFTaus = pfTaus->size();
-  for ( size_t idxPFTau = 0; idxPFTau < numPFTaus; ++idxPFTau ) {
-    reco::PFTauRef pfTau(pfTaus, idxPFTau);
+    //FR
+    //GenEle_Eta_ = genElectron->eta() ;
+    //GenEle_Pt_ = genElectron->pt() ;
 
     Tau_GsfEleMatch_ = 0;
-    const reco::GsfElectron* matchedElectron = 0;
-    for ( reco::GsfElectronCollection::const_iterator gsfElectron = gsfElectrons->begin();
-	  gsfElectron != gsfElectrons->end(); ++gsfElectron ) {
-      if ( deltaR(pfTau->p4(), gsfElectron->p4()) < 0.3 && gsfElectron->pt() > 10. && (matchedElectron == 0 || gsfElectron->pt() > matchedElectron->pt()) ) {
-	matchedElectron = &(*gsfElectron);
-	Tau_GsfEleMatch_ = 1;
-      }
-      ++NumGsfEle_;
-    } 
 
     Tau_EtaAtEcalEntrance_ = -99;
     Tau_PhiAtEcalEntrance_ = -99;
@@ -234,7 +251,6 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_LeadNeutralPFCandPt_ = -99;
     Tau_LeadChargedPFCandEtaAtEcalEntrance_ = -99;
     Tau_LeadChargedPFCandPhiAtEcalEntrance_ = -99;
-    Tau_LeadChargedPFCandPt_ = -99;
     Tau_Eta_ = -99;
     Tau_Phi_ = -99;
     Tau_Pt_ = -99;
@@ -256,6 +272,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_KFTracklnPt_ = -99;
     Tau_KFTrackEta_ = -99;
     Tau_EmFraction_ = -99;
+    Tau_EmFraction_PFCharged_ = -99;
     Tau_NumChargedCands_ = -99;
     Tau_NumGammaCandsIn_ = -99;
     Tau_NumGammaCandsOut_ = -99;
@@ -276,10 +293,14 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Tau_MatchElePassVeto_ = -99;
     Tau_VtxZ_ = -99;
     Tau_zImpact_ = -99;
+    Tau_LeadChargedPFCandPt_ = -99;
 
     // Matchings
     Tau_GenEleMatch_ = 0;
     Tau_GenHadMatch_ = 0;
+
+    Tau_GenEle_Pt_ = -99.;
+    Tau_GenEle_Eta_ = -99.;
 
     NumGenEle_ = 0;
     NumGenHad_ = 0;
@@ -294,6 +315,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Elec_MvaInHadEnergy_ = -99;
     Elec_MvaInDeltaEta_ = -99;
     Elec_MvaInNClusterOutMustache_ = -99;
+    Elec_Iso_ = -99;
+    Elec_IsoRel_ = -99;
     Elec_MvaInEtOutMustache_ = -99;
     Elec_SigmaEtaEta_ = -99;
     Elec_SigmaEtaEta_full5x5_ = -99;
@@ -301,6 +324,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Elec_Eecal_ = -99.;
     Elec_DeltaEta_ = -99.;
     Elec_DeltaPhi_ = -99.;
+    Elec_DeltaEtaAtVtx_ = -99.;
+    Elec_DeltaPhiAtVtx_ = -99.;
     // Variables related to the SC
     Elec_HasSC_ = -99;
     Elec_Ee_ = -99;
@@ -339,44 +364,100 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     Elec_GenEleMatch_ = 0;
     Elec_GenHadMatch_ = 0; 
     
+    NumPFTaus_ = 0;
+    NumGsfEle_ = 0;
+
+    //
+    size_t numPFTaus = taus->size();
+    for ( size_t idxPFTau = 0; idxPFTau < numPFTaus; ++idxPFTau )
+    {
+      const pat::Tau& tau = taus->at(idxPFTau);
+
+    //TBU
+    //if ( std::abs(tau.eta()) > 2.4 || tau.pt() < 18. || tau.tauID("decayModeFindingNewDMs")<0.5 ) continue;
+
+    //For FR plots only, FR vs gen electron...
+    //if ( deltaR(tau.eta(), tau.phi(), genElectron->eta(), genElectron->phi()) < 0.2 )
+     //{
+
+    //
+    int matchedElectronIdx = -1;
+    int nEle = gsfElectrons->size();
+
+    for (int ie = 0; ie < nEle; ie++)
+    {
+      const pat::Electron& el = gsfElectrons->at(ie);
+      if ( deltaR(tau.p4(), el.p4()) < 0.2 && el.pt() > 10. &&
+	   (matchedElectronIdx == -1 || (matchedElectronIdx > -1 && el.pt() > gsfElectrons->at(matchedElectronIdx).pt())) ) {
+	matchedElectronIdx = ie;
+	Tau_GsfEleMatch_ = 1;
+      }
+      ++NumGsfEle_;
+     }
+
     //-----------------------------------------------------------------------------
     // GSF electron variables
     //-----------------------------------------------------------------------------
 
-    if ( matchedElectron ) {
+    if ( matchedElectronIdx != -1 )
+    {
+      //Is electron matched to gen info ?
       for ( reco::CandidateView::const_iterator genElectron = genElectrons->begin();
 	    genElectron != genElectrons->end(); ++genElectron ) {
 	++NumGenEle_;
-	if ( deltaR(matchedElectron->eta(), matchedElectron->phi(), genElectron->eta(), genElectron->phi()) < 0.3 ) Elec_GenEleMatch_ = 1;
+	if ( deltaR(gsfElectrons->at(matchedElectronIdx).eta(), gsfElectrons->at(matchedElectronIdx).phi(), genElectron->eta(), genElectron->phi()) < 0.2 ) {
+	  Elec_GenEleMatch_ = 1;
+	  break;
+	}
       }
       for ( reco::CandidateView::const_iterator genTau = genTaus->begin();
 	    genTau != genTaus->end(); ++genTau ) {
 	++NumGenHad_;
-	if ( deltaR(matchedElectron->eta(), matchedElectron->phi(), genTau->eta(), genTau->phi()) < 0.3 ) Elec_GenHadMatch_ = 1;
+	if ( deltaR(gsfElectrons->at(matchedElectronIdx).eta(), gsfElectrons->at(matchedElectronIdx).phi(), genTau->eta(), genTau->phi()) < 0.2 ) {
+	  Elec_GenHadMatch_ = 1;
+	  break;
+	}
       }
 
       // Matchings
-      Elec_Eta_ = matchedElectron->eta();
-      Elec_Pt_ = matchedElectron->pt();
-      Elec_MvaOut_ = TMath::Max(matchedElectron->mvaOutput().mva_e_pi, float(-1.0));
-      Elec_MvaOutIsolated_ = TMath::Max(matchedElectron->mvaOutput().mva_Isolated, float(-1.0));
-      Elec_MvaInEarlyBrem_ = matchedElectron->mvaInput().earlyBrem;
-      Elec_MvaInLateBrem_= matchedElectron->mvaInput().lateBrem;
-      Elec_MvaInSigmaEtaEta_ = matchedElectron->mvaInput().sigmaEtaEta;
-      Elec_MvaInHadEnergy_ = matchedElectron->mvaInput().hadEnergy;
-      Elec_MvaInDeltaEta_ = matchedElectron->mvaInput().deltaEta;
-      Elec_MvaInNClusterOutMustache_ = matchedElectron->mvaInput().nClusterOutsideMustache;
-      Elec_MvaInEtOutMustache_ = matchedElectron->mvaInput().etOutsideMustache;
-      Elec_SigmaEtaEta_ = matchedElectron->sigmaEtaEta();
-      Elec_SigmaEtaEta_full5x5_ = matchedElectron->full5x5_sigmaEtaEta();
-      Elec_Fbrem_ = matchedElectron->fbrem();
-      Elec_Eecal_ = matchedElectron->ecalEnergy();
-      Elec_DeltaEta_ = matchedElectron->deltaEtaSeedClusterTrackAtCalo();
-      Elec_DeltaPhi_ = matchedElectron->deltaPhiSeedClusterTrackAtCalo();
+      Elec_Eta_ = gsfElectrons->at(matchedElectronIdx).eta();
+      Elec_Pt_ = gsfElectrons->at(matchedElectronIdx).pt();
+      Elec_MvaOut_ = TMath::Max(gsfElectrons->at(matchedElectronIdx).mvaOutput().mva_e_pi, float(-1.0));
+      Elec_MvaOutIsolated_ = TMath::Max(gsfElectrons->at(matchedElectronIdx).mvaOutput().mva_Isolated, float(-1.0));
+      Elec_MvaInEarlyBrem_ = gsfElectrons->at(matchedElectronIdx).mvaInput().earlyBrem;
+      Elec_MvaInLateBrem_= gsfElectrons->at(matchedElectronIdx).mvaInput().lateBrem;
+      Elec_MvaInSigmaEtaEta_ = gsfElectrons->at(matchedElectronIdx).mvaInput().sigmaEtaEta;
+      Elec_MvaInHadEnergy_ = gsfElectrons->at(matchedElectronIdx).mvaInput().hadEnergy;
+      Elec_MvaInDeltaEta_ = gsfElectrons->at(matchedElectronIdx).mvaInput().deltaEta;
+      Elec_MvaInNClusterOutMustache_ = gsfElectrons->at(matchedElectronIdx).mvaInput().nClusterOutsideMustache;
+      Elec_MvaInEtOutMustache_ = gsfElectrons->at(matchedElectronIdx).mvaInput().etOutsideMustache;
+
+      //double absEta = std::abs(gsfElectrons->at(matchedElectronIdx).superCluster()->eta());
+      //const float eA = _effectiveAreas.getEffectiveArea( absEta );
+      //const float rho = rhoHandle.isValid() ? (float)(*rhoHandle) : 0;
+
+      Elec_Iso_ = gsfElectrons->at(matchedElectronIdx).pfIsolationVariables().sumChargedHadronPt
+      + std::max(0.0,
+      gsfElectrons->at(matchedElectronIdx).pfIsolationVariables().sumNeutralHadronEt +
+      gsfElectrons->at(matchedElectronIdx).pfIsolationVariables().sumPhotonEt
+      -0.5*gsfElectrons->at(matchedElectronIdx).pfIsolationVariables().sumPUPt);
+      //- rho*eA);
+
+      Elec_IsoRel_ = Elec_Iso_;
+      if (Elec_Pt_>0.) Elec_IsoRel_ = Elec_Iso_ /Elec_Pt_;
+
+      Elec_SigmaEtaEta_ = gsfElectrons->at(matchedElectronIdx).sigmaEtaEta();
+      Elec_SigmaEtaEta_full5x5_ = gsfElectrons->at(matchedElectronIdx).full5x5_sigmaEtaEta();
+      Elec_Fbrem_ = gsfElectrons->at(matchedElectronIdx).fbrem();
+      Elec_Eecal_ = gsfElectrons->at(matchedElectronIdx).ecalEnergy();
+      Elec_DeltaEta_ = gsfElectrons->at(matchedElectronIdx).deltaEtaSeedClusterTrackAtCalo();
+      Elec_DeltaPhi_ = gsfElectrons->at(matchedElectronIdx).deltaPhiSeedClusterTrackAtCalo();
+      Elec_DeltaEtaAtVtx_ = gsfElectrons->at(matchedElectronIdx).deltaEtaSuperClusterTrackAtVtx();
+      Elec_DeltaPhiAtVtx_ = gsfElectrons->at(matchedElectronIdx).deltaPhiSuperClusterTrackAtVtx();
 
       // Variables related to the SC
       Elec_HasSC_ = 0;
-      reco::SuperClusterRef pfSuperCluster = matchedElectron->parentSuperCluster();
+      reco::SuperClusterRef pfSuperCluster = gsfElectrons->at(matchedElectronIdx).superCluster();
       if ( pfSuperCluster.isNonnull() && pfSuperCluster.isAvailable() ) {
 	Elec_HasSC_ = 1;
 	Elec_Ee_ = 0.;
@@ -387,40 +468,44 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 	  if ( pfCluster == pfSuperCluster->clustersBegin() ) Elec_Ee_ += pfClusterEn;
 	  else Elec_Egamma_ += pfClusterEn;
 	}
-	Elec_Pin_ = TMath::Sqrt(matchedElectron->trackMomentumAtVtx().Mag2());
-	Elec_Pout_ = TMath::Sqrt(matchedElectron->trackMomentumOut().Mag2()); 
+	Elec_Pin_ = TMath::Sqrt(gsfElectrons->at(matchedElectronIdx).trackMomentumAtVtx().Mag2());
+	Elec_Pout_ = TMath::Sqrt(gsfElectrons->at(matchedElectronIdx).trackMomentumOut().Mag2());
 	Elec_EtotOverPin_ = (Elec_Ee_ + Elec_Egamma_)/Elec_Pin_;
 	Elec_EeOverPout_ = Elec_Ee_/Elec_Pout_;
 	Elec_EgammaOverPdif_ = Elec_Egamma_/(Elec_Pin_ - Elec_Pout_);
-	Elec_HoHplusE_ = matchedElectron->mvaInput().hadEnergy/(matchedElectron->mvaInput().hadEnergy+Elec_Ee_) ;
+	Elec_HoHplusE_ = gsfElectrons->at(matchedElectronIdx).mvaInput().hadEnergy/(gsfElectrons->at(matchedElectronIdx).mvaInput().hadEnergy+Elec_Ee_) ;
       }
 
       // Variables related to the CtfTrack
       Elec_HasKF_ = 0;
-      if ( matchedElectron->closestCtfTrackRef().isNonnull() ) {
+
+      const reco::TrackRef trackref = gsfElectrons->at(matchedElectronIdx).closestCtfTrackRef();
+      const reco::Track* track = gsfElectrons->at(matchedElectronIdx).closestCtfTrackRef().get();
+      if (track != 0 && trackref.isNonnull()) {
 	Elec_HasKF_ = 1;
-	Elec_Chi2KF_ = matchedElectron->closestCtfTrackRef()->chi2();
-	Elec_Chi2NormKF_ = matchedElectron->closestCtfTrackRef()->normalizedChi2();
-	Elec_KFNumHits_ = matchedElectron->closestCtfTrackRef()->numberOfValidHits();
-	Elec_KFNumPixelHits_ = matchedElectron->closestCtfTrackRef()->hitPattern().numberOfValidPixelHits();
-	Elec_KFNumStripHits_ = matchedElectron->closestCtfTrackRef()->hitPattern().numberOfValidStripHits();
-    	Elec_KFTrackResol_ = matchedElectron->closestCtfTrackRef()->ptError()/matchedElectron->closestCtfTrackRef()->pt();
-	Elec_KFTracklnPt_ = log(matchedElectron->closestCtfTrackRef()->pt())*TMath::Ln10();
-	Elec_KFTrackEta_ = matchedElectron->closestCtfTrackRef()->eta();
+	Elec_Chi2KF_ = track->chi2();
+	Elec_Chi2NormKF_ = track->normalizedChi2();
+	Elec_KFNumHits_ = track->numberOfValidHits();
+	Elec_KFNumPixelHits_ = track->hitPattern().numberOfValidPixelHits();
+	Elec_KFNumStripHits_ = track->hitPattern().numberOfValidStripHits();
+	Elec_KFTrackResol_ = track->ptError()/track->pt();
+	Elec_KFTracklnPt_ = log(track->pt())*TMath::Ln10();
+	Elec_KFTrackEta_ = track->eta();
       }
 
       // Variables related to the GsfTrack
       Elec_HasGSF_ = 0;
-      if ( matchedElectron->gsfTrack().isNonnull() ) {
+
+      if ( gsfElectrons->at(matchedElectronIdx).gsfTrack().isNonnull() ) {
 	Elec_HasGSF_ = 1;
-	Elec_Chi2GSF_ = matchedElectron->gsfTrack()->chi2();
-	Elec_Chi2NormGSF_ = matchedElectron->gsfTrack()->normalizedChi2();
-	Elec_GSFNumHits_ = matchedElectron->gsfTrack()->numberOfValidHits();
-	Elec_GSFNumPixelHits_ = matchedElectron->gsfTrack()->hitPattern().numberOfValidPixelHits();
-	Elec_GSFNumStripHits_ = matchedElectron->gsfTrack()->hitPattern().numberOfValidStripHits();
-    	Elec_GSFTrackResol_ = matchedElectron->gsfTrack()->ptError()/matchedElectron->gsfTrack()->pt();
-	Elec_GSFTracklnPt_ = log(matchedElectron->gsfTrack()->pt())*TMath::Ln10();
-	Elec_GSFTrackEta_ = matchedElectron->gsfTrack()->eta();
+	Elec_Chi2GSF_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->chi2();
+	Elec_Chi2NormGSF_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->normalizedChi2();
+	Elec_GSFNumHits_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->numberOfValidHits();
+	Elec_GSFNumPixelHits_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->hitPattern().numberOfValidPixelHits();
+	Elec_GSFNumStripHits_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->hitPattern().numberOfValidStripHits();
+	Elec_GSFTrackResol_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->ptError()/gsfElectrons->at(matchedElectronIdx).gsfTrack()->pt();
+	Elec_GSFTracklnPt_ = log(gsfElectrons->at(matchedElectronIdx).gsfTrack()->pt())*TMath::Ln10();
+	Elec_GSFTrackEta_ = gsfElectrons->at(matchedElectronIdx).gsfTrack()->eta();
       }
 
       if ( verbosity_ ) {
@@ -448,6 +533,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 	std::cout << "Elec_HoHplusE: " << Elec_HoHplusE_ << std::endl;
 	std::cout << "Elec_FBrem: " << Elec_Fbrem_ << std::endl;
 	std::cout << "Elec_DeltaEta: " << Elec_DeltaEta_ << ", Elec_DeltaPhi: " << Elec_DeltaPhi_ << std::endl;
+	std::cout << "Elec_DeltaEtaAtVtx: " << Elec_DeltaEtaAtVtx_ << ", Elec_DeltaPhiAtVtx: " << Elec_DeltaPhiAtVtx_ << std::endl;
 	std::cout << "Elec_Chi2KF: " << Elec_Chi2KF_ << ", Elec_Chi2NormKF: " << Elec_Chi2NormKF_ << std::endl;
 	std::cout << "Elec_Chi2GSF: " << Elec_Chi2GSF_ << ", Elec_Chi2NormGSF: " << Elec_Chi2NormGSF_ << std::endl;
 	std::cout << "Elec_GSFNumHits: " << Elec_GSFNumHits_ << std::endl;
@@ -465,99 +551,78 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     // PFTau variables
     //-----------------------------------------------------------------------------
 
+    // is tau matched to gen info ?
+    //
     for ( reco::CandidateView::const_iterator genElectron = genElectrons->begin();
 	  genElectron != genElectrons->end(); ++genElectron ) {
-      if ( deltaR(pfTau->eta(), pfTau->phi(), genElectron->eta(), genElectron->phi()) < 0.3 ) Tau_GenEleMatch_ = 1;
+      if ( deltaR(tau.eta(), tau.phi(), genElectron->eta(), genElectron->phi()) < 0.2 ) {
+	Tau_GenEleMatch_ = 1;
+	Tau_GenEle_Pt_  = genElectron->pt();
+	Tau_GenEle_Eta_ = genElectron->eta();
+      }
     }
     for ( reco::CandidateView::const_iterator genTau = genTaus->begin();
 	  genTau != genTaus->end(); ++genTau ) {
-      if ( deltaR(pfTau->eta(), pfTau->phi(), genTau->eta(), genTau->phi()) < 0.3 ) Tau_GenHadMatch_ = 1;
-    }
-
-    // Matchings
-    float sumEtaTimesEnergy = 0.;
-    float sumPhiTimesEnergy = 0.;
-    float sumEnergy = 0.;
-    float sumEtaTimesEnergyEcalEnWeighted = 0.;
-    float sumPhiTimesEnergyEcalEnWeighted = 0.;
-    float sumEnergyEcalEnWeighted = 0.;
-    const std::vector<reco::PFCandidatePtr>& signalPFCands = pfTau->signalPFCands();
-    for ( std::vector<reco::PFCandidatePtr>::const_iterator pfCandidate = signalPFCands.begin();
-	  pfCandidate != signalPFCands.end(); ++pfCandidate ) {
-      sumEtaTimesEnergy += ((*pfCandidate)->positionAtECALEntrance().eta()*(*pfCandidate)->energy());
-      sumPhiTimesEnergy += ((*pfCandidate)->positionAtECALEntrance().phi()*(*pfCandidate)->energy());
-      sumEnergy += (*pfCandidate)->energy();
-      sumEtaTimesEnergyEcalEnWeighted += ((*pfCandidate)->positionAtECALEntrance().eta()*(*pfCandidate)->ecalEnergy());
-      sumPhiTimesEnergyEcalEnWeighted += ((*pfCandidate)->positionAtECALEntrance().phi()*(*pfCandidate)->ecalEnergy());
-      sumEnergyEcalEnWeighted += (*pfCandidate)->ecalEnergy();
-    }
-    if ( sumEnergy > 0. ) {
-      Tau_EtaAtEcalEntrance_ = sumEtaTimesEnergy/sumEnergy;
-      Tau_PhiAtEcalEntrance_ = sumPhiTimesEnergy/sumEnergy;
-    }
-    if ( sumEnergyEcalEnWeighted > 0. ) {
-      Tau_EtaAtEcalEntranceEcalEnWeighted_ = sumEtaTimesEnergyEcalEnWeighted/sumEnergyEcalEnWeighted;
-      Tau_PhiAtEcalEntranceEcalEnWeighted_ = sumPhiTimesEnergyEcalEnWeighted/sumEnergyEcalEnWeighted;
-    }
-    for ( std::vector<reco::PFCandidatePtr>::const_iterator pfCandidate = signalPFCands.begin();
-	  pfCandidate != signalPFCands.end(); ++pfCandidate ) {
-      const reco::Track* track = 0;
-      if ( (*pfCandidate)->trackRef().isNonnull() ) track = (*pfCandidate)->trackRef().get();
-      else if ( (*pfCandidate)->muonRef().isNonnull() && (*pfCandidate)->muonRef()->innerTrack().isNonnull()  ) track = (*pfCandidate)->muonRef()->innerTrack().get();
-      else if ( (*pfCandidate)->muonRef().isNonnull() && (*pfCandidate)->muonRef()->globalTrack().isNonnull() ) track = (*pfCandidate)->muonRef()->globalTrack().get();
-      else if ( (*pfCandidate)->muonRef().isNonnull() && (*pfCandidate)->muonRef()->outerTrack().isNonnull()  ) track = (*pfCandidate)->muonRef()->outerTrack().get();
-      else if ( (*pfCandidate)->gsfTrackRef().isNonnull() ) track = (*pfCandidate)->gsfTrackRef().get();
-      if ( track ) {
-	if ( track->pt() > Tau_LeadChargedPFCandPt_ ) {
-	  Tau_LeadChargedPFCandEtaAtEcalEntrance_ = (*pfCandidate)->positionAtECALEntrance().eta();
-	  Tau_LeadChargedPFCandPhiAtEcalEntrance_ = (*pfCandidate)->positionAtECALEntrance().phi();
-	  Tau_LeadChargedPFCandPt_ = track->pt();
-	}
-      } else {
-	if ( (*pfCandidate)->pt() > Tau_LeadNeutralPFCandPt_ ) {
-	  Tau_LeadNeutralPFCandEtaAtEcalEntrance_ = (*pfCandidate)->positionAtECALEntrance().eta();
-	  Tau_LeadNeutralPFCandPhiAtEcalEntrance_ = (*pfCandidate)->positionAtECALEntrance().phi();
-	  Tau_LeadNeutralPFCandPt_ = (*pfCandidate)->pt();
-	}
+      if ( deltaR(tau.eta(), tau.phi(), genTau->eta(), genTau->phi()) < 0.2 ) {
+	Tau_GenHadMatch_ = 1;
+	break;
       }
     }
-    Tau_Eta_ = pfTau->eta();
-    Tau_Pt_ = pfTau->pt();
-    Tau_Phi_ = pfTau->phi();
-    Tau_EmFraction_ = TMath::Max(pfTau->emFraction(), float(0.));
-    Tau_NumChargedCands_ = pfTau->signalPFChargedHadrCands().size();
 
-    if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
-      Tau_LeadHadronPt_ = pfTau->leadPFChargedHadrCand()->pt();
-      Tau_HasGsf_ = (pfTau->leadPFChargedHadrCand()->gsfTrackRef()).isNonnull();
+    //
+    const reco::CandidatePtrVector signalCands = tau.signalCands();
+    for (unsigned int o = 0; o < signalCands.size(); o++ ) {
+//     pat::PackedCandidate const*  signalCand = dynamic_cast<pat::PackedCandidate const*> (signalCands[o].get());
+       if ( signalCands[o]->pt() > Tau_LeadNeutralPFCandPt_ ) {
+         Tau_LeadNeutralPFCandPt_ = signalCands[o]->pt();
+       }
     }
-    if ( (pfTau->leadPFChargedHadrCand()->gsfTrackRef()).isNonnull() ) {
-      Tau_GSFChi2_ = pfTau->leadPFChargedHadrCand()->gsfTrackRef()->normalizedChi2();
-      Tau_GSFNumHits_ = pfTau->leadPFChargedHadrCand()->gsfTrackRef()->numberOfValidHits();
-      Tau_GSFNumPixelHits_ = pfTau->leadPFChargedHadrCand()->gsfTrackRef()->hitPattern().numberOfValidPixelHits();
-      Tau_GSFNumStripHits_ = pfTau->leadPFChargedHadrCand()->gsfTrackRef()->hitPattern().numberOfValidStripHits();
-      Tau_GSFTrackResol_ = pfTau->leadPFChargedHadrCand()->gsfTrackRef()->ptError()/pfTau->leadPFChargedHadrCand()->gsfTrackRef()->pt();
-      Tau_GSFTracklnPt_ = log(pfTau->leadPFChargedHadrCand()->gsfTrackRef()->pt())*TMath::Ln10();
-      Tau_GSFTrackEta_ = pfTau->leadPFChargedHadrCand()->gsfTrackRef()->eta();
+    Tau_LeadChargedPFCandEtaAtEcalEntrance_ = tau.etaAtEcalEntranceLeadChargedCand();
+    Tau_EtaAtEcalEntrance_   = tau.etaAtEcalEntrance();
+    Tau_PhiAtEcalEntrance_   = tau.phiAtEcalEntrance();
+    Tau_LeadChargedPFCandPt_ = tau.ptLeadChargedCand();
+    Tau_Eta_ = tau.eta();
+    Tau_Pt_  = tau.pt();
+    Tau_Phi_ = tau.phi();
+    Tau_EmFraction_ = TMath::Max(tau.emFraction_MVA(), float(0.));
+    Tau_NumChargedCands_ = tau.signalChargedHadrCands().size();
+
+    pat::PackedCandidate const* packedLeadTauCand = dynamic_cast<pat::PackedCandidate const*>(tau.leadChargedHadrCand().get());
+    Tau_LeadHadronPt_ = packedLeadTauCand->pt();
+    if( std::abs(packedLeadTauCand->pdgId()) == 11 )
+    {
+      Tau_HasGsf_ = 1;
+      if (packedLeadTauCand->hasTrackDetails()) {
+	const reco::Track & pseudoTrack = packedLeadTauCand->pseudoTrack();
+	Tau_GSFChi2_ = pseudoTrack.normalizedChi2();
+	Tau_GSFNumHits_ = pseudoTrack.numberOfValidHits();
+	Tau_GSFNumPixelHits_ = pseudoTrack.hitPattern().numberOfValidPixelHits();
+	Tau_GSFNumStripHits_ = pseudoTrack.hitPattern().numberOfValidStripHits();
+	Tau_GSFTrackResol_ = pseudoTrack.ptError()/pseudoTrack.pt();
+	Tau_GSFTracklnPt_ = log(pseudoTrack.pt())*TMath::Ln10();
+	Tau_GSFTrackEta_ = pseudoTrack.eta();
+      }
+    }
+    if ( std::abs(packedLeadTauCand->pdgId()) != 11 ) {
+      Tau_HasKF_ = 0;
+      if (packedLeadTauCand->hasTrackDetails()) {
+	const reco::Track & pseudoTrack = packedLeadTauCand->pseudoTrack();
+	Tau_KFChi2_ = pseudoTrack.normalizedChi2();
+	Tau_KFNumHits_ = pseudoTrack.numberOfValidHits();
+	Tau_KFNumPixelHits_ = pseudoTrack.hitPattern().numberOfValidPixelHits();
+	Tau_KFNumStripHits_ = pseudoTrack.hitPattern().numberOfValidStripHits();
+	Tau_KFTrackResol_ = pseudoTrack.ptError()/pseudoTrack.pt();
+	Tau_KFTracklnPt_ = log(pseudoTrack.pt())*TMath::Ln10();
+	Tau_KFTrackEta_ = pseudoTrack.eta();
+      }
     }
 
-    if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
-      Tau_HasKF_ = (pfTau->leadPFChargedHadrCand()->trackRef()).isNonnull();
-    }
-    if ( (pfTau->leadPFChargedHadrCand()->trackRef()).isNonnull() ) {
-      Tau_KFChi2_ = pfTau->leadPFChargedHadrCand()->trackRef()->normalizedChi2();
-      Tau_KFNumHits_ = pfTau->leadPFChargedHadrCand()->trackRef()->numberOfValidHits();
-      Tau_KFNumPixelHits_ = pfTau->leadPFChargedHadrCand()->trackRef()->hitPattern().numberOfValidPixelHits();
-      Tau_KFNumStripHits_ = pfTau->leadPFChargedHadrCand()->trackRef()->hitPattern().numberOfValidStripHits();
-      Tau_KFTrackResol_ = pfTau->leadPFChargedHadrCand()->trackRef()->ptError()/pfTau->leadPFChargedHadrCand()->trackRef()->pt();
-      Tau_KFTracklnPt_ = log(pfTau->leadPFChargedHadrCand()->trackRef()->pt())*TMath::Ln10();
-      Tau_KFTrackEta_ = pfTau->leadPFChargedHadrCand()->trackRef()->eta();
-    }
+    Tau_HadrHoP_ = tau.hcalEnergyLeadChargedHadrCand()/packedLeadTauCand->p();
+    Tau_HadrEoP_ = tau.ecalEnergyLeadChargedHadrCand()/packedLeadTauCand->p();
 
-    if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
-      Tau_HadrHoP_ = pfTau->leadPFChargedHadrCand()->hcalEnergy()/pfTau->leadPFChargedHadrCand()->p();
-      Tau_HadrEoP_ = pfTau->leadPFChargedHadrCand()->ecalEnergy()/pfTau->leadPFChargedHadrCand()->p();
-    }
+    if ( tau.hcalEnergyLeadChargedHadrCand()+tau.ecalEnergyLeadChargedHadrCand() != 0. ) {
+      Tau_EmFraction_PFCharged_ = TMath::Max(tau.ecalEnergyLeadChargedHadrCand()/(tau.hcalEnergyLeadChargedHadrCand()+tau.ecalEnergyLeadChargedHadrCand()), float(0.));
+    } else { Tau_EmFraction_PFCharged_ = 0.; }
 
     GammasdEtaInSigCone_.clear();
     GammasdPhiInSigCone_.clear();
@@ -568,34 +633,34 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
 
     reco::Candidate::LorentzVector pfGammaSum(0,0,0,0);
 
-    const std::vector<reco::PFCandidatePtr>& signalPFGammaCands = pfTau->signalPFGammaCands();
-    for ( std::vector<reco::PFCandidatePtr>::const_iterator pfGamma = signalPFGammaCands.begin();
-	  pfGamma != signalPFGammaCands.end(); ++pfGamma ) {
+    const reco::CandidatePtrVector signalGammaCands = tau.signalGammaCands();
+    for ( reco::CandidatePtrVector::const_iterator pfGamma = signalGammaCands.begin();
+	  pfGamma != signalGammaCands.end(); ++pfGamma ) {
 
-      float dR = deltaR((*pfGamma)->p4(), pfTau->leadPFChargedHadrCand()->p4());
+      float dR = deltaR((*pfGamma)->p4(), tau.leadChargedHadrCand()->p4());
 
       // gammas inside the tau signal cone
-      if (dR < std::max(0.05, std::min(0.10, 3.0/pfTau->pt()))) {
-        if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
-	  GammasdEtaInSigCone_.push_back((*pfGamma)->eta() - pfTau->leadPFChargedHadrCand()->eta());
-	  GammasdPhiInSigCone_.push_back((*pfGamma)->phi() - pfTau->leadPFChargedHadrCand()->phi());
+      if (dR < std::max(0.05, std::min(0.10, 3.0/tau.pt()))) {
+        if ( tau.leadChargedHadrCand().isNonnull() ) {
+	  GammasdEtaInSigCone_.push_back((*pfGamma)->eta() - tau.leadChargedHadrCand()->eta());
+	  GammasdPhiInSigCone_.push_back((*pfGamma)->phi() - tau.leadChargedHadrCand()->phi());
         } 
         else {
-	  GammasdEtaInSigCone_.push_back((*pfGamma)->eta() - pfTau->eta());
-	  GammasdPhiInSigCone_.push_back((*pfGamma)->phi() - pfTau->phi());
+	  GammasdEtaInSigCone_.push_back((*pfGamma)->eta() - tau.eta());
+	  GammasdPhiInSigCone_.push_back((*pfGamma)->phi() - tau.phi());
         }
         GammasPtInSigCone_.push_back((*pfGamma)->pt());
         pfGammaSum += (*pfGamma)->p4();
       }
       // gammas outside the tau signal cone
       else {
-        if ( pfTau->leadPFChargedHadrCand().isNonnull() ) {
-	  GammasdEtaOutSigCone_.push_back((*pfGamma)->eta() - pfTau->leadPFChargedHadrCand()->eta());
-	  GammasdPhiOutSigCone_.push_back((*pfGamma)->phi() - pfTau->leadPFChargedHadrCand()->phi());
+        if ( tau.leadChargedHadrCand().isNonnull() ) {
+	  GammasdEtaOutSigCone_.push_back((*pfGamma)->eta() - tau.leadChargedHadrCand()->eta());
+	  GammasdPhiOutSigCone_.push_back((*pfGamma)->phi() - tau.leadChargedHadrCand()->phi());
         } 
         else {
-	  GammasdEtaOutSigCone_.push_back((*pfGamma)->eta() - pfTau->eta());
-	  GammasdPhiOutSigCone_.push_back((*pfGamma)->phi() - pfTau->phi());
+	  GammasdEtaOutSigCone_.push_back((*pfGamma)->eta() - tau.eta());
+	  GammasdPhiOutSigCone_.push_back((*pfGamma)->phi() - tau.phi());
         }
         GammasPtOutSigCone_.push_back((*pfGamma)->pt());
       }
@@ -627,7 +692,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       dPhi2  += (gamma_pt*gamma_dPhi*gamma_dPhi);  
     }
     
-    float gammadPt = sumPt/pfTau->pt();
+    float gammadPt = sumPt/tau.pt();
 	    
     if ( sumPt > 0. ) {
       dEta  /= sumPt;
@@ -636,8 +701,8 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       dPhi2 /= sumPt;
     }
 
-    Tau_GammaEtaMomIn_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*pfTau->pt();
-    Tau_GammaPhiMomIn_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
+    Tau_GammaEtaMomIn_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*tau.pt();
+    Tau_GammaPhiMomIn_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*tau.pt();
     Tau_GammaEnFracIn_ = gammadPt;
 
     sumPt  = 0.;
@@ -647,8 +712,10 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
     dPhi2  = 0.;
     sumPt2 = 0.;
     numPFGammas = GammasPtOutSigCone_.size();
+
     assert(GammasdEtaOutSigCone_.size() == numPFGammas);
     assert(GammasdPhiOutSigCone_.size() == numPFGammas);
+
     for ( size_t idxPFGamma = 0; idxPFGamma < numPFGammas; ++idxPFGamma ) {
       float gamma_pt  = GammasPtOutSigCone_[idxPFGamma];
       float gamma_dPhi = GammasdPhiOutSigCone_[idxPFGamma];
@@ -663,7 +730,7 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       dPhi2  += (gamma_pt*gamma_dPhi*gamma_dPhi);  
     }
     
-    gammadPt = sumPt/pfTau->pt();
+    gammadPt = sumPt/tau.pt();
 	    
     if ( sumPt > 0. ) {
       dEta  /= sumPt;
@@ -672,28 +739,31 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       dPhi2 /= sumPt;
     }
 
-    Tau_GammaEtaMomOut_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*pfTau->pt();
-    Tau_GammaPhiMomOut_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*pfTau->pt();  
+    Tau_GammaEtaMomOut_ = TMath::Sqrt(dEta2)*TMath::Sqrt(gammadPt)*tau.pt();
+    Tau_GammaPhiMomOut_ = TMath::Sqrt(dPhi2)*TMath::Sqrt(gammadPt)*tau.pt();
     Tau_GammaEnFracOut_ = gammadPt;
 
     reco::Candidate::LorentzVector pfChargedSum(0,0,0,0);
 
-    const std::vector<reco::PFCandidatePtr>& signalPFChargedCands = pfTau->signalPFChargedHadrCands();
-    for ( std::vector<reco::PFCandidatePtr>::const_iterator pfCharged = signalPFChargedCands.begin();
-	  pfCharged != signalPFChargedCands.end(); ++pfCharged ) {
+    const reco::CandidatePtrVector signalChargedCands = tau.signalChargedHadrCands();
+    for ( reco::CandidatePtrVector::const_iterator pfCharged = signalChargedCands.begin();
+	  pfCharged != signalChargedCands.end(); ++pfCharged ) {
 
-      float dR = deltaR((*pfCharged)->p4(), pfTau->leadPFChargedHadrCand()->p4());
+      float dR = deltaR((*pfCharged)->p4(), tau.leadChargedHadrCand()->p4());
 
       // charged particles inside the tau signal cone
-      if (dR < std::max(0.05, std::min(0.10, 3.0/pfTau->pt()))) {
+      if (dR < std::max(0.05, std::min(0.10, 3.0/tau.pt()))) {
         pfChargedSum += (*pfCharged)->p4();
       }
     }
 
-    Tau_VisMass_ = pfTau->mass();
+    Tau_VisMass_ = tau.mass();
     Tau_VisMassIn_ = (pfGammaSum + pfChargedSum).mass();
-    Tau_HadrMvaOut_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_e_pi(), float(-1.));
-    Tau_HadrMvaOutIsolated_ = TMath::Max(pfTau->leadPFChargedHadrCand()->mva_Isolated(), float(-1.));
+
+    if ( tau.leadPFChargedHadrCand().isNonnull() ) {
+      Tau_HadrMvaOut_ = TMath::Max(tau.leadPFChargedHadrCand()->mva_e_pi(), float(-1.));
+      Tau_HadrMvaOutIsolated_ = TMath::Max(tau.leadPFChargedHadrCand()->mva_Isolated(), float(-1.));
+    }
 
     if ( verbosity_ ) {
       std::cout << "GammaEtaMomIn: " << Tau_GammaEtaMomIn_ << std::endl;
@@ -701,94 +771,153 @@ void AntiElectronDiscrMVATrainingNtupleProducer::analyze(const edm::Event& evt, 
       std::cout << "GammaPhiMomIn: " << Tau_GammaPhiMomIn_ << std::endl;
       std::cout << "GammaPhiMomOut: " << Tau_GammaPhiMomOut_ << std::endl;
       std::cout << "GammaPt: " << sumPt << std::endl;
-      std::cout << "TauPt: " << pfTau->pt() << std::endl;
-      std::cout << "TauEta: " << pfTau->eta() << std::endl;
-      std::cout << "TauEtaAtEcalEntrance: " << Tau_EtaAtEcalEntrance_ << std::endl;
-      std::cout << "sumEtaTimesEnergy: " << sumEtaTimesEnergy << std::endl;
-      std::cout << "sumEnergy: " << sumEnergy << std::endl;
+      std::cout << "TauPt: " << tau.pt() << std::endl;
+      std::cout << "TauEta: " << tau.eta() << std::endl;
+      //std::cout << "sumEtaTimesEnergy: " << sumEtaTimesEnergy << std::endl;
+      //std::cout << "sumEnergy: " << sumEnergy << std::endl;
       std::cout << "GammaEnFracIn: " << Tau_GammaEnFracIn_ << std::endl;
       std::cout << "GammaEnFracOut: " << Tau_GammaEnFracOut_ << std::endl;
       std::cout << std::endl;
     }
 
+
     for ( std::vector<tauIdDiscrEntryType>::iterator tauIdDiscriminator = tauIdDiscrEntries_.begin();
 	  tauIdDiscriminator != tauIdDiscrEntries_.end(); ++tauIdDiscriminator ) {
-      edm::Handle<reco::PFTauDiscriminator> discriminator;
-      evt.getByLabel(tauIdDiscriminator->src_, discriminator);
-      tauIdDiscriminator->value_ = (*discriminator)[pfTau];
+      tauIdDiscriminator->value_ = tau.tauID(tauIdDiscriminator->branchName_);
     }
 
-    Tau_DecayMode_ = pfTau->decayMode();
 
-    Tau_VtxZ_ = pfTau->vertex().z();
-    if ( TMath::Abs(TMath::Tan(pfTau->theta())) > 1.e-3 ) {
+
+    Tau_DecayMode_ = tau.decayMode();
+
+    Tau_VtxZ_ = tau.vertex().z();
+    if ( std::abs(TMath::Tan(tau.theta())) > 1.e-3 ) {
       const double rECAL = 130; // approx. ECAL radius in cm
-      Tau_zImpact_ = pfTau->vertex().z() + rECAL/TMath::Tan(pfTau->theta());
-    }
+      Tau_zImpact_ = tau.vertex().z() + rECAL/TMath::Tan(tau.theta());
+      }
     
     // Tau is matched to a gsfElectron passing selection criteria for SecondElectronVeto
-    bool matchElectronCutsVeto = false;
+    /*bool matchElectronCutsVeto = false;
+
     int idxGSFElectron = 0;
-    for ( reco::GsfElectronCollection::const_iterator gsfElectron = gsfElectrons->begin();
-	  gsfElectron != gsfElectrons->end(); ++gsfElectron ) {
-      const reco::Track* track = (const reco::Track*)((gsfElectron)->gsfTrack().get());  
-      assert(track);
-      //const reco::HitPattern& p_inner = track->trackerExpectedHitsInner(); 
-      float nHits = track->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
-      float dPhi  = fabs(gsfElectron->deltaPhiSuperClusterTrackAtVtx());
-      float dEta  = fabs(gsfElectron->deltaEtaSuperClusterTrackAtVtx());
-      float sihih = gsfElectron->sigmaIetaIeta();
-      float HoE   = gsfElectron->hadronicOverEm();
-      if ( verbosity_ ) {
-	std::cout << "gsfElectron #: " << idxGSFElectron << std::endl;
-	std::cout << "gsfElectron nHits: " << nHits << std::endl;
-	std::cout << "gsfElectron pt: " << gsfElectron->pt() << std::endl;
-	std::cout << "gsfElectron eta: " << gsfElectron->eta() << std::endl;
-	std::cout << "gsfElectron dPhi: " << dPhi << std::endl;
-	std::cout << "gsfElectron dEta: " << dEta << std::endl;
-	std::cout << "gsfElectron sihih: " << sihih << std::endl;
-	std::cout << "gsfElectron HoE: " << HoE << std::endl;
-	std::cout << std::endl;
-      }
-      bool ElectronPassCutsVeto = false;
-      if ( nHits <= 999 &&
-	   ((fabs(gsfElectron->eta()) < 1.5 &&
-	     sihih < 0.010 &&
-	     dPhi < 0.80 &&
-	     dEta < 0.007 &&
-	     HoE < 0.15) ||
-	    (fabs(gsfElectron->eta()) > 1.5 && fabs(gsfElectron->eta()) < 2.3 &&
-	     sihih < 0.030 &&
-	     dPhi < 0.70 &&
-	     dEta < 0.010 &&
-	     HoE < 999))
-	   ) ElectronPassCutsVeto = true;
-      if ( verbosity_ ) {
-	if ( ElectronPassCutsVeto ) std::cout << "gsfElectron passes 2nd electron selection." << std::endl;
-	else std::cout << "gsfElectron fails 2nd electron selection." << std::endl;
-      }
-      double ElePt = gsfElectron->pt();
-      if ( (deltaR(pfTau->eta(), pfTau->phi(), gsfElectron->eta(), gsfElectron->phi()) < 0.3) && ElectronPassCutsVeto && ElePt > ElecVeto_Pt_ ) {
-	matchElectronCutsVeto = true;
-	ElecVeto_Pt_ = ElePt;
-	ElecVeto_Eta_ = gsfElectron->eta();
-	ElecVeto_Phi_ = gsfElectron->phi();
-	++ElecVeto_N_;
-      } 
-      ++idxGSFElectron;
+    for(int ie=0;ie<nEle;ie++) {      
+      if(gsfElectrons->at(ie).gsfTrack().isNonnull()) { 
+        float nHits = gsfElectrons->at(ie).gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS);//}
+	float dPhi  = std::abs(gsfElectrons->at(ie).deltaPhiSuperClusterTrackAtVtx());
+	float dEta  = std::abs(gsfElectrons->at(ie).deltaEtaSuperClusterTrackAtVtx());
+	float sihih = gsfElectrons->at(ie).sigmaIetaIeta();
+	float HoE   = gsfElectrons->at(ie).hadronicOverEm();
+	if ( verbosity_ ) {
+	  std::cout << "gsfElectron #: " << idxGSFElectron << std::endl;
+	  std::cout << "gsfElectron nHits: " << nHits << std::endl;
+	  std::cout << "gsfElectron pt: " << gsfElectrons->at(ie).pt() << std::endl;
+	  std::cout << "gsfElectron eta: " << gsfElectrons->at(ie).eta() << std::endl;
+	  std::cout << "gsfElectron dPhi: " << dPhi << std::endl;
+	  std::cout << "gsfElectron dEta: " << dEta << std::endl;
+	  std::cout << "gsfElectron sihih: " << sihih << std::endl;
+	  std::cout << "gsfElectron HoE: " << HoE << std::endl;
+	  std::cout << std::endl;
+	}
+	bool ElectronPassCutsVeto = false;
+	if ( nHits <= 999 &&
+	     ((std::abs(gsfElectrons->at(ie).eta()) < 1.5 &&
+	       sihih < 0.010 &&
+	       dPhi < 0.80 &&
+	       dEta < 0.007 &&
+	       HoE < 0.15) ||
+	      (std::abs(gsfElectrons->at(ie).eta()) > 1.5 && std::abs(gsfElectrons->at(ie).eta()) < 2.3 &&
+	       sihih < 0.030 &&
+	       dPhi < 0.70 &&
+	       dEta < 0.010 &&
+	       HoE < 999))
+	     ) ElectronPassCutsVeto = true;
+	if ( verbosity_ ) {
+	  if ( ElectronPassCutsVeto ) std::cout << "gsfElectrons->at(ie) passes 2nd electron selection." << std::endl;
+	  else std::cout << "gsfElectrons->at(ie) fails 2nd electron selection." << std::endl;
+	}
+	double ElePt = gsfElectrons->at(ie).pt();
+	if ( (deltaR(tau.eta(), tau.phi(), gsfElectrons->at(ie).eta(), gsfElectrons->at(ie).phi()) < 0.3) && ElectronPassCutsVeto && ElePt > ElecVeto_Pt_ ) {
+	  matchElectronCutsVeto = true;
+	  ElecVeto_Pt_ = ElePt;
+	  ElecVeto_Eta_ = gsfElectrons->at(ie).eta();
+	  ElecVeto_Phi_ = gsfElectrons->at(ie).phi();
+	  ++ElecVeto_N_;
+	} 
+	++idxGSFElectron;}
     } // end loop over gsfElectrons
     Tau_MatchElePassVeto_ = matchElectronCutsVeto;
 
     if ( verbosity_ ) {
-      std::cout << "Tau: Pt = " << pfTau->pt() << ", eta = " << pfTau->eta() << ", phi = " << pfTau->phi() << std::endl;
+      std::cout << "Tau: Pt = " << tau.pt() << ", eta = " << tau.eta() << ", phi = " << tau.phi() << std::endl;
+      std::cout << "matchElectronCutsVeto = " << matchElectronCutsVeto << std::endl;
+    }
+    */
+    bool matchElectronCutsVeto = false;
+
+    //int idxGSFElectron = 0;
+    //std::cout <<" safety " << nEle << " " << electrons->size() << std::endl;
+    for(int ie=0;ie<nEle;ie++) {
+       if(gsfElectrons->at(ie).gsfTrack().isNonnull()) {
+	 float nHits = gsfElectrons->at(ie).gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS);
+	 float dxy = 99;
+	 float dz  = 99;
+	 const reco::Vertex* vertex = 0;
+	 if (vertices->size()>0) {
+	   vertex = &(vertices->front());
+	   dxy = (gsfElectrons->at(ie).gsfTrack()->dxy(vertex->position()));
+	   dz  = (gsfElectrons->at(ie).gsfTrack()->dz(vertex->position()));
+	 } 
+	 bool passConversionVeto = gsfElectrons->at(ie).passConversionVeto();
+	 float iso = gsfElectrons->at(ie).pfIsolationVariables().sumChargedHadronPt
+	   + std::max(0.0,
+		      gsfElectrons->at(ie).pfIsolationVariables().sumNeutralHadronEt +
+		      gsfElectrons->at(ie).pfIsolationVariables().sumPhotonEt
+		      -0.5*gsfElectrons->at(ie).pfIsolationVariables().sumPUPt);
+
+	 double ElePt = gsfElectrons->at(ie).pt();
+	 if (ElePt> 0.) iso = iso/ElePt;
+	 const auto ele = electrons->ptrAt(ie);
+	 int  isEleID90  = (*tight_id_decisions2)[ele];
+
+	 //std::cout << nHits << " " << std::abs(gsfElectrons->at(ie).eta())<<" "<< ElePt<<" " << dxy<<" " << dz <<" "<< passConversionVeto<< " " << iso << " " << isEleID90 << std::endl;
+	 
+	 bool ElectronPassCutsVeto = false;
+	 if ( nHits <= 1 &&
+	      std::abs(gsfElectrons->at(ie).eta()) < 2.5 &&
+	      ElePt >10. &&
+	      std::abs(dxy) < 0.045 &&
+	      std::abs(dz) < 0.2 &&
+	      passConversionVeto == true &&
+	      iso < 0.3 &&
+	      isEleID90 == 1 ) ElectronPassCutsVeto = true;
+
+	 if ( (deltaR(tau.eta(), tau.phi(), gsfElectrons->at(ie).eta(), gsfElectrons->at(ie).phi()) < 0.2) && ElectronPassCutsVeto ) {
+	   matchElectronCutsVeto = true;
+	   ElecVeto_Pt_ = ElePt;
+	   ElecVeto_Eta_ = gsfElectrons->at(ie).eta();
+	   ElecVeto_Phi_ = gsfElectrons->at(ie).phi();
+	   ++ElecVeto_N_;
+	 }
+	 //++idxGSFElectron;
+       }
+    } // end loop over gsfElectrons
+    Tau_MatchElePassVeto_ = matchElectronCutsVeto;
+
+    if ( verbosity_ ) {
+      std::cout << "Tau: Pt = " << tau.pt() << ", eta = " << tau.eta() << ", phi = " << tau.phi() << std::endl;
       std::cout << "matchElectronCutsVeto = " << matchElectronCutsVeto << std::endl;
     }
 
     ++NumPFTaus_;
 
+    //for FR plots only, FR vs gen electron...
+    //}//if tau matched
+    }//end loop over taus
+
     tree_->Fill();
 
-  } // end loop over PFTaus   
+    //for FR plots only, FR vs gen electron...
+    //}//end loop over gen elec
 }
 
 AntiElectronDiscrMVATrainingNtupleProducer::~AntiElectronDiscrMVATrainingNtupleProducer()
@@ -802,8 +931,4 @@ void AntiElectronDiscrMVATrainingNtupleProducer::endJob()
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 DEFINE_FWK_MODULE(AntiElectronDiscrMVATrainingNtupleProducer);
-
-
-

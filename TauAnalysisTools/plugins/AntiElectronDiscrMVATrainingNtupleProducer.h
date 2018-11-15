@@ -24,9 +24,19 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+//#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
+#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+
+//#include "RecoEgamma/EgammaTools/interface/EffectiveAreas.h"
+//#include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 #include <TFile.h>
 #include <TTree.h>
@@ -34,6 +44,7 @@
 
 #include <vector>
 #include <string>
+
 
 class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
 {
@@ -48,12 +59,16 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   void beginJob();
   void analyze(const edm::Event&, const edm::EventSetup&);
   void endJob();
-  
-  edm::InputTag srcPFTaus_;
-  edm::InputTag srcGsfElectrons_;
-  edm::InputTag srcPrimaryVertex_;
-  edm::InputTag srcGenElectrons_;
-  edm::InputTag srcGenTaus_;
+
+  edm::EDGetTokenT<pat::TauCollection> tauToken_;
+  edm::EDGetTokenT<pat::ElectronCollection> electronToken_;
+  edm::EDGetTokenT<edm::View<pat::Electron> > electronToken2_;
+  edm::EDGetTokenT<edm::View<reco::Candidate> > genElectronToken_;
+  edm::EDGetTokenT<edm::View<reco::Candidate> > genTauToken_;
+  edm::EDGetTokenT<reco::VertexCollection> vertexToken_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
+
+  //EffectiveAreas _effectiveAreas;
 
   struct tauIdDiscrEntryType
   {
@@ -66,12 +81,17 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
     edm::InputTag src_;
     std::string branchName_;
     float value_;
+    //edm::EDGetTokenT<reco::PFTauDiscriminator> srcToken_;
   };
+
   std::vector<tauIdDiscrEntryType> tauIdDiscrEntries_;
 
   typedef std::vector<edm::InputTag> vInputTag;
-  vInputTag srcWeights_;
+  //vInputTag srcWeights_;
   
+  typedef std::vector<std::string> vstring;
+  vstring vTauID;
+
   int verbosity_;
   
   TTree* tree_;
@@ -127,6 +147,7 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Tau_KFTracklnPt_; 
   float Tau_KFTrackEta_; 
   float Tau_EmFraction_; 
+  float Tau_EmFraction_PFCharged_;
   int Tau_NumChargedCands_;
   int Tau_NumGammaCandsIn_;
   int Tau_NumGammaCandsOut_;
@@ -146,6 +167,9 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   int Tau_MatchElePassVeto_;
   float Tau_VtxZ_;
   float Tau_zImpact_;
+  float Tau_GenEle_Pt_;
+  float Tau_GenEle_Eta_;
+
 
   int Elec_GenEleMatch_;
   int Elec_GenEleFromZMatch_;
@@ -171,6 +195,8 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Elec_MvaInDeltaEta_;
   int Elec_MvaInNClusterOutMustache_;
   float Elec_MvaInEtOutMustache_;
+  float Elec_Iso_;
+  float Elec_IsoRel_;
   float Elec_SigmaEtaEta_;
   float Elec_SigmaEtaEta_full5x5_; 
   float Elec_HoHplusE_;
@@ -178,6 +204,8 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Elec_Eecal_;
   float Elec_DeltaEta_;
   float Elec_DeltaPhi_;
+  float Elec_DeltaEtaAtVtx_;
+  float Elec_DeltaPhiAtVtx_;
   int Elec_HasKF_;
   float Elec_Chi2KF_;
   float Elec_Chi2NormKF_;
@@ -203,6 +231,9 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float ElecVeto_Phi_;
 
   float evtWeight_;
+
+  float GenEle_Pt_;
+  float GenEle_Eta_;
 };
 
 #endif   
