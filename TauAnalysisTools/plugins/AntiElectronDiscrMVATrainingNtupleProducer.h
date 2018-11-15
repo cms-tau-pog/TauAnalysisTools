@@ -164,6 +164,8 @@ class AntiElectronDiscrMVATrainingNtupleProducer : public edm::EDAnalyzer
   float Tau_zImpact_;
   float Tau_GenEle_Pt_;
   float Tau_GenEle_Eta_;
+  float Tau_GenHad_Pt_;
+  float Tau_GenHad_Eta_;
 
 
   int Elec_GenEleMatch_;
