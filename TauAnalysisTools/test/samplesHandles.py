@@ -194,6 +194,7 @@ class SamplesHandles(object):
 
         return samples
 
+
     @staticmethod
     def getSamplesdR03_16():
         pass
@@ -303,7 +304,6 @@ class SamplesHandles(object):
                 'total_files'                        : -1,
                 'type'                               : 'SignalMC'
             }
-
 
         return samples
 
