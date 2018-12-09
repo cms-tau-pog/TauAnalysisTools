@@ -6,6 +6,7 @@
 <use name="DataFormats/Common"/>
 <use name="FWCore/ServiceRegistry"/>
 <use name="CommonTools/UtilAlgos"/>
+<use name="CommonTools/MVAUtils"/>
 <use name="PhysicsTools/UtilAlgos"/>
 
 <export>

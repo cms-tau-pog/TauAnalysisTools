@@ -19,8 +19,9 @@
 <use name="CondCore/CondDB"/>
 <use name="CondCore/DBOutputService"/>
 <use name="CondFormats/EgammaObjects"/>
+<use name="CommonTools/MVAUtils"/>
 <use name="boost"/>
 <use name="root"/>
-<use name="roottmva"/>
+<flags CXXFLAGS=\"-g -D=EDM_ML_DEBUG\"/>
 </library>
 
