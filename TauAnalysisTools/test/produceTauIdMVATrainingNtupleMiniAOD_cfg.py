@@ -126,7 +126,7 @@ na.runTauID()
 print dir(process.loadRecoTauTagMVAsFromPrepDB.toGet)
 print process.loadRecoTauTagMVAsFromPrepDB.toGet[-1]
 #--------------------------------------------------------------------------------
-   
+
 process.produceTauIdMVATrainingNtupleMiniAODSequence = cms.Sequence()
 
 #--------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ process.selectedOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
     src = cms.InputTag('offlineSlimmedPrimaryVertices'),
     #cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2."),
     cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & abs(z) < 24 & abs(position.Rho) < 2."), # tracksSize & nTracks are set to 0 in MiniAOD
-    filter = cms.bool(False)                                          
+    filter = cms.bool(False)
 )
 process.produceTauIdMVATrainingNtupleMiniAODSequence += process.selectedOfflinePrimaryVertices
 #--------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     srcPrunedGenParticles = cms.InputTag('prunedGenParticles'),
     srcPackedGenParticles = cms.InputTag('packedGenParticles'),
     srcRecJets = cms.InputTag('slimmedJets'),
-    minGenVisPt = cms.double(10.),                                          
+    minGenVisPt = cms.double(10.),
     dRmatch = cms.double(0.3),
     tauIdDiscriminators = cms.PSet(
         decayModeFindingNewDMs = cms.string('decayModeFindingNewDMs'),
@@ -272,7 +272,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     isolationPtSums = cms.PSet(
         chargedIsoPtSum = cms.string("chargedIsoPtSum"),
         neutralIsoPtSum = cms.string("neutralIsoPtSum"),
-        puCorrPtSum = cms.string("puCorrPtSum"), 
+        puCorrPtSum = cms.string("puCorrPtSum"),
         neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
         footprintCorrection = cms.string("footprintCorrection"),
         photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone"),
@@ -287,7 +287,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
         selectedOfflinePrimaryVertices = cms.InputTag('selectedOfflinePrimaryVertices')
     ),
     #--------------------------------------------------------
-    # CV: pile-up information for Monte Carlo and data                                                               
+    # CV: pile-up information for Monte Carlo and data
     srcGenPileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
     #inputFileNameLumiCalc = cms.FileInPath(inputFileNameLumiCalc),
     isMC = cms.bool(isMC),
@@ -295,7 +295,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     dRClean = cms.double(dRClean),
     ptCleanMin = cms.double(10.),
     matchGenTauVis = cms.bool(True),
-    #--------------------------------------------------------                                                                       
+    #--------------------------------------------------------
     srcWeights = cms.VInputTag(srcWeights),
     ptMin_allPhotonsVariables = cms.vstring("0.5","1.0","1.5"),
     ptMin_nPhotons = cms.vstring("0.5","0.75","1.0","1.25","1.5"),
@@ -309,12 +309,12 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
 #pset = cms.PSet(
 #    chargedIsoPtSum = cms.string("chargedIsoPtSum"),
 #    neutralIsoPtSum = cms.string("neutralIsoPtSum"),
-#    puCorrPtSum = cms.string("puCorrPtSum"), 
+#    puCorrPtSum = cms.string("puCorrPtSum"),
 #    neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
 #    footprintCorrection = cms.string("footprintCorrection"),
 #    photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone")
 #)
-#psetName = "tauIsoDeltaR%02.0f" % (dRisoCone*10.)    
+#psetName = "tauIsoDeltaR%02.0f" % (dRisoCone*10.)
 #setattr(process.tauIdMVATrainingNtupleProducerMiniAOD.isolationPtSums, psetName, pset)
 process.produceTauIdMVATrainingNtupleMiniAODSequence += process.tauIdMVATrainingNtupleProducerMiniAOD
 
