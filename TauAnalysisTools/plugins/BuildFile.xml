@@ -22,6 +22,6 @@
 <use name="CommonTools/MVAUtils"/>
 <use name="boost"/>
 <use name="root"/>
-<flags CXXFLAGS=\"-g -D=EDM_ML_DEBUG\"/>
+<flags cxxflags="-g -D=EDM_ML_DEBUG"/>
 </library>
 
