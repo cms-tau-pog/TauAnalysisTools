@@ -34,7 +34,7 @@
 
 typedef std::vector<std::string> vstring;
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -49,14 +49,14 @@ int main(int argc, char* argv[])
   clock.Start("preselectTreeTauIdMVA");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("preselectTreeTauIdMVA") 
+  if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+    throw cms::Exception("preselectTreeTauIdMVA")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgPreselectTreeTauIdMVA = cfg.getParameter<edm::ParameterSet>("preselectTreeTauIdMVA");
-  
+
   std::string inputTreeName = cfgPreselectTreeTauIdMVA.getParameter<std::string>("inputTreeName");
   std::string outputTreeName = cfgPreselectTreeTauIdMVA.getParameter<std::string>("outputTreeName");
 
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
   int applyEventPruning = cfgPreselectTreeTauIdMVA.getParameter<int>("applyEventPruning");
   bool applyPtDependentPruning = cfgPreselectTreeTauIdMVA.getParameter<bool>("applyPtDependentPruning");
 
-  fwlite::InputSource inputFiles(cfg); 
+  fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
@@ -105,12 +105,12 @@ int main(int argc, char* argv[])
       inputTree->AddFile(inputFileName->data());
       // testrun_samples_num++;
       // if (testrun_samples_num == 5) break;
-    } 
+    }
   }
-  
+
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) throw cms::Exception("preselectTreeTauIdMVA") << "Failed to identify input Tree !!\n";
 
-  // CV: need to call TChain::LoadTree before processing first event 
+  // CV: need to call TChain::LoadTree before processing first event
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
   std::cout << "Loading Tree...";
@@ -144,8 +144,8 @@ int main(int argc, char* argv[])
   TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
   outputFile->cd();
   TTree* outputTree = preselectTree(
-    inputTree, outputTreeName, 
-    preselection, branchesToKeep_expressions, 
+    inputTree, outputTreeName,
+    preselection, branchesToKeep_expressions,
     applyEventPruning, branchNamePt, branchNameEta, branchNameNumMatches,
     -1, false, false, 0, 0, 0,
     maxEvents, checkBranchesForNaNs, reportEvery, applyPtDependentPruning);
@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
   delete outputFile;
 
   delete inputTree;
-  
+
   clock.Show("preselectTreeTauIdMVA");
 
   return 0;

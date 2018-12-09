@@ -71,14 +71,14 @@ struct workingPointEntryType
   double SoverB_;
 };
 
-workingPointEntryType computeDifferentialWP(double targetSignalEfficiency, 
-					    const std::vector<int>& categories, 
+workingPointEntryType computeDifferentialWP(double targetSignalEfficiency,
+					    const std::vector<int>& categories,
 					    std::map<Int_t, TH1*>& histograms_mvaOutput_signal, std::map<Int_t, double>& categoryProbabilities_signal,
 					    std::map<Int_t, TH1*>& histograms_mvaOutput_background, std::map<Int_t, double>& categoryProbabilities_background)
 {
   std::cout << "<computeDifferentialWP>:" << std::endl;
   std::cout << " targetSignalEfficiency = " << targetSignalEfficiency << std::endl;
-  
+
   workingPointEntryType workingPoint;
   workingPoint.targetSignalEfficiency_ = targetSignalEfficiency;
   for ( std::vector<int>::const_iterator category = categories.begin();
@@ -98,11 +98,11 @@ workingPointEntryType computeDifferentialWP(double targetSignalEfficiency,
     //     in case cut on BDT output in each category is lowered by stepsize
     for ( std::vector<int>::const_iterator category = categories.begin();
 	  category != categories.end(); ++category ) {
-      dSdOutput[*category] = 
-        TMath::Abs((compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category]) 
+      dSdOutput[*category] =
+        TMath::Abs((compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category])
                   - compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category] - windowSize))/windowSize);
-      dBdOutput[*category] = 
-        TMath::Abs((compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category]) 
+      dBdOutput[*category] =
+        TMath::Abs((compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category])
                   - compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category] - windowSize))/windowSize);
     }
 
@@ -124,7 +124,7 @@ workingPointEntryType computeDifferentialWP(double targetSignalEfficiency,
       continue;
     }
 
-    // CV: lower cut on BDT output in the category in which background yield 
+    // CV: lower cut on BDT output in the category in which background yield
     //     increases by the least amount per unit of increase in signal yield
     int bestCategory = -1;
     double dSoverBmax = 0.;
@@ -149,8 +149,8 @@ workingPointEntryType computeDifferentialWP(double targetSignalEfficiency,
       Ssum += (categoryProbabilities_signal[*category]*compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category]));
       Bsum += (categoryProbabilities_background[*category]*compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category]));
     }
-    
-    if ( (step % 1000) == 0 ){ 
+
+    if ( (step % 1000) == 0 ){
       std::cout << "step #" << step << ": Ssum = " << Ssum << ", Bsum = " << Bsum << std::endl;
       for ( std::vector<int>::const_iterator category = categories.begin();
 	    category != categories.end(); ++category ) {
@@ -174,7 +174,7 @@ workingPointEntryType computeDifferentialWP(double targetSignalEfficiency,
 }
 
 void testWP(workingPointEntryType& workingPoint,
-	    const std::vector<int>& categories, 
+	    const std::vector<int>& categories,
 	    std::map<Int_t, TH1*>& histograms_mvaOutput_signal, std::map<Int_t, double>& categoryProbabilities_signal,
 	    std::map<Int_t, TH1*>& histograms_mvaOutput_background, std::map<Int_t, double>& categoryProbabilities_background)
 {
@@ -190,22 +190,22 @@ void testWP(workingPointEntryType& workingPoint,
 
     double p_signal = categoryProbabilities_signal[*category];
     double integral_signal = compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category]);
-    double dSdOutput = 
-      TMath::Abs((compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category]) 
+    double dSdOutput =
+      TMath::Abs((compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category])
                 - compIntegral(histograms_mvaOutput_signal[*category], workingPoint.cuts_[*category] - windowSize))/windowSize);
     std::cout << " signal: integral = " << integral_signal << ", p = " << p_signal << " (p*dS/dOutput = "<< (p_signal*dSdOutput) << ")" << std::endl;
     Ssum += (p_signal*integral_signal);
 
     double p_background = categoryProbabilities_background[*category];
     double integral_background = compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category]);
-    double dBdOutput = 
-      TMath::Abs((compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category]) 
+    double dBdOutput =
+      TMath::Abs((compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category])
                 - compIntegral(histograms_mvaOutput_background[*category], workingPoint.cuts_[*category] - windowSize))/windowSize);
     std::cout << " background: integral = " << integral_background << ", p = " << p_background << " (p*dB/dOutput = "<< (p_background*dBdOutput) << ")" << std::endl;
     Bsum += (p_background*integral_background);
   }
 
-  std::cout << "--> S = "<< Ssum << ", B = " << Bsum << " --> S/B = " << (Ssum/Bsum) << std::endl;  
+  std::cout << "--> S = "<< Ssum << ", B = " << Bsum << " --> S/B = " << (Ssum/Bsum) << std::endl;
 }
 
 void writeWorkingPoints(const std::string& outputFileName, const std::string& outputTreeName, const std::vector<int>& categories, std::vector<workingPointEntryType>& workingPoints)
@@ -227,14 +227,14 @@ void writeWorkingPoints(const std::string& outputFileName, const std::string& ou
     std::string branchName = Form("cutCategory%i", *category);
     outputTree->Branch(branchName.data(), &cuts[*category], Form("%s/F", branchName.data()));
   }
-    
+
   Float_t S;
   outputTree->Branch("S", &S, "S/F");
   Float_t B;
   outputTree->Branch("B", &B, "B/F");
   Float_t SoverB;
   outputTree->Branch("SoverB", &SoverB, "SoverB/F");
-  
+
   for ( std::vector<workingPointEntryType>::iterator workingPoint = workingPoints.begin();
 	workingPoint != workingPoints.end(); ++workingPoint ) {
     std::cout << "targetSignalEfficiency = " << workingPoint->targetSignalEfficiency_ << ":" << std::endl;
@@ -279,7 +279,7 @@ struct ptBinEntryType
   std::map<Int_t, double> categoryProbabilities_background_; // key = category
 };
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -294,14 +294,14 @@ int main(int argc, char* argv[])
   clock.Start("computeWPcutsAntiElectronDiscrMVA");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("computeWPcutsAntiElectronDiscrMVA") 
+  if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+    throw cms::Exception("computeWPcutsAntiElectronDiscrMVA")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgComputeWPcutsAntiElectronDiscrMVA = cfg.getParameter<edm::ParameterSet>("computeWPcutsAntiElectronDiscrMVA");
-  
+
   std::string inputTreeName = cfgComputeWPcutsAntiElectronDiscrMVA.getParameter<std::string>("inputTreeName");
   std::string outputTreeName = cfgComputeWPcutsAntiElectronDiscrMVA.getParameter<std::string>("outputTreeName");
 
@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
   vint categories = cfgComputeWPcutsAntiElectronDiscrMVA.getParameter<vint>("categories");
   vdouble ptBinning = cfgComputeWPcutsAntiElectronDiscrMVA.getParameter<vdouble>("ptBinning");
 
-  fwlite::InputSource inputFiles(cfg); 
+  fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
@@ -331,15 +331,15 @@ int main(int argc, char* argv[])
     std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
     inputTree->AddFile(inputFileName->data());
   }
-  
+
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("computeWPcutsAntiElectronDiscrMVA") 
+    throw cms::Exception("computeWPcutsAntiElectronDiscrMVA")
       << "Failed to identify input Tree !!\n";
   }
 
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
 
-  // CV: need to call TChain::LoadTree before processing first event 
+  // CV: need to call TChain::LoadTree before processing first event
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
   inputTree->LoadTree(0);
@@ -353,12 +353,12 @@ int main(int argc, char* argv[])
 
   TTreeFormula* evtWeight_formula = 0;
   if ( branchName_evtWeight != "" ) {
-    evtWeight_formula = new TTreeFormula("evtWeight_formula", branchName_evtWeight.data(), inputTree);   
+    evtWeight_formula = new TTreeFormula("evtWeight_formula", branchName_evtWeight.data(), inputTree);
   }
 
   int numPtBins = ptBinning.size() - 1;
   if ( !(numPtBins >= 2) ) {
-    throw cms::Exception("computeWPcutsAntiElectronDiscrMVA") 
+    throw cms::Exception("computeWPcutsAntiElectronDiscrMVA")
       << "Invalid Configuration Parameter 'ptBinning' !!\n";
   }
   std::vector<ptBinEntryType> ptBinEntries;
@@ -368,7 +368,7 @@ int main(int argc, char* argv[])
     ptBinEntry.maxPt_ = ptBinning[iPtBin + 1];
     ptBinEntries.push_back(ptBinEntry);
   }
-  
+
   enum { kLogTauPt, kTauPt };
   int mode = -1;
   Float_t logTauPt, tauPt;
@@ -378,8 +378,8 @@ int main(int argc, char* argv[])
   } else if ( branchName_logTauPt == "" && branchName_tauPt != "" ) {
     inputTree->SetBranchAddress(branchName_tauPt.data(), &tauPt);
     mode = kTauPt;
-  } 
-  
+  }
+
   int currentTreeNumber = inputTree->GetTreeNumber();
 
   int numEntries = inputTree->GetEntries();
@@ -387,7 +387,7 @@ int main(int argc, char* argv[])
     if ( iEntry > 0 && (iEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << iEntry << std::endl;
     }
-    
+
     inputTree->GetEntry(iEntry);
 
     if ( evtWeight_formula ) {
@@ -399,12 +399,12 @@ int main(int argc, char* argv[])
 	currentTreeNumber = inputTree->GetTreeNumber();
       }
     }
-    
+
     double evtWeight = 1.0;
     if ( evtWeight_formula ) {
       evtWeight = evtWeight_formula->EvalInstance();
     }
-    
+
     double tauPt_value;
     if      ( mode == kLogTauPt ) tauPt_value = TMath::Exp(logTauPt);
     else if ( mode == kTauPt    ) tauPt_value = tauPt;
@@ -427,7 +427,7 @@ int main(int argc, char* argv[])
 	  categoryProbabilities = &ptBinEntry->categoryProbabilities_background_;
 	  classId_string = "background";
 	  ptBinEntry_ref = &(*ptBinEntry);
-	} 
+	}
       }
     }
 
@@ -458,7 +458,7 @@ int main(int argc, char* argv[])
   for ( std::vector<ptBinEntryType>::iterator ptBinEntry = ptBinEntries.begin();
 	ptBinEntry != ptBinEntries.end(); ++ptBinEntry ) {
     std::cout << "Pt = " << ptBinEntry->minPt_ << ".." << ptBinEntry->maxPt_ << std::endl;
-    
+
     // normalize categoryProbabilities
     double normalization_signal = 0.;
     double normalization_background = 0.;
@@ -471,8 +471,8 @@ int main(int argc, char* argv[])
 	  category != categories.end(); ++category ) {
       ptBinEntry->categoryProbabilities_signal_[*category] /= normalization_signal;
       ptBinEntry->categoryProbabilities_background_[*category] /= normalization_background;
-      std::cout << " category #" << (*category) << ":" 
-		<< " P(signal) = " << ptBinEntry->categoryProbabilities_signal_[*category] << "," 
+      std::cout << " category #" << (*category) << ":"
+		<< " P(signal) = " << ptBinEntry->categoryProbabilities_signal_[*category] << ","
 		<< " P(background) = " << ptBinEntry->categoryProbabilities_background_[*category] << std::endl;
     }
 
@@ -482,13 +482,13 @@ int main(int argc, char* argv[])
       normalizeHistogram(ptBinEntry->histograms_mvaOutput_signal_[*category]);
       normalizeHistogram(ptBinEntry->histograms_mvaOutput_background_[*category]);
     }
-  
+
     // compute working-points
     for ( double targetSignalEfficiency = 0.50; targetSignalEfficiency <= 0.995; targetSignalEfficiency += 0.01 ) {
       workingPointEntryType workingPoint = computeDifferentialWP(
-        targetSignalEfficiency, 
-        categories, 
-        ptBinEntry->histograms_mvaOutput_signal_, ptBinEntry->categoryProbabilities_signal_, 
+        targetSignalEfficiency,
+        categories,
+        ptBinEntry->histograms_mvaOutput_signal_, ptBinEntry->categoryProbabilities_signal_,
         ptBinEntry->histograms_mvaOutput_background_, ptBinEntry->categoryProbabilities_background_);
 
       testWP(workingPoint,
@@ -499,7 +499,7 @@ int main(int argc, char* argv[])
       workingPoint.minPt_ = ptBinEntry->minPt_;
       workingPoint.maxPt_ = ptBinEntry->maxPt_;
 
-      workingPoints.push_back(workingPoint);    
+      workingPoints.push_back(workingPoint);
     }
   }
 

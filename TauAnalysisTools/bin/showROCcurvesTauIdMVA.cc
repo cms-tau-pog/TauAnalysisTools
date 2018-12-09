@@ -166,10 +166,10 @@ int main(int argc, char* argv[])
 	TH1::AddDirectory(false);
 
 	//--- read python configuration parameters
-	if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+	if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
 		throw cms::Exception("showROCcurvesTauIdMVA") << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-	edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+	edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 	edm::ParameterSet cfgShowROCcurvesTauIdMVA = cfg.getParameter<edm::ParameterSet>("showROCcurvesTauIdMVA");
 
 	std::vector<graphEntryType*> graphEntries;

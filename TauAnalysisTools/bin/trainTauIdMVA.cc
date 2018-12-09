@@ -25,6 +25,7 @@
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
 #include "CondFormats/EgammaObjects/interface/GBRForest.h"
+#include "CommonTools/MVAUtils/interface/GBRForestTools.h"
 
 #include "TauAnalysisTools/TauAnalysisTools/bin/tauIdMVATrainingAuxFunctions.h"
 
@@ -51,7 +52,7 @@
 
 typedef std::vector<std::string> vstring;
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -66,14 +67,14 @@ int main(int argc, char* argv[])
   clock.Start("trainTauIdMVA");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("trainTauIdMVA") 
+  if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+    throw cms::Exception("trainTauIdMVA")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgTrainTauIdMVA = cfg.getParameter<edm::ParameterSet>("trainTauIdMVA");
-  
+
   std::string treeName = cfgTrainTauIdMVA.getParameter<std::string>("treeName");
 
   vstring signalSamples = cfgTrainTauIdMVA.getParameter<vstring>("signalSamples");
@@ -81,7 +82,7 @@ int main(int argc, char* argv[])
 
   bool applyPtReweighting = cfgTrainTauIdMVA.getParameter<bool>("applyPtReweighting");
   bool applyEtaReweighting = cfgTrainTauIdMVA.getParameter<bool>("applyEtaReweighting");
-  TString reweightOption_tstring = cfgTrainTauIdMVA.getParameter<std::string>("reweight").data();  
+  TString reweightOption_tstring = cfgTrainTauIdMVA.getParameter<std::string>("reweight").data();
   int reweight_or_KILL = kReweight;
   int reweightOption = -1;
   TObjArray* reweightOption_items = reweightOption_tstring.Tokenize(":");
@@ -95,8 +96,8 @@ int main(int argc, char* argv[])
     else if ( item_string == "background" ) reweightOption   = kReweight_or_KILLbackground;
     else if ( item_string == "flat"       ) reweightOption   = kReweight_or_KILLflat;
     else if ( item_string == "min"        ) reweightOption   = kReweight_or_KILLmin;
-    else if ( item_string == "KILL"       ) reweight_or_KILL = kKILL;    
-    else throw cms::Exception("trainTauIdMVA") 
+    else if ( item_string == "KILL"       ) reweight_or_KILL = kKILL;
+    else throw cms::Exception("trainTauIdMVA")
       << "Invalid Configuration parameter 'reweight' = " << reweightOption_tstring.Data() << " !!\n";
   }
 
@@ -106,7 +107,7 @@ int main(int argc, char* argv[])
 
   std::string branchNameEvtWeight = cfgTrainTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
 
-  fwlite::InputSource inputFiles(cfg); 
+  fwlite::InputSource inputFiles(cfg);
 
   std::string outputFileName = cfgTrainTauIdMVA.getParameter<std::string>("outputFileName");
   std::cout << " outputFileName = " << outputFileName << std::endl;
@@ -126,29 +127,29 @@ int main(int argc, char* argv[])
       if ( inputFileName->find(*background) != std::string::npos ) matchesSample_background = true;
     }
     if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) ) {
-      throw cms::Exception("trainTauIdMVA") 
+      throw cms::Exception("trainTauIdMVA")
 	 << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
     }
     if ( matchesSample_signal ) {
       std::cout << "signal Tree: adding file = " << (*inputFileName) << std::endl;
       tree_signal->AddFile(inputFileName->data());
-    } 
+    }
     if ( matchesSample_background ) {
       std::cout << "background Tree: adding file = " << (*inputFileName) << std::endl;
       tree_background->AddFile(inputFileName->data());
     }
   }
-  
+
   if ( !(tree_signal->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("trainTauIdMVA") 
+    throw cms::Exception("trainTauIdMVA")
       << "Failed to identify signal Tree !!\n";
   }
   if ( !(tree_background->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("trainTauIdMVA") 
+    throw cms::Exception("trainTauIdMVA")
       << "Failed to identify background Tree !!\n";
   }
 
-  // CV: need to call TChain::LoadTree before processing first event 
+  // CV: need to call TChain::LoadTree before processing first event
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
   //tree_signal->LoadTree(0);
@@ -177,7 +178,7 @@ int main(int argc, char* argv[])
 
   TMVA::Tools::Instance();
   TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
-  
+
   TMVA::DataLoader* dataloader = new TMVA::DataLoader("dataset");
 
   dataloader->AddSignalTree(tree_signal);
@@ -188,7 +189,7 @@ int main(int argc, char* argv[])
     unsigned int idx = inputVariable->find_last_of("/");
     if ( idx == (inputVariable->length() - 2) )
     {
-      std::string inputVariableName = std::string(*inputVariable, 0, idx);      
+      std::string inputVariableName = std::string(*inputVariable, 0, idx);
       char inputVariableType = (*inputVariable)[idx + 1];
       dataloader->AddVariable(inputVariableName.data(), inputVariableType);
     }
@@ -197,19 +198,19 @@ int main(int argc, char* argv[])
   for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin();
 	spectatorVariable != spectatorVariables.end(); ++spectatorVariable ) {
     int idxSpectatorVariable = spectatorVariable->find_last_of("/");
-    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);      
+    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
     bool isInputVariable = false;
     for ( vstring::const_iterator inputVariable = inputVariables.begin();
 	  inputVariable != inputVariables.end(); ++inputVariable ) {
       int idxInputVariable = inputVariable->find_last_of("/");
-      std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable); 
+      std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
       if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
     }
     if ( !isInputVariable ) {
       dataloader->AddSpectator(spectatorVariableName.data());
     }
   }
-  if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight && 
+  if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight &&
        (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) ) {
     std::string signalWeightExpression = "ptVsEtaReweight";
     if ( branchNameEvtWeight != "" ) signalWeightExpression.append("*").append(branchNameEvtWeight);
@@ -217,7 +218,7 @@ int main(int argc, char* argv[])
   } else {
     if ( branchNameEvtWeight != "" ) dataloader->SetSignalWeightExpression(branchNameEvtWeight.data());
   }
-  if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight && 
+  if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight &&
        (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) ) {
     std::string backgroundWeightExpression = "ptVsEtaReweight";
     if ( branchNameEvtWeight != "" ) backgroundWeightExpression.append("*").append(branchNameEvtWeight);
@@ -235,8 +236,8 @@ int main(int argc, char* argv[])
   std::cout << "Info: calling TMVA::Factory::TestAllMethods" << std::endl;
   factory->TestAllMethods();
   std::cout << "Info: calling TMVA::Factory::EvaluateAllMethods" << std::endl;
-  factory->EvaluateAllMethods();  
-  
+  factory->EvaluateAllMethods();
+
   delete factory;
   TMVA::Tools::DestroyInstance();
   delete outputFile;
@@ -255,27 +256,39 @@ int main(int argc, char* argv[])
 	inputVariable != inputVariables.end(); ++inputVariable ) {
     int idx = inputVariable->find_last_of("/");
     std::string inputVariableName = std::string(*inputVariable, 0, idx);
-    reader->AddVariable(inputVariableName.data(), &dummyVariable);    
+    reader->AddVariable(inputVariableName.data(), &dummyVariable);
   }
   for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin();
 	spectatorVariable != spectatorVariables.end(); ++spectatorVariable ) {
     int idxSpectatorVariable = spectatorVariable->find_last_of("/");
-    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);      
+    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
     bool isInputVariable = false;
     for ( vstring::const_iterator inputVariable = inputVariables.begin();
 	  inputVariable != inputVariables.end(); ++inputVariable ) {
       int idxInputVariable = inputVariable->find_last_of("/");
-      std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable); 
+      std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
       if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
     }
     if ( !isInputVariable ) {
       reader->AddSpectator(spectatorVariableName.data(), &dummyVariable);
     }
   }
-  TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), Form("dataset/weights/%s_%s.weights.xml", mvaName.data(), mvaMethodName.data()));
-  saveAsGBRForest(mva, mvaName, outputFileName);
-  delete mva;
-  
+  const std::string& weightsfile(Form("dataset/weights/%s_%s.weights.xml", mvaName.data(), mvaMethodName.data()));
+  // CMSSW 9
+  // TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), weightsfile.c_str());  // https://github.com/cms-sw/cmssw/commit/0f09c19f5464811fdbf36f178ad833ab45f34f49#diff-9e5a1ffbf53411d5d6efeab6c46a2c76L39
+  // saveAsGBRForest(mva, mvaName, outputFileName);
+
+  // CMSSW 10
+  saveAsGBRForest(weightsfile, mvaName, outputFileName);
+  // std::unique_ptr<const GBRForest> gbrForest_ = std::make_unique<GBRForest>( weightsfile );
+
+  /*
+  - auto temp{ reader->BookMVA(softmuon_mva_name, weightsfile.c_str()) };
+  - gbrForest_ = std::make_unique<GBRForest>( dynamic_cast<TMVA::MethodBDT*>( temp ) );
+  std::unique_ptr<const GBRForest> gbrForest_  = std::make_unique<GBRForest>( weightsfile );
+  */
+  // delete mva;
+
   clock.Show("trainTauIdMVA");
 
   return 0;

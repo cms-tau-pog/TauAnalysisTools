@@ -37,13 +37,13 @@
 #include <vector>
 #include <assert.h>
 
-bool isInEcalCrack(Float_t eta) 
+bool isInEcalCrack(Float_t eta)
 {
   Float_t absEta = fabs(eta);
   return ( absEta > 1.460 && absEta < 1.558 );
 }
 
-// IN: define useful auxiliary function to compute the signed distance to the closest crack 
+// IN: define useful auxiliary function to compute the signed distance to the closest crack
 double minimum(double a, double b) {
   if (TMath::Abs(b) < TMath::Abs(a) ) return b;
   else return a;
@@ -51,10 +51,10 @@ double minimum(double a, double b) {
 
 double dCrackPhi(double phi, double eta)
 {
-//--- compute the (unsigned) distance to the closest phi-crack in the ECAL barrel  
+//--- compute the (unsigned) distance to the closest phi-crack in the ECAL barrel
 
   double pi = TMath::Pi(); // 3.14159265358979323846;
-  
+
   // IN: define locations of the 18 phi-cracks
   static std::vector<double> cPhi;
   if ( cPhi.size() == 0 ) {
@@ -68,7 +68,7 @@ double dCrackPhi(double phi, double eta)
   // IN: shift of this location if eta < 0
   double delta_cPhi = 0.00638;
 
-  double retVal = 99.; 
+  double retVal = 99.;
 
   if ( eta >= -1.47464 && eta <= 1.47464 ) {
 
@@ -84,7 +84,7 @@ double dCrackPhi(double phi, double eta)
       // the problem of the extrema:
       if ( phi < cPhi[17] || phi >= cPhi[0] ) {
 	if ( phi < 0. ) phi += 2.*pi;
-	retVal = minimum(phi - cPhi[0], phi - cPhi[17] - 2.*pi);        	
+	retVal = minimum(phi - cPhi[0], phi - cPhi[17] - 2.*pi);
       } else {
 	// between these extrema...
 	bool OK = false;
@@ -102,21 +102,21 @@ double dCrackPhi(double phi, double eta)
       retVal = 0.; // IN: if there is a problem, we assume that we are in a crack
     }
   } else {
-    return -99.;       
+    return -99.;
   }
-  
+
   return TMath::Abs(retVal);
 }
 
 double dCrackEta(double eta)
 {
 //--- compute the (unsigned) distance to the closest eta-crack in the ECAL barrel
-  
+
   // IN: define locations of the eta-cracks
   double cracks[5] = { 0., 4.44747e-01, 7.92824e-01, 1.14090e+00, 1.47464e+00 };
-  
+
   double retVal = 99.;
-  
+
   for ( int iCrack = 0; iCrack < 5 ; ++iCrack ) {
     double d = minimum(eta - cracks[iCrack], eta + cracks[iCrack]);
     if ( TMath::Abs(d) < TMath::Abs(retVal) ) {
@@ -169,7 +169,7 @@ struct categoryEntryType
 
 typedef std::vector<std::string> vstring;
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -184,20 +184,20 @@ int main(int argc, char* argv[])
   clock.Start("extendTreeAntiElectronDiscrMVA");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("extendTreeAntiElectronDiscrMVA") 
+  if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+    throw cms::Exception("extendTreeAntiElectronDiscrMVA")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgExtendTreeAntiElectronDiscrMVA = cfg.getParameter<edm::ParameterSet>("extendTreeAntiElectronDiscrMVA");
-  
+
   std::string inputTreeName = cfgExtendTreeAntiElectronDiscrMVA.getParameter<std::string>("inputTreeName");
   std::string outputTreeName = cfgExtendTreeAntiElectronDiscrMVA.getParameter<std::string>("outputTreeName");
 
   vstring samples = cfgExtendTreeAntiElectronDiscrMVA.getParameter<vstring>("samples");
 
-  fwlite::InputSource inputFiles(cfg); 
+  fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
@@ -216,11 +216,11 @@ int main(int argc, char* argv[])
     if ( matchesSample ) {
       std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
       inputTree->AddFile(inputFileName->data());
-    } 
+    }
   }
-  
+
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("extendTreeAntiElectronDiscrMVA") 
+    throw cms::Exception("extendTreeAntiElectronDiscrMVA")
       << "Failed to identify input Tree !!\n";
   }
 
@@ -310,8 +310,8 @@ int main(int argc, char* argv[])
     if ( branchName == "Elec_MvaInHadEnergy" )     branch_Elec_MvaInHadEnergy     = branch_to_copy;
     if ( branchName == "Elec_MvaInDeltaEta" )      branch_Elec_MvaInDeltaEta      = branch_to_copy;
   }
-  if ( !(branch_Tau_EtaAtEcalEntrance && branch_Tau_PhiAtEcalEntrance) ) 
-    throw cms::Exception("extendTreeAntiElectronDiscrMVA") 
+  if ( !(branch_Tau_EtaAtEcalEntrance && branch_Tau_PhiAtEcalEntrance) )
+    throw cms::Exception("extendTreeAntiElectronDiscrMVA")
       << "Failed to find Branches 'Tau_EtaAtEcalEntrance' and 'Tau_PhiAtEcalEntrance' in input Tree !!\n";
 
   for ( std::vector<branchEntryType*>::iterator branch = branches_to_copy.begin();
@@ -335,7 +335,7 @@ int main(int argc, char* argv[])
     std::string selection = cfgCategory.getParameter<std::string>("selection");
     int idx = cfgCategory.getParameter<int>("idx");
     if ( !(idx >= 0) )
-      throw cms::Exception("extendTreeAntiElectronDiscrMVA") 
+      throw cms::Exception("extendTreeAntiElectronDiscrMVA")
 	<< "Invalid Configuration Parameter 'idx' = " << idx << " defined for category = " << (*categoryName) << " !!\n";
     categoryEntryType* category = new categoryEntryType();
     category->name_ = (*categoryName);
@@ -348,7 +348,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfgMva = cfgExtendTreeAntiElectronDiscrMVA.getParameter<edm::ParameterSet>("mva");
   AntiElectronIDMVA* mva = new AntiElectronIDMVA(cfgMva);
 
-  // CV: need to call TChain::LoadTree before processing first event 
+  // CV: need to call TChain::LoadTree before processing first event
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
   inputTree->LoadTree(0);
@@ -365,7 +365,7 @@ int main(int argc, char* argv[])
     } else if ( (*branch)->branchType_ == branchEntryType::kULong64_t ) {
       outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueL_, Form("%s/l", (*branch)->branchName_.data()));
     } else if ( (*branch)->branchType_ == branchEntryType::kFloat_t ) {
-      outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueF_, Form("%s/F", (*branch)->branchName_.data()));    
+      outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueF_, Form("%s/F", (*branch)->branchName_.data()));
     } else assert(0);
   }
 
@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
   outputTree->Branch("Tau_dCrackEta", &value_Tau_dCrackEta, "Tau_dCrackEta/F");
   Float_t value_Tau_dCrackPhi;
   outputTree->Branch("Tau_dCrackPhi", &value_Tau_dCrackPhi, "Tau_dCrackPhi/F");
-  
+
   Int_t value_Tau_Category;
   outputTree->Branch("Tau_Category", &value_Tau_Category, "Tau_Category/I");
   Float_t value_mva;
@@ -388,7 +388,7 @@ int main(int argc, char* argv[])
     if ( iEntry > 0 && (iEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << iEntry << std::endl;
     }
-    
+
     inputTree->GetEntry(iEntry);
 
     for ( std::vector<branchEntryType*>::iterator branch = branches_to_copy.begin();
@@ -410,7 +410,7 @@ int main(int argc, char* argv[])
       }
       currentTreeNumber = inputTree->GetTreeNumber();
     }
-    
+
     value_Tau_Category = 0;
     int category_idx = -1;
     int numCategories_passed = 0;
@@ -483,7 +483,7 @@ int main(int argc, char* argv[])
   delete outputFile;
 
   delete inputTree;
-  
+
   for ( std::vector<branchEntryType*>::iterator it = branches_to_copy.begin();
 	it != branches_to_copy.end(); ++it ) {
     delete (*it);

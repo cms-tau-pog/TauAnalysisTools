@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-# import TauAnalysis.Configuration.tools.eos as eos
+
 import inspect
 import os
 # import shlex
@@ -20,6 +20,7 @@ def runcommand(commandline):
 
 
 # def createFilePath(filePath):
+#    import TauAnalysis.Configuration.tools.eos as eos
 #    try:
 #        eos.lsl(filePath)
 #    except IOError:

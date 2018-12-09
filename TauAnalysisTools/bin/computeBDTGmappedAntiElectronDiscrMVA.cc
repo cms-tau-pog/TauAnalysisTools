@@ -50,17 +50,17 @@ std::vector<workingPointEntryType> readWorkingPoints(const std::string& wpFileNa
 {
   TFile* wpFile = new TFile(wpFileName.data());
   if ( !wpFile )
-    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA") 
+    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA")
       << " Failed to open File = " << wpFileName << " !!\n";
-  
+
   TTree* wpTree = dynamic_cast<TTree*>(wpFile->Get(wpTreeName.data()));
-  if ( !wpTree ) 
-    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA") 
+  if ( !wpTree )
+    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA")
       << " Failed to lood Tree = " << wpTreeName << " from File = " << wpFileName << " !!\n";
 
   Float_t targetSignalEfficiency;
   wpTree->SetBranchAddress("targetSignalEfficiency", &targetSignalEfficiency);
-  
+
   Float_t minPt;
   wpTree->SetBranchAddress("minPt", &minPt);
   Float_t maxPt;
@@ -72,7 +72,7 @@ std::vector<workingPointEntryType> readWorkingPoints(const std::string& wpFileNa
     std::string branchName = Form("cutCategory%i", *category);
     wpTree->SetBranchAddress(branchName.data(), &cuts[*category]);
   }
-    
+
   Float_t S;
   wpTree->SetBranchAddress("S", &S);
   Float_t B;
@@ -146,7 +146,7 @@ struct branchEntryType
 typedef std::vector<std::string> vstring;
 typedef std::vector<int> vint;
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -161,14 +161,14 @@ int main(int argc, char* argv[])
   clock.Start("computeBDTGmappedAntiElectronDiscrMVA");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA") 
+  if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgComputeBDTGmappedAntiElectronDiscrMVA = cfg.getParameter<edm::ParameterSet>("computeBDTGmappedAntiElectronDiscrMVA");
-  
+
   std::string inputTreeName = cfgComputeBDTGmappedAntiElectronDiscrMVA.getParameter<std::string>("inputTreeName");
   std::string outputTreeName = cfgComputeBDTGmappedAntiElectronDiscrMVA.getParameter<std::string>("outputTreeName");
 
@@ -178,12 +178,12 @@ int main(int argc, char* argv[])
   std::string branchName_logTauPt = cfgComputeBDTGmappedAntiElectronDiscrMVA.getParameter<std::string>("branchName_logTauPt");
 
   std::vector<int> categories = cfgComputeBDTGmappedAntiElectronDiscrMVA.getParameter<vint>("categories");
-  
+
   std::string wpFileName = cfgComputeBDTGmappedAntiElectronDiscrMVA.getParameter<std::string>("wpFileName");
   std::string wpTreeName = cfgComputeBDTGmappedAntiElectronDiscrMVA.getParameter<std::string>("wpTreeName");
   std::vector<workingPointEntryType> workingPoints = readWorkingPoints(wpFileName, wpTreeName, categories);
 
-  fwlite::InputSource inputFiles(cfg); 
+  fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
@@ -197,9 +197,9 @@ int main(int argc, char* argv[])
     std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
     inputTree->AddFile(inputFileName->data());
   }
-  
+
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA") 
+    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA")
       << "Failed to identify input Tree !!\n";
   }
 
@@ -239,13 +239,13 @@ int main(int argc, char* argv[])
     if ( branchName == branchName_tauPt       ) branch_tauPt       = branch_to_copy;
     if ( branchName == branchName_logTauPt    ) branch_logTauPt    = branch_to_copy;
   }
-  if ( !(branch_mvaOutput && branch_categoryIdx) ) 
-    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA") 
+  if ( !(branch_mvaOutput && branch_categoryIdx) )
+    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA")
       << "Failed to find Branches '" << branchName_mvaOutput << "' and '" << branchName_categoryIdx << "' in input Tree !!\n";
   if ( !(branch_tauPt || branch_logTauPt) )
-    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA") 
+    throw cms::Exception("computeBDTGmappedAntiElectronDiscrMVA")
       << "Failed to find either one of the Branches '" << branchName_tauPt << "' and '" << branchName_logTauPt << "' in input Tree !!\n";
-  
+
   for ( std::vector<branchEntryType*>::iterator branch = branches_to_copy.begin();
         branch != branches_to_copy.end(); ++branch ) {
     if ( (*branch)->branchType_ == branchEntryType::kInt_t ) {
@@ -270,19 +270,19 @@ int main(int argc, char* argv[])
     } else if ( (*branch)->branchType_ == branchEntryType::kLong_t ) {
       outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueL_, Form("%s/l", (*branch)->branchName_.data()));
     } else if ( (*branch)->branchType_ == branchEntryType::kFloat_t ) {
-      outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueF_, Form("%s/F", (*branch)->branchName_.data()));    
+      outputTree->Branch((*branch)->branchName_.data(), &(*branch)->outputValueF_, Form("%s/F", (*branch)->branchName_.data()));
     } else assert(0);
   }
 
   Float_t mvaOutput_mapped;
-  outputTree->Branch("BDTGmapped", &mvaOutput_mapped, "BDTGmapped/F");    
+  outputTree->Branch("BDTGmapped", &mvaOutput_mapped, "BDTGmapped/F");
 
   int numEntries = inputTree->GetEntries();
   for ( int iEntry = 0; iEntry < numEntries && (maxEvents == -1 || iEntry < maxEvents); ++iEntry ) {
     if ( iEntry > 0 && (iEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << iEntry << std::endl;
     }
-    
+
     inputTree->GetEntry(iEntry);
 
     for ( std::vector<branchEntryType*>::iterator branch = branches_to_copy.begin();
@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
 
     Float_t mvaOutput = branch_mvaOutput->inputValueF_;
     Int_t categoryIdx = TMath::Nint(branch_categoryIdx->inputValueF_); // CV: TMVA stores Tau_Category branch in floating-point format !!
-    
+
     double tauPt_value;
     if      ( branch_logTauPt ) tauPt_value = TMath::Exp(branch_logTauPt->inputValueF_);
     else if ( branch_tauPt    ) tauPt_value = branch_tauPt->inputValueF_;
@@ -313,7 +313,7 @@ int main(int argc, char* argv[])
     mvaOutput_mapped = 2.*(SoverBmax/(SoverBmax + 1.)) - 1.;
 
     //std::cout << "Entry #" << iEntry << ": categoryIdx = " << categoryIdx << ", mvaOutput = " << mvaOutput << " --> (S/B)max = " << SoverBmax << ", mvaOutput(mapped) = " << mvaOutput_mapped << std::endl;
-	
+
     outputTree->Fill();
   }
 

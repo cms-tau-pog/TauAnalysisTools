@@ -2,6 +2,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include "CondFormats/EgammaObjects/interface/GBRForest.h"
+#include "CommonTools/MVAUtils/interface/GBRForestTools.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 
@@ -39,7 +40,11 @@ enum { kSignal, kBackground };
 enum { kReweight_orKILLnone, kReweight_or_KILLsignal, kReweight_or_KILLbackground, kReweight_or_KILLflat, kReweight_or_KILLmin };
 enum { kReweight, kKILL };
 
-void saveGBRForest(GBRForest* gbr, const std::string& mvaName, const std::string& outputFileName)
+// void saveGBRForest(GBRForest* gbr, const std::string& mvaName, const std::string& outputFileName)
+// void saveGBRForest( gbr auto, const std::string& mvaName, const std::string& outputFileName)
+// template<typename T>
+// void saveGBRForest(T gbr, const std::string& mvaName, const std::string& outputFileName)
+void saveGBRForest( const GBRForest * gbr , const std::string& mvaName, const std::string& outputFileName)
 {
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_gbr = std::string(outputFileName, 0, idx);
@@ -52,19 +57,53 @@ void saveGBRForest(GBRForest* gbr, const std::string& mvaName, const std::string
   outputFile->WriteObject(gbr, mvaName.data());
   delete outputFile;
 }
+// template void saveGBRForest<GBRForest>();
+
+// template<GBRForest* I> void saveGBRForest(I);
+// template<std::unique_ptr<const GBRForest> K> void saveGBRForest(K); // same as #1
+//  void saveGBRForest(I);
+// template<std::unique_ptr<const GBRForest> K> void saveGBRForest(K); // same as #1
+
 
 void saveAsGBRForest(TMVA::IMethod* mva, const std::string& mvaName, const std::string& outputFileName)
 {
-  TMVA::MethodBDT* bdt = dynamic_cast<TMVA::MethodBDT*>(mva);
-  if ( !bdt )
+  // TMVA::MethodBDT* bdt = dynamic_cast<TMVA::MethodBDT*>(mva);
+  // if ( !bdt )
     throw cms::Exception("saveAsGBRForest")
       << "MVA object passed as function argument needs to be of type 'BDTG' !!\n";
 
-  GBRForest* gbr = new GBRForest(bdt);
+  // GBRForest* gbr = new GBRForest(bdt);
 
-  saveGBRForest(gbr, mvaName, outputFileName);
+  // saveGBRForest(gbr, mvaName, outputFileName);
 
-  delete gbr;
+  // delete gbr;
+}
+
+
+void saveAsGBRForest( const std::string& weightsfile, const std::string& mvaName, const std::string& outputFileName)
+{
+  // https://github.com/cms-sw/cmssw/blob/master/CondFormats/EgammaObjects/interface/GBRForest.h
+  // std::unique_ptr<const GBRForest> gbrForest_ ;
+  // gbrForest_ = std::make_unique<GBRForest>( weightsfile );
+
+  // std::unique_ptr<const GBRForest> gbr = createGBRForest()//std::make_unique<GBRForest>(mva);
+  /*
+  - auto temp{ reader->BookMVA(softmuon_mva_name, weightsfile.c_str()) };
+  - gbrForest_ = std::make_unique<GBRForest>( dynamic_cast<TMVA::MethodBDT*>( temp ) );
+  std::unique_ptr<const GBRForest> gbrForest_;
+  gbrForest_ = std::make_unique<GBRForest>( weightsfile );
+  */
+
+  // saveGBRForest(gbrForest_.get(), mvaName, outputFileName);
+
+
+  // GBRForest gbrForest_ = GBRForest( weightsfile );
+  // saveGBRForest(gbrForest_ *, mvaName, outputFileName );
+
+
+  std::unique_ptr<const GBRForest> gbrForest_  = createGBRForest( weightsfile );
+  saveGBRForest(gbrForest_.get(), mvaName, outputFileName );
+
 }
 
 struct branchEntryType
