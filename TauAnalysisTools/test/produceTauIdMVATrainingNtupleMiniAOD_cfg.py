@@ -14,12 +14,9 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
+# process.add_(cms.Service("PrintLoadingPlugins"))
 
-#process.add_(cms.Service("PrintLoadingPlugins"))
-
-key = '2018_ZTT'
+key = '2018_TTToHad'
 test_files = {
     'RelValQCD_FlatPt_15_3000HS_13_1': {
         'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/E89C4CD3-CEBB-E711-BF4F-0025905B856C.root',
@@ -49,22 +46,36 @@ test_files = {
     '2017MCv1_ggH': {
         'file' :'/store/mc/RunIISummer17MiniAOD/SUSYGluGluToHToTauTau_M-2600_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10-v2/50000/04BF6396-8F9C-E711-9BE4-0CC47A1DF620.root',
         'type' : 'SignalMC',
+        'globaltag': '92X_upgrade2017_realistic_v10',
         'comment' : "2017 MCv1, with 2016 training, phpt>0.5"
     },
     '2017MCv2_W3Jets': {
         'file' :'/store/mc/RunIIFall17MiniAOD/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v3/80000/02B37840-A50C-E811-B96F-008CFAF70DF6.root',
         'type' : 'BackgroundMC',
+        'globaltag': '94X_mc2017_realistic_v10',
         'comment' : "2017 MCv2"
     },
     '2018_ZTT': {
         'file' :'/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root',
-        'type' : 'BackgroundMC',
+        'type' : 'SignalMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
         'comment' : "2018, ZTT"
     },
+    '2018_TTToHad':{
+        'file': '/store/mc/RunIIAutumn18MiniAOD/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/100000/2FA2A920-8461-264C-8A72-74C1179D019D.root',
+        'type' : 'BackgroundMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment' : "2018, TTToHad"
+    }
 }
 
+from Configuration.AlCa.GlobalTag import GlobalTag
+globaltag_name = test_files[key]['globaltag']
+#__globaltag_name = #gttype#    # hook to set GT from samplesHandles.py when submitted to grid
+process.GlobalTag = GlobalTag(process.GlobalTag, globaltag_name, '')
+
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(test_files[key]['file']),
+    fileNames=cms.untracked.vstring(test_files[key]['file']),
     # eventsToProcess = cms.untracked.VEventRange(
     #    '1:917:1719279',
     #    '1:1022:1915188'
@@ -72,20 +83,24 @@ process.source = cms.Source("PoolSource",
     # skipEvents = cms.untracked.uint32(539)
 )
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1005))
+# Only for local runs. Replaced during submittion to GRID with -1
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1005))
 
+verbosity = 1
+#__verbosity = 0  # hook to disable printout when submitted to grid
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
 type = test_files[key]['type']
-# example: type = 'BackgroundMC'
-#--------------------------------------------------------------------------------
-
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
 # in case running jobs on the CERN batch system/grid
+# the line before gets replaced during the crab config creation redefining type
+#
+#__type = #type#
+
 isMC = True if type == 'SignalMC' or type == 'BackgroundMC' else False
 
 # information for cleaning against leptons
@@ -282,7 +297,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     ptMin_nPhotons = cms.vstring("0.5","0.75","1.0","1.25","1.5"),
     ptMin_photonPtSumOutsideSignalCone = cms.vstring("0.5","1.0","1.5"),
     ptMin_photonPtSumOutsideSignalConedRgt0p1 = cms.vstring("0.5","1.0","1.5"),
-    verbosity = cms.int32(0)
+    verbosity = cms.int32(verbosity)
 )
 
 # dRisoCone = 0.4
