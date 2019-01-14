@@ -156,6 +156,8 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 	*/
 
 	isSignal_ = cfg.getParameter<bool>("isSignal");
+	includeMaxLikeVar_ = cfg.getParameter<bool>("includeMaxLikeVar");
+
 	dRClean_ = cfg.getParameter<double>("dRClean");
 	ptCleanMin_ = cfg.getParameter<double>("ptCleanMin");
 	matchGenTauVis_ = cfg.getParameter<bool>("matchGenTauVis");
@@ -1370,8 +1372,10 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 			setValueF("genEvtWeight", weightevt);
 
 			// Needed for maxLiklyhood METHOD
-			if (verbosity_) std::cout<< "produce::maxLike \n";
-			maxLike(*recTau);// const pat::TauRef& rectau
+			if (includeMaxLikeVar_)
+			{
+				maxLike(*recTau);// const pat::TauRef& rectau
+			}
 
 			/*
 				branchMap::iterator branch = branches_.find("recTau_isolationChargedHadrCands_dz");
@@ -1644,7 +1648,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::maxLike(const pat::Tau& recTau)
 	std::vector<Float_t> recTau_isolationGammaCands_dR = {};
 
 	const auto cands = recTau.isolationChargedHadrCands();
-	for(const auto& charged_hadr_cands : cands)
+	for (const auto& charged_hadr_cands : cands)
 	{
 		// wrong: float b = ((pat::PackedCandidate*)(recTau.leadChargedHadrCand()))->dz(charged_hadr_cands->vertex());
 		recTau_isolationChargedHadrCands_dz.push_back(recTau.leadChargedHadrCand()->bestTrack()->dz(charged_hadr_cands->vertex()));
@@ -1654,7 +1658,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::maxLike(const pat::Tau& recTau)
 	}
 
 	const auto candsgamma = recTau.isolationGammaCands();
-	for(const auto& iso_gamma_cands : candsgamma)
+	for (const auto& iso_gamma_cands : candsgamma)
 	{
 		recTau_isolationGammaCands_pt.push_back(iso_gamma_cands->pt());
 		recTau_isolationGammaCands_dR.push_back(reco::deltaR(*iso_gamma_cands, recTau));
@@ -1693,8 +1697,8 @@ void TauIdMVATrainingNtupleProducerMiniAOD::maxLike(const pat::Tau& recTau)
 		if (verbosity_) std::cout << "\tmaxLike: ";
 		if (branch->second.valueVFloat_.size() != 0)
 		if (verbosity_) std::cout << branch->second.pvalueVFloat_->size() << "; " << branch->second.pvalueVFloat_->back() << std::endl;
-	 */
-	
+	*/
+
 	if (verbosity_) std::cout<< "maxLike end \n";
 }
 

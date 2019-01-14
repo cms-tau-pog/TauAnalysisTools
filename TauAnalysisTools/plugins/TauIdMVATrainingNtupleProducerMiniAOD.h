@@ -173,6 +173,7 @@ private:
 
 	bool isMC_;
 	bool isSignal_;
+	bool includeMaxLikeVar_;
 	double dRClean_;
 	double ptCleanMin_;
 	bool matchGenTauVis_;

@@ -275,6 +275,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     dRClean = cms.double(dRClean),
     ptCleanMin = cms.double(10.),
     matchGenTauVis = cms.bool(True),
+    includeMaxLikeVar=cms.bool(False),
     #--------------------------------------------------------
     srcWeights = cms.VInputTag(srcWeights),
     ptMin_allPhotonsVariables = cms.vstring("0.5","1.0","1.5"),
