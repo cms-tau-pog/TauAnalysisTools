@@ -1,5 +1,34 @@
 # TauAnalysisTools
 
+## Anti-jet discriminator
+
+### Ntupliser
+
+1) update `samplesHandlers.py` with new samples
+2) check the local runs with:
+
+	python produceTauIdMVATrainingNtupleMiniAOD_cfg.py  # check only python syntax
+	cmsRun produceTauIdMVATrainingNtupleMiniAOD_cfg.py
+
+The script has to be updated accordingly with sample file including the global tag.
+
+3) create all crab configs for submitting to GRID:
+
+	python TauAnalysisTools/TauAnalysisTools/test/submitTauIdMVATrainingNtupleProduction_crab3.py
+
+Set of configs that have to be changed are outlined in the header of the script.
+
+4) submit jobs executing the printed out command. Requires prior execution of:
+
+	voms-proxy-init --voms cms:/cms/dcms --valid 192:00
+	setcrab3
+
+In case the submition has errors a clean-up should be performed:
+
+	for f in *; do crab purge $f; done
+	gfal-rm -r srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/<path to skimmed samples>
+	rm -rf <crab workdir>
+
 ## Anti-e discriminator
 The following section explains briefly the codes and macros used for the training of the antiElectron MVA discriminator. This includes skimming of the ntuples, preselection, training, evaluation of the cut working points and plotting.
 
@@ -40,7 +69,7 @@ One single script called [runAntiElectronDiscrMVATraining](https://github.com/cm
 - [extendTreeAntiElectronDiscrMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/extendTreeAntiElectronDiscrMVA.cc): creates two large ntuples (one for signals and one for backgrounds), merging together the entries of all the samples skimmed in the previous step. Additional branches (e.g., the MVA output of a previous training, if available) are added to the TTree.
 - [preselectTreeTauIdMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/preselectTreeTauIdMVA.cc): applies a preselection and separates the events in the training categories. The preselection cuts and the categories are defined in the first part of runAntiElectronDiscrMVATraining.
 - [trainTauIdMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/trainTauIdMVA.cc): runs the training and testing of one Boosted Decision Tree (BDT) for each category.
-- [computeWPcutsAntiElectronDiscrMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/computeWPcutsAntiElectronDiscrMVA.cc): runs an algorithm to compute the best cut working point on the BDT output (for a given target signal efficiency), for each one of the categories. This recursive cut optimization is done splitting the events in different tau pT-bins. The current pT-binning default is [0 - 60, 60 - 100, 100 - 200, 200 - inf] GeV. 
+- [computeWPcutsAntiElectronDiscrMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/computeWPcutsAntiElectronDiscrMVA.cc): runs an algorithm to compute the best cut working point on the BDT output (for a given target signal efficiency), for each one of the categories. This recursive cut optimization is done splitting the events in different tau pT-bins. The current pT-binning default is [0 - 60, 60 - 100, 100 - 200, 200 - inf] GeV.
 - [computeBDTGmappedAntiElectronDiscrMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/computeBDTGmappedAntiElectronDiscrMVA.cc)
 - [makeROCcurveTauIdMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/makeROCcurveTauIdMVA.cc) and [showROCcurvesTauIdMVA](https://github.com/cms-tau-pog/TauAnalysisTools/blob/master/TauAnalysisTools/bin/showROCcurvesTauIdMVA.cc): create a set of ROC curves (background rejection vs. signal efficiency and background efficiency vs. signal efficiency) based on the cut points defined in the previous steps and display them as ROOT plots.
 
