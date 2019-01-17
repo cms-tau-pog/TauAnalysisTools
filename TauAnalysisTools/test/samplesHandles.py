@@ -1,6 +1,7 @@
 import json
 import copy
 
+
 class SamplesHandles(object):
     """docstring for SamplesHandles"""
     def __init__(self, era="2016"):

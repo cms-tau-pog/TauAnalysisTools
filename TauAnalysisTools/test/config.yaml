@@ -1,0 +1,8 @@
+nfs_base: '/nfs/dust/cms/user/glusheno/TauIDMVATraining2018/Autum2018tauId_v1/'
+pnfs_base: '/pnfs/desy.de/cms/tier2'
+store_base: '/store/user/ohlushch/TauIDMVATraining2018/Autum2018tauId_v1'
+samples_key:
+  dR0p5: '2018'
+  dR0p3: '2018dR0p3'
+version: 'v1'
+workarea_base: 'Autum2018'
