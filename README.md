@@ -29,6 +29,24 @@ In case the submition has errors a clean-up should be performed:
 	gfal-rm -r srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/<path to skimmed samples>
 	rm -rf <crab workdir>
 
+5) the training scripts have to be tuned and run for different cones:
+
+	python TauAnalysisTools/test/runTauIdMVATrainingMiniAOD_deltaBeta_dR05.py
+	python TauAnalysisTools/test/runTauIdMVATrainingMiniAOD_deltaBeta_dR03.py
+
+This script creates scripts for preselecting, reweighting, training, and evaluating events from other template scripts. Options for all of the scripts (e.g., input variables) are set in this script as well.
+
+NOTICE: first do ALL the preselections
+NOTICE: check that the spectators variables also contain the variables for the other trainings BOTH IN PRESELECTION AND IN REWEIGHTING STEPS
+
+6) Because running all of this may be very time consuming (preselection of background events for full Summer16 campaign may take up to 12h already) and the wall time limit is 24h, you should send the job (the script will tell you which file you have to execute) to the bird cluster.
+Example:
+
+	./qsub_OnlyTraining.sh trainTauIdMVA_mvaIsolation3HitsDeltaR05opt1aLTDB_photonPtSumOutsideSignalConePtGt1p5_cfg
+
+
+7) After everything is completed, you will have a couple of root files and a lot of performance plots. Before going any further, you need to present the results in a tau POG meeting.
+
 ## Anti-e discriminator
 The following section explains briefly the codes and macros used for the training of the antiElectron MVA discriminator. This includes skimming of the ntuples, preselection, training, evaluation of the cut working points and plotting.
 
