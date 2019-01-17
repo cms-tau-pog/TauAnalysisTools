@@ -12,36 +12,8 @@ import json
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-def replaceCommomns(commonName, commonList, singleList):
-    if commonName in singleList:
-        singleList[:] = [x for x in singleList if x != commonName]
-        singleList[:] = commonList + singleList
+from submitHelpers import replaceCommomns, _decode_dict
 
-def _decode_list(data):
-    rv = []
-    for item in data:
-        if isinstance(item, unicode):
-            item = item.encode('utf-8')
-        elif isinstance(item, list):
-            item = _decode_list(item)
-        elif isinstance(item, dict):
-            item = _decode_dict(item)
-        rv.append(item)
-    return rv
-
-def _decode_dict(data):
-    rv = {}
-    for key, value in data.iteritems():
-        if isinstance(key, unicode):
-            key = key.encode('utf-8')
-        if isinstance(value, unicode):
-            value = value.encode('utf-8')
-        elif isinstance(value, list):
-            value = _decode_list(value)
-        elif isinstance(value, dict):
-            value = _decode_dict(value)
-        rv[key] = value
-    return rv
 
 DM = "old"  # New DM not used for 0.3 cone training
 samples_key = "2017MCv2dR0p3"
@@ -260,7 +232,7 @@ for discriminator in mvaDiscriminators.keys():
         logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
         preselectTreeTauIdMVA_logFileNames[discriminator][sample] = logFileName
     #----------------------------------------------------------------------------
-    
+
     #----------------------------------------------------------------------------
     # CV: build config file for Pt, eta reweighting
     reweightTreeTauIdMVA_configFileNames[discriminator] = {}
@@ -277,7 +249,7 @@ for discriminator in mvaDiscriminators.keys():
         cfgFile_original.close()
         cfg_modified  = cfg_original
         cfg_modified += "\n"
-        cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n" 
+        cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
         cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['signal']
         cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['background']
         cfg_modified += "\n"
@@ -300,10 +272,10 @@ for discriminator in mvaDiscriminators.keys():
         logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
         reweightTreeTauIdMVA_logFileNames[discriminator][sample] = logFileName
     #----------------------------------------------------------------------------
-        
-    #----------------------------------------------------------------------------    
+
+    #----------------------------------------------------------------------------
     # CV: build config file for actual MVA training
-        
+
     outputFileName = os.path.join(outputFilePath, "trainTauIdMVA_%s.root" % discriminator)
     print " outputFileName = '%s'" % outputFileName
     trainTauIdMVA_outputFileNames[discriminator] = outputFileName
@@ -349,7 +321,7 @@ for discriminator in mvaDiscriminators.keys():
     makeROCcurveTauIdMVA_configFileNames[discriminator] = {}
     makeROCcurveTauIdMVA_outputFileNames[discriminator] = {}
     makeROCcurveTauIdMVA_logFileNames[discriminator]    = {}
-        
+
     for tree in [ "TestTree", "TrainTree" ]:
         outputFileName = os.path.join(outputFilePath, "makeROCcurveTauIdMVA_%s_%s.root" % (discriminator, tree))
         print " outputFileName = '%s'" % outputFileName
@@ -362,7 +334,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified  = cfg_original
         cfg_modified += "\n"
         cfg_modified += "process.fwliteInput.fileNames = cms.vstring('%s')\n" % trainTauIdMVA_outputFileNames[discriminator]
-        cfg_modified += "\n"    
+        cfg_modified += "\n"
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
         cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
         cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('dataset/%s')\n" % tree
@@ -404,17 +376,17 @@ for discriminator in mvaDiscriminators.keys():
 
 if computeROConAllEvents:
     for discriminator in cutDiscriminators.keys():
-    
+
         print "processing discriminator = %s" % discriminator
-    
+
         makeROCcurveTauIdMVA_configFileNames[discriminator] = {}
         makeROCcurveTauIdMVA_outputFileNames[discriminator] = {}
         makeROCcurveTauIdMVA_logFileNames[discriminator]    = {}
-    
+
         outputFileName = os.path.join(outputFilePath, "makeROCcurveTauIdMVA_%s.root" % discriminator)
         print " outputFileName = '%s'" % outputFileName
         makeROCcurveTauIdMVA_outputFileNames[discriminator]['TestTree'] = outputFileName
-    
+
         cfgFileName_original = configFile_makeROCcurveTauIdMVA
         cfgFile_original = open(cfgFileName_original, "r")
         cfg_original = cfgFile_original.read()
@@ -443,24 +415,24 @@ if computeROConAllEvents:
         cfgFile_modified.write(cfg_modified)
         cfgFile_modified.close()
         makeROCcurveTauIdMVA_configFileNames[discriminator]['TestTree'] = cfgFileName_modified
-    
+
         logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
         makeROCcurveTauIdMVA_logFileNames[discriminator]['TestTree'] = logFileName
 else:
     for mvaDiscriminator in mvaDiscriminators.keys():
         for cutDiscriminator in cutDiscriminators.keys():
-            
+
             print "processing discriminator = %s" % cutDiscriminator
-            
+
             makeROCcurveTauIdMVA_configFileNames[cutDiscriminator] = {}
             makeROCcurveTauIdMVA_outputFileNames[cutDiscriminator] = {}
             makeROCcurveTauIdMVA_logFileNames[cutDiscriminator]    = {}
-            
+
             for tree in [ "TestTree" ]:
                 outputFileName = os.path.join(outputFilePath, "makeROCcurveTauIdMVA_%s_%s.root" % (cutDiscriminator, tree))
                 print " outputFileName = '%s'" % outputFileName
                 makeROCcurveTauIdMVA_outputFileNames[cutDiscriminator][tree] = outputFileName
-                
+
                 cfgFileName_original = configFile_makeROCcurveTauIdMVA
                 cfgFile_original = open(cfgFileName_original, "r")
                 cfg_original = cfgFile_original.read()
@@ -495,7 +467,7 @@ else:
                 cfgFile_modified.write(cfg_modified)
                 cfgFile_modified.close()
                 makeROCcurveTauIdMVA_configFileNames[cutDiscriminator][tree] = cfgFileName_modified
-                
+
                 logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
                 makeROCcurveTauIdMVA_logFileNames[cutDiscriminator][tree] = logFileName
 
@@ -513,7 +485,7 @@ showROCcurvesTauIdMVA_logFileNames    = {} # key = plot
 for plot in plots.keys():
 
     print "processing plot = %s" % plot
-    
+
     outputFileName = os.path.join(outputFilePath, "showROCcurvesTauIdMVA_%s.png" % plot)
     print " outputFileName = '%s'" % outputFileName
     showROCcurvesTauIdMVA_outputFileNames[plot] = outputFileName
@@ -563,7 +535,7 @@ for plot in plots.keys():
         if markerStyle:
             cfg_modified += "        markerStyle = cms.int32(%i),\n" % markerStyle
         if markerSize:
-            cfg_modified += "        markerSize = cms.int32(%i),\n" % markerSize    
+            cfg_modified += "        markerSize = cms.int32(%i),\n" % markerSize
         cfg_modified += "        color = cms.int32(%i)\n" % markerColor
         cfg_modified += "    ),\n"
     cfg_modified += ")\n"
@@ -577,7 +549,7 @@ for plot in plots.keys():
 
     logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
     showROCcurvesTauIdMVA_logFileNames[plot] = logFileName
-    
+
 def make_MakeFile_vstring(list_of_strings):
     retVal = ""
     for i, string_i in enumerate(list_of_strings):
@@ -599,7 +571,7 @@ for discriminator in trainTauIdMVA_outputFileNames.keys():
 for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
     for tree in makeROCcurveTauIdMVA_outputFileNames[discriminator]:
         outputFileNames.append(makeROCcurveTauIdMVA_outputFileNames[discriminator][tree])
-outputFileNames.append(hadd_outputFileName)    
+outputFileNames.append(hadd_outputFileName)
 for plot in showROCcurvesTauIdMVA_outputFileNames.keys():
     outputFileNames.append(showROCcurvesTauIdMVA_outputFileNames[plot])
 makeFile.write("all: %s\n" % make_MakeFile_vstring(outputFileNames))
@@ -627,7 +599,7 @@ for discriminator in trainTauIdMVA_outputFileNames.keys():
       (nice, executable_trainTauIdMVA,
        trainTauIdMVA_configFileNames[discriminator],
        trainTauIdMVA_logFileNames[discriminator]))
-makeFile.write("\n")    
+makeFile.write("\n")
 for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
     for tree in [ "TestTree", "TrainTree" ]:
         if tree in makeROCcurveTauIdMVA_outputFileNames[discriminator].keys():

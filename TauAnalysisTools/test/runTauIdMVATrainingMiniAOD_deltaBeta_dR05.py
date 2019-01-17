@@ -5,7 +5,8 @@ as well as the choice of the campaighn
 '''
 from samplesHandles import SamplesHandles
 import os
-import json
+import yaml
+from string import Template
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
