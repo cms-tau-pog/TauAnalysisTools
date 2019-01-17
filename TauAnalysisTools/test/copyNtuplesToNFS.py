@@ -7,25 +7,30 @@ import shutil
 from samplesHandles import SamplesHandles
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
+# from python_wrappers.subprocessHandler import SubprocessHandler
+
+# renice -n 19 -u `whoami`
 
 # generic path to dCache where ntuples are stored
-inputPath = "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial_withraw15"
-version = "tauId_v2"
-subfolder = "" # for regular runs use empty string
-sh = SamplesHandles("2017MCv2")
+inputPath = '/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2018/Autum2018tauId_v1'  # "/pnfs/desy.de/cms/tier2/store/user/ohlushch/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial_withraw15"
+version = "tauId_v1"
+subfolder = ""  # for regular runs use empty string
+sh = SamplesHandles("2018")
 samples = sh.samples
 # samples = sh.getSamplesPU17(subfolder)
 
 # generic path to NFS where we want to copy ntuples to
-outputPath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples2/" + subfolder + (len(subfolder) > 0 )*"/"
+outputPath = os.path.join("/nfs/dust/cms/user/glusheno/TauIDMVATraining2018/Autum2018tauId_v1/ntuples/", subfolder)
 
 # loop through dictionary, create directories according to sampleName
 # and copy corresponding ntuples to the directory
 print "Starting folder creation and copying of files. \n=====>Be mindfull and better remove old folders manualy before calling this script."
 
 rewriteall = None
+commands = []
+count = 0
 for sampleName, sampleOption in samples.items():
-    #pp.pprint("sampleName, sampleOption:", sampleName, sampleOption)
+    # pp.pprint("sampleName, sampleOption:", sampleName, sampleOption)
 
     folderToBeCreated = outputPath + sampleName
     print "folderToBeCreated:", folderToBeCreated
@@ -59,12 +64,33 @@ for sampleName, sampleOption in samples.items():
         shutil.rmtree(folderToBeCreated)
 
     os.makedirs(folderToBeCreated)
-    subfolder = sampleName + "_" + version
-    filesToCopy = inputPath + "/" + sampleOption['datasetpath'].split('/')[1] + "/*" + subfolder + (len(subfolder) > 0 )*"*" + "/*/*/*.root"
+    # subfolder = sampleName  #+ "_" + version
+    filesToCopy = os.path.join(inputPath, sampleOption['datasetpath'].split('/')[1], '*' + sampleName + '*', "*/*/*.root")
+
     copyCommand = "cp " + filesToCopy + " " + folderToBeCreated + "/"
     args = shlex.split(copyCommand)
     args[0] = sampleName
     print copyCommand, "\n"
-    subprocess.Popen(copyCommand, shell = True)#subprocess.call(copyCommand, shell = True)
+    # exit(1)
+    subprocess.Popen(copyCommand, shell=True)  # subprocess.call(copyCommand, shell = True)
+    # commands.append(copyCommand)
+    # count += 1
+    # if count == 3:
+    #     break
 
-print "submission done"
+# dry = False
+# debug = True
+# n_threads = 20
+# yes_on_command = True
+# silent = False
+# subprocessHandler = SubprocessHandler(
+#     commands=commands,
+#     dry=dry,
+#     debug=debug,
+#     n_threads=n_threads,
+#     yes_on_command=yes_on_command,
+#     silent=silent,
+# )
+# subprocessHandler.run()
+
+print "copy done"
