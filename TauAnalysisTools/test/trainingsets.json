@@ -578,7 +578,7 @@
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
 	            "byIsolationMVArun2v1DBnewDMwLTraw",
-				"byIsolationMVArun2v1DBnewDMwLTraw2016",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	        ],
 	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., phpt>1, new DM",
@@ -768,7 +768,7 @@
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
 				"byIsolationMVArun2v1DBoldDMwLTraw2016",
-				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
+				"byIsolationMVArun2017v2DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., dRiso 0.5, old DM",
