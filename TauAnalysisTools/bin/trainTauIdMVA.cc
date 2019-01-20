@@ -183,6 +183,55 @@ int main(int argc, char* argv[])
 
   TMVA::DataLoader* dataloader = new TMVA::DataLoader(datasetDirName);
 
+  std::cout << "SetBranchStatus to 0..." << std::endl;
+  tree_signal->SetBranchStatus("*", 0);
+  tree_background->SetBranchStatus("*", 0);
+  // for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
+  // {
+  //   unsigned int idx = inputVariable->find_last_of("/");
+  //   if (idx == (inputVariable->length() - 2))
+  //   {
+  //     std::string inputVariableName = std::string(*inputVariable, 0, idx);
+  //     char inputVariableType = (*inputVariable)[idx + 1];
+  //     tree_signal->SetBranchStatus(inputVariableName.data(), 1);
+  //     tree_background->SetBranchStatus(inputVariableName.data(), 1);
+  //   }
+  //   else throw cms::Exception("trainTauIdMVA") << "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
+  // }
+  std::cout << "SetBranchStatus to 1..." << std::endl;
+  vstring traintingVariables = {"recTauPt",
+    "recTauEta",
+    "chargedIsoPtSum",
+    "neutralIsoPtSum_ptGt1.0",
+    "puCorrPtSum",
+    "photonPtSumOutsideSignalCone_ptGt1.0",
+    "recTauDecayMode",
+    "recTauNphoton_ptGt1.0",
+    "recTauPtWeightedDetaStrip_ptGt1.0",
+    "recTauPtWeightedDphiStrip_ptGt1.0",
+    "recTauPtWeightedDrSignal_ptGt1.0",
+    "recTauPtWeightedDrIsolation_ptGt1.0",
+    "recTauEratio",
+    "recImpactParam",
+    "recImpactParam",
+    "recImpactParamSign",
+    "recImpactParam3D",
+    "recImpactParam3D",
+    "recImpactParamSign3D",
+    "hasRecDecayVertex",
+    "recDecayDistMag",
+    "recDecayDistSign",
+    "recTauGJangleDiff"}; // cfgTrainTauIdMVA.getParameter<vstring>("traintingVariables");
+  for ( vstring::const_iterator spectatorVariable = traintingVariables.begin(); spectatorVariable != traintingVariables.end(); ++spectatorVariable )
+  // for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
+  {
+    int idxSpectatorVariable = spectatorVariable->find_last_of("/");
+    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
+    tree_signal->SetBranchStatus(spectatorVariableName.data(), 1);
+    tree_background->SetBranchStatus(spectatorVariableName.data(), 1);
+  }
+  std::cout << "SetBranchStatus to 1 done" << std::endl;
+
   dataloader->AddSignalTree(tree_signal);
   dataloader->AddBackgroundTree(tree_background);
 
