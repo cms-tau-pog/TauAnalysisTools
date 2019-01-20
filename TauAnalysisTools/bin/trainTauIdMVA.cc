@@ -175,11 +175,13 @@ int main(int argc, char* argv[])
   std::string mvaMethodName = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodName");
 
   std::string mvaTrainingOptions = cfgTrainTauIdMVA.getParameter<std::string>("mvaTrainingOptions");
+  std::string datasetDirName = cfgTrainTauIdMVA.getParameter<std::string>("datasetDirName");
+
 
   TMVA::Tools::Instance();
   TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
 
-  TMVA::DataLoader* dataloader = new TMVA::DataLoader("dataset");
+  TMVA::DataLoader* dataloader = new TMVA::DataLoader(datasetDirName);
 
   dataloader->AddSignalTree(tree_signal);
   dataloader->AddBackgroundTree(tree_background);
@@ -195,18 +197,21 @@ int main(int argc, char* argv[])
     }
     else throw cms::Exception("trainTauIdMVA") << "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
   }
-  for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin();
-	spectatorVariable != spectatorVariables.end(); ++spectatorVariable ) {
+
+  for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
+  {
     int idxSpectatorVariable = spectatorVariable->find_last_of("/");
     std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
     bool isInputVariable = false;
-    for ( vstring::const_iterator inputVariable = inputVariables.begin();
-	  inputVariable != inputVariables.end(); ++inputVariable ) {
+
+    for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
+    {
       int idxInputVariable = inputVariable->find_last_of("/");
       std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
       if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
     }
-    if ( !isInputVariable ) {
+    if ( !isInputVariable )
+    {
       dataloader->AddSpectator(spectatorVariableName.data());
     }
   }
@@ -258,22 +263,23 @@ int main(int argc, char* argv[])
     std::string inputVariableName = std::string(*inputVariable, 0, idx);
     reader->AddVariable(inputVariableName.data(), &dummyVariable);
   }
-  for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin();
-	spectatorVariable != spectatorVariables.end(); ++spectatorVariable ) {
+
+  for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
+  {
     int idxSpectatorVariable = spectatorVariable->find_last_of("/");
     std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
     bool isInputVariable = false;
-    for ( vstring::const_iterator inputVariable = inputVariables.begin();
-	  inputVariable != inputVariables.end(); ++inputVariable ) {
+
+    for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
+    {
       int idxInputVariable = inputVariable->find_last_of("/");
       std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
       if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
     }
-    if ( !isInputVariable ) {
-      reader->AddSpectator(spectatorVariableName.data(), &dummyVariable);
-    }
+    if (!isInputVariable) reader->AddSpectator(spectatorVariableName.data(), &dummyVariable);
+
   }
-  const std::string& weightsfile(Form("dataset/weights/%s_%s.weights.xml", mvaName.data(), mvaMethodName.data()));
+  const std::string& weightsfile(Form("%s/weights/%s_%s.weights.xml", datasetDirName.data(), mvaName.data(), mvaMethodName.data()));
   // CMSSW 9
   // TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), weightsfile.c_str());  // https://github.com/cms-sw/cmssw/commit/0f09c19f5464811fdbf36f178ad833ab45f34f49#diff-9e5a1ffbf53411d5d6efeab6c46a2c76L39
   // saveAsGBRForest(mva, mvaName, outputFileName);
