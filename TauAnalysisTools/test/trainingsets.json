@@ -20,6 +20,16 @@
 	        "color"               : 3
 	    },
 
+		"rawMVAoldDMdR03wLT2017" : {
+	        "preselection"        : "preselection_dR03_oldDMs",
+	        "discriminator"       : "byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
+	        "numBins"             : 30000,
+	        "min"                 : -1.5,
+	        "max"                 : 1.5,
+	        "legendEntry"         : "2017 MVA, dRiso 0.3, old DM",
+	        "color"               : 3
+	    },
+
 	    "rawMVAoldDMwLT" : {
 	        "preselection"        : "preselection_oldDMs",
 	        "discriminator"       : "byIsolationMVArun2v1DBoldDMwLTraw",
@@ -49,6 +59,16 @@
 			"color"                : 14
 		},
 
+		"rawMVAoldDMwLT2017v2" : {
+			"preselection"        : "preselection_oldDMs",
+			"discriminator"       : "byIsolationMVArun2017v2DBoldDMwLTraw2017",
+			"numBins"             : 30000,
+			"min"                 : -1.5,
+			"max"                 : 1.5,
+			"legendEntry"         : "2017 MVAv2, dRiso 0.5, old DM",
+			"color"                : 14
+		},
+
 		"rawMVAnewDMwLT" : {
 	        "preselection"        : "preselection_newDMs",
 	        "discriminator"       : "byIsolationMVArun2v1DBnewDMwLTraw",
@@ -68,6 +88,27 @@
 	        "legendEntry"         : "2016 MVA, dRiso 0.5, new DM",
 	        "color"               : 3
 	    },
+
+		"rawMVAnewDMwLT2017v1" : {
+			"preselection"        : "preselection_oldDMs",
+			"discriminator"       : "byIsolationMVArun2017v1DBnewDMwLTraw2017",
+			"numBins"             : 30000,
+			"min"                 : -1.5,
+			"max"                 : 1.5,
+			"legendEntry"         : "2017 MVAv1, dRiso 0.5, new DM",
+			"color"                : 14
+		},
+
+		"rawMVAnewDMwLT2017v2" : {
+			"preselection"        : "preselection_oldDMs",
+			"discriminator"       : "byIsolationMVArun2017v2DBnewDMwLTraw2017",
+			"numBins"             : 30000,
+			"min"                 : -1.5,
+			"max"                 : 1.5,
+			"legendEntry"         : "2017 MVAv2, dRiso 0.5, new DM",
+			"color"                : 14
+		},
+
 
 	    "CombinedIsolationDeltaBetaCorrRaw3Hits_oldDM" : {
 	        "preselection"        : "preselection_oldDMs",
@@ -111,27 +152,31 @@
 	[
 		"recTauNphoton",
 		"recTauNphoton_ptGt1.0",
-        "recTauNphoton_ptGt1.5",
         "photonPtSumOutsideSignalCone_ptGt1.0",
-        "photonPtSumOutsideSignalCone_ptGt1.5",
         "photonPtSumOutsideSignalConedRgt0p1_ptGt1.0",
-        "photonPtSumOutsideSignalConedRgt0p1_ptGt1.5",
         "neutralIsoPtSum_ptGt1.0",
-        "neutralIsoPtSum_ptGt1.5",
         "recTauPtWeightedDetaStrip_ptGt1.0",
-        "recTauPtWeightedDetaStrip_ptGt1.5",
         "recTauPtWeightedDphiStrip_ptGt1.0",
-        "recTauPtWeightedDphiStrip_ptGt1.5",
         "recTauPtWeightedDrSignal_ptGt1.0",
-        "recTauPtWeightedDrSignal_ptGt1.5",
         "recTauPtWeightedDrIsolation_ptGt1.0",
-        "recTauPtWeightedDrIsolation_ptGt1.5",
 
         "chargedIsoPtSumdR03",
         "neutralIsoPtSumdR03",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt1.0",
+		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.0"
+    ],
+
+    "commonOtherVariables_removed":
+	[
+		"recTauNphoton_ptGt1.5",
+        "photonPtSumOutsideSignalCone_ptGt1.5",
+        "photonPtSumOutsideSignalConedRgt0p1_ptGt1.5",
+        "neutralIsoPtSum_ptGt1.5",
+        "recTauPtWeightedDetaStrip_ptGt1.5",
+        "recTauPtWeightedDphiStrip_ptGt1.5",
+        "recTauPtWeightedDrSignal_ptGt1.5",
+        "recTauPtWeightedDrIsolation_ptGt1.5",
 		"neutralIsoPtSum_IsoConeR0p3_ptGt1.5",
-		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.0",
 		"photonPtSumOutsideSignalCone_IsoConeR0p3_ptGt1.5"
     ],
 
@@ -142,18 +187,34 @@
 		"numOfflinePrimaryVertices/I",
 		"genVisTauPt/F",
 		"genTauPt/F",
+
+
 		"byIsolationMVArun2v1DBdR03oldDMwLTraw",
+		"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
+
+
 		"byIsolationMVArun2v1DBoldDMwLTraw",
 		"byIsolationMVArun2v1DBoldDMwLTraw2016",
-		"byIsolationMVArun2017v1DBoldDMwLTraw2017",
+		"byIsolationMVArun2017v2DBoldDMwLTraw2017",
+
+
 		"byIsolationMVArun2v1DBnewDMwLTraw",
 		"byIsolationMVArun2v1DBnewDMwLTraw2016",
+		"byIsolationMVArun2017v2DBnewDMwLTraw2017",
+
+
 		"byCombinedIsolationDeltaBetaCorrRaw3Hits",
 		"byLooseCombinedIsolationDeltaBetaCorr3Hits",
 		"byMediumCombinedIsolationDeltaBetaCorr3Hits",
 		"byTightCombinedIsolationDeltaBetaCorr3Hits"
 	],
-	
+
+	"commonSpectatorVariables_removed":
+	[
+		"byIsolationMVArun2017v1DBoldDMwLTraw2017",
+		"byIsolationMVArun2017v1DBnewDMwLTraw2017"
+	],
+
 	"trainings":
 	{
 	    "mvaIsolation3HitsDeltaR03opt1aLTDB" : {
