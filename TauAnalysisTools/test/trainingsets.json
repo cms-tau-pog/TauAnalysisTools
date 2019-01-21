@@ -189,20 +189,6 @@
 		"genTauPt/F",
 
 
-		"byIsolationMVArun2v1DBdR03oldDMwLTraw",
-		"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
-
-
-		"byIsolationMVArun2v1DBoldDMwLTraw",
-		"byIsolationMVArun2v1DBoldDMwLTraw2016",
-		"byIsolationMVArun2017v2DBoldDMwLTraw2017",
-
-
-		"byIsolationMVArun2v1DBnewDMwLTraw",
-		"byIsolationMVArun2v1DBnewDMwLTraw2016",
-		"byIsolationMVArun2017v2DBnewDMwLTraw2017",
-
-
 		"byCombinedIsolationDeltaBetaCorrRaw3Hits",
 		"byLooseCombinedIsolationDeltaBetaCorr3Hits",
 		"byMediumCombinedIsolationDeltaBetaCorr3Hits",
@@ -254,6 +240,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBdR03oldDMwLTraw",
+				"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [],
@@ -298,6 +286,9 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBoldDMwLTraw",
+				"byIsolationMVArun2v1DBoldDMwLTraw2016",
+				"byIsolationMVArun2017v2DBoldDMwLTraw2017",
 	            "byIsolationMVArun2v1DBoldDMwLTraw"
 	        ],
 	        "otherVariables" : [
@@ -347,6 +338,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBdR03oldDMwLTraw",
+				"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [],
@@ -391,6 +384,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBdR03oldDMwLTraw",
+				"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [
@@ -437,6 +432,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBdR03oldDMwLTraw",
+				"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [],
@@ -481,6 +478,8 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBdR03oldDMwLTraw",
+				"byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017",
 	            "byIsolationMVArun2v1DBdR03oldDMwLTraw"
 	        ],
 	        "otherVariables" : [
@@ -530,6 +529,9 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016",
+				"byIsolationMVArun2017v2DBnewDMwLTraw2017",
 	            "byIsolationMVArun2v1DBnewDMwLTraw",
 				"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	        ],
@@ -577,6 +579,9 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016",
+				"byIsolationMVArun2017v2DBnewDMwLTraw2017",
 	            "byIsolationMVArun2v1DBnewDMwLTraw",
 				"byIsolationMVArun2v1DBnewDMwLTraw2016"
 	        ],
@@ -622,6 +627,9 @@
 	        ],
 	        "spectatorVariables"  : [
 	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016",
+				"byIsolationMVArun2017v2DBnewDMwLTraw2017",
 	            "byIsolationMVArun2v1DBnewDMwLTraw",
 				"byIsolationMVArun2v1DBnewDMwLTraw2016",
 				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
@@ -673,7 +681,7 @@
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
 				"byIsolationMVArun2v1DBoldDMwLTraw2016",
-				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
+				"byIsolationMVArun2017v2DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -720,7 +728,7 @@
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
 				"byIsolationMVArun2v1DBoldDMwLTraw2016",
-				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
+				"byIsolationMVArun2017v2DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [
 	            "commonOtherVariables"
@@ -814,7 +822,7 @@
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBoldDMwLTraw",
 				"byIsolationMVArun2v1DBoldDMwLTraw2016",
-				"byIsolationMVArun2017v1DBoldDMwLTraw2017"
+				"byIsolationMVArun2017v2DBoldDMwLTraw2017"
 	        ],
 	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., phpt>1.5, old DM, MC16",
