@@ -1,0 +1,43 @@
+# Unix submit description file
+# Default Universe for normal jobs
+universe                = vanilla
+executable              = condor_test.sh
+arguments               = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2018/Autum2018tauId_v1/tauId_dR05_old_v1/train_test.py &> delmelog"
+log                     = log_condor_test.$(BATCH_NAME).$(ID).$(DOLLAR).$$(Name).$(DOLLAR).log
+output                  = out_condor_test.$(BATCH_NAME).$(ID).$(DOLLAR).$$(Name).$(DOLLAR).log
+error                   = err_condor_test.$(BATCH_NAME).$(ID).$(DOLLAR).$$(Name).$(DOLLAR).log
+
+# Until now we use shared file system:
+should_transfer_files   = No
+# should_transfer_files   = Yes
+# when_to_transfer_output = ON_EXIT
+
+# use SL6
+requirements   = OpSysAndVer == "SL6"
+
+# (the maximum memory usage of this job) - 32G; 48G - for the NEW DM; 64G
+request_memory = 500 MB
+
+# (the maximum Available_Disk_Space  Amount of memory). kB
+request_disk = 512 MB
+
+#(the cpu time for this job) -l h_cpu=72:00:00
+# Defaults to 1 day:
+# RequestRuntime = 72 * 60 * 60
+
+# Mailing requests:
+#notification = $<$Always | Complete | Error | Never$>$
+notification  = Complete
+notify_user   = olena.hlushchenko@desy.de
+
+queue
+
+
+#(stderr and stdout are merged together to stdout)
+#$ -j y
+
+# use current dir and current environment
+#$ -cwd
+#$ -V
+
+

@@ -1,0 +1,37 @@
+# Unix submit description file
+# Default Universe for normal jobs
+universe                = vanilla
+executable              = condor_SingleJob_slx7.sh
+
+# DR 0.5 old
+log                     = old05_train.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).slx7.log
+output                  = old05_train.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).slx7.out
+error                   = old05_train.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).slx7.err
+
+# DR 0.5 new
+# log                     = new05_reweighting_bg.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).log
+# output                  = new05_reweighting_bg.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).out
+# error                   = new05_reweighting_bg.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).err
+
+# DR 0.3 old
+
+should_transfer_files   = No
+
+requirements   = OpSysAndVer == "SL7"
+
+# request_cpus = Cpus
+rank = Cpus
+# rank = Memory
+
+# Defaults to 3h [sek] 12h*3
++RequestRuntime = 129600
+
+# this can impact the cpu requested. eg it rewrites the request
+request_memory = 64 GB
+request_disk = 512 MB
+
+#notification = $<$Always | Complete | Error | Never$>$
+notification  = Always
+notify_user   = olena.hlushchenko@desy.de
+
+queue
