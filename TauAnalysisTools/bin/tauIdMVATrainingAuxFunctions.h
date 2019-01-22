@@ -142,6 +142,8 @@ bool isPrunedEventByNumMatches(int numMatches, int eventPruningLevel)
 
 bool isPrunedEventByLevel(int eventPruningLevel)
 {
+  // eventPruningLevel = 2 -> 50% ev left
+  // eventPruningLevel = 3 -> 33% ev left
   static TRandom3 rnd;
   if ( eventPruningLevel == 0 ) return false;
   double u = rnd.Rndm();
@@ -184,6 +186,7 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
 
   int numBranches = branches->GetEntries();
   std::vector<Float_t> intVariables;
+  // inputTree->SetBranchStatus("*", 0);
   for ( int iBranch = 0; iBranch < numBranches; ++iBranch )
   {
     const TBranch* branch = dynamic_cast<const TBranch*>(branches->At(iBranch));
@@ -231,6 +234,7 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
         {
           std::cout << "\t branchEntry->branchType_ == F"  << std::endl;
           inputTree->SetBranchAddress(branchEntry->branchName_.data(), &branchEntry->valueF_);
+          // inputTree->SetBranchStatus(branchEntry->branchName_.data(), 1);
           outputTree->Branch(branchEntry->branchName_.data(), &branchEntry->valueF_, branchEntry->branchName_and_Type_.data());
         }
         else if ( branchEntry->branchType_ == 'I' )
