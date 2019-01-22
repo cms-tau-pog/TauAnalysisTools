@@ -8,40 +8,30 @@ manipulating of the SamplesHandles class
 '''
 from samplesHandles import SamplesHandles
 import os
-import json
+import yaml
+from string import Template
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-from submitHelpers import replaceCommomns, _decode_dict
+from submitHelpers import getTrainingSets, reweighting_no_xml, addCondorToMake
+from condorTemplates import presel_sub, presel_sh
+
+config = yaml.load(open("config.yaml", 'r'))
+preselections, cutDiscriminatorsAll, trainings, commonsDict = getTrainingSets(trainingsets='trainingsets.json')
+
+inputFilePath = os.path.join(config['nfs_base'], 'ntuples')
+outputFilePath = Template(os.path.join(config['nfs_base'], "$version"))
+# version = decaymodes[DM]["version"] #version = 'tauId_dR03' #'tauId_v3_0'
+# inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples/"
+# outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/%s/trainfilesfinal_WIP1_attempt2/" % version
 
 
+# ---------- Settings to touch ----------------
 DM = "old"  # New DM not used for 0.3 cone training
-samples_key = "2017MCv2dR0p3"
-train_option = 'optaDBAll'
+disable_xml_inclusion = True
+use_condor = True
 
-sh = SamplesHandles(samples_key)
-signalSamples = sh.samples_sg.keys()
-backgroundSamples = sh.samples_bg.keys()
-
-with open('trainingsets.json') as f:
-    ff = json.load(f, object_hook=_decode_dict)
-
-preselections = ff['preselections']
-cutDiscriminatorsAll = ff['cutDiscriminators']
-trainings = ff['trainings']
-commonsDict = {
-    'commonOtherVariables': ff['commonOtherVariables'],
-    'commonSpectatorVariables': ff['commonSpectatorVariables'],
-}
-
-for cval in cutDiscriminatorsAll.values():
-    cval["preselection"] = preselections[cval["preselection"]]
-
-for tval in trainings.values():
-    tval["preselection"] = preselections[tval["preselection"]]
-    replaceCommomns('commonOtherVariables', commonsDict['commonOtherVariables'], tval["otherVariables"])
-    replaceCommomns('commonSpectatorVariables', commonsDict['commonSpectatorVariables'], tval["spectatorVariables"])
-
+v = config['version']
 decaymodes = {
     "old": {
         "mvaDiscriminators": {
@@ -73,21 +63,32 @@ decaymodes = {
     }
 }
 
+datasetDirName = 'dataset_' + DM + "DM_" + decaymodes[DM]["version"]
+
+# OPTIONAL!!!!
+for val in decaymodes[DM]['mvaDiscriminators'].values():
+    val['applyPtDependentPruningSignal'] = False
 
 # Set this to true if you want to compute ROC curves for additional
 # discriminators for comparisons on ALL events available in the ntuples
 # NB: if pt-dependent pruning is used, this will not result in an
 # apples-to-apples comparison!
 computeROConAllEvents = False
-version = decaymodes[DM]["version"] #version = 'tauId_dR03' #'tauId_v3_0'
-inputFilePath  = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/ntuples/"
-outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_2017MCv2_partial/%s/trainfilesfinal_WIP1_attempt2/" % version
 
-#====================================================NO MANUAL BELOW THIS LINE
+# ---------- end Settings to touch ----------------
+
+train_option = 'optaDBAll'
+
+version = decaymodes[DM]["version"]
+outputFilePath = outputFilePath.substitute(version=version)
+
+samples_key = config['samples_key']['dR0p3']
+sh = SamplesHandles(samples_key)
+signalSamples = sh.samples_sg.keys()
+backgroundSamples = sh.samples_bg.keys()
 
 # DO NOT process isodR03 and isodR05 together! - different input variables
 # preselection root-files can be shared only if thew follow the same preselection choice (1 of 4)
-
 mvaDiscriminators = decaymodes[DM]["mvaDiscriminators"]
 
 # to ensure the final reweighting root files will be suitable for larger spectra of trainings
@@ -95,16 +96,12 @@ for value in mvaDiscriminators.values():
     value["spectatorVariables"] += commonsDict['commonOtherVariables']
 
 cutDiscriminators = decaymodes[DM]["cutDiscriminators"]
-
 plots = decaymodes[DM]["plots"]
-
 allDiscriminators = {}
 allDiscriminators.update(mvaDiscriminators)
 allDiscriminators.update(cutDiscriminators)
 
-
-#====================================================NO SETTINGS BELOW THIS LINE
-
+#==================================================== NO SETTINGS BELOW THIS LINE
 
 execDir = "%s/bin/%s/" % (os.environ['CMSSW_BASE'], os.environ['SCRAM_ARCH'])
 
@@ -161,6 +158,12 @@ def createFilePath_recursively(filePath):
 if not os.path.isdir(outputFilePath):
     print "outputFilePath does not yet exist, creating it."
     createFilePath_recursively(outputFilePath)
+# else:
+#     print 'first delete dir:', outputFilePath
+#     exit(1)
+
+if not os.path.exists(os.path.join(outputFilePath, 'preselection')):
+    os.mkdir(os.path.join(outputFilePath, 'preselection'))
 
 def getStringRep_bool(flag):
     retVal = None
@@ -180,6 +183,10 @@ reweightTreeTauIdMVA_logFileNames         = {} # key = discriminator, "signal" o
 trainTauIdMVA_configFileNames             = {} # key = discriminator
 trainTauIdMVA_outputFileNames             = {} # key = discriminator
 trainTauIdMVA_logFileNames                = {} # key = discriminator
+merged_preselected_root                   = {} # key = discriminator
+preselected_roots                   = {} # key = discriminator
+
+
 for discriminator in mvaDiscriminators.keys():
 
     print "processing discriminator = %s" % discriminator
@@ -189,7 +196,7 @@ for discriminator in mvaDiscriminators.keys():
     preselectTreeTauIdMVA_configFileNames[discriminator] = {}
     preselectTreeTauIdMVA_outputFileNames[discriminator] = {}
     preselectTreeTauIdMVA_logFileNames[discriminator]    = {}
-    for sample in [ "signal", "background" ]:
+    for sample in ["signal"]:
         outputFileName = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s.root" % (discriminator, sample))
         print " outputFileName = '%s'" % outputFileName
         preselectTreeTauIdMVA_outputFileNames[discriminator][sample] = outputFileName
@@ -222,7 +229,8 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "process.preselectTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.otherVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['otherVariables']
         cfg_modified += "process.preselectTreeTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
-        cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_%s_cfg.py" % (discriminator, sample)))
+        cfgFileName_modified = os.path.join(outputFilePath, 'preselection', cfgFileName_original.replace("_cfg.py", "_%s_%s_cfg.py" % (discriminator, sample)))
+
         print " cfgFileName_modified = '%s'" % cfgFileName_modified
         cfgFile_modified = open(cfgFileName_modified, "w")
         cfgFile_modified.write(cfg_modified)
@@ -231,6 +239,60 @@ for discriminator in mvaDiscriminators.keys():
 
         logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
         preselectTreeTauIdMVA_logFileNames[discriminator][sample] = logFileName
+
+    # Background preselections
+    preselectTreeTauIdMVA_outputFileNames[discriminator]["background"] = []
+    preselectTreeTauIdMVA_configFileNames[discriminator]["background"] = []
+    preselectTreeTauIdMVA_logFileNames[discriminator]["background"] = []
+    merged_preselected_root[discriminator] = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s.root" % (discriminator, "background"))
+    preselected_roots[discriminator] = []
+    for proc in backgroundSamples:
+        sample = "background"
+        outputFileName = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s_%s.root" % (discriminator, sample, proc))
+        preselected_roots[discriminator].append(outputFileName)
+        print " outputFileName = '%s'" % outputFileName
+        preselectTreeTauIdMVA_outputFileNames[discriminator][sample].append(outputFileName)
+
+        cfgFileName_original = configFile_preselectTreeTauIdMVA
+        cfgFile_original = open(cfgFileName_original, "r")
+        cfg_original = cfgFile_original.read()
+        cfgFile_original.close()
+        cfg_modified  = cfg_original
+        cfg_modified += "\n"
+        cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
+        for inputFileName in inputFileNames:
+            cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % inputFileName
+        cfg_modified += "\n"
+        eventPruningLevel = None
+        ptDependentPruning = None
+        cfg_modified += "process.preselectTreeTauIdMVA.samples = cms.vstring(%s)\n" % [proc]
+        eventPruningLevel = mvaDiscriminators[discriminator]['applyEventPruningBackground']
+        ptDependentPruning = mvaDiscriminators[discriminator]['applyPtDependentPruningBackground']
+        cfg_modified += "process.preselectTreeTauIdMVA.inputTreeName = cms.string('%s')\n" % "tauIdMVATrainingNtupleProducerMiniAOD/tauIdMVATrainingNtupleMiniAOD"
+        cfg_modified += "process.preselectTreeTauIdMVA.preselection = cms.string('%s')\n" % mvaDiscriminators[discriminator]['preselection']
+        cfg_modified += "process.preselectTreeTauIdMVA.applyEventPruning = cms.int32(%i)\n" % eventPruningLevel
+        cfg_modified += "process.preselectTreeTauIdMVA.applyPtDependentPruning = cms.bool(%s)\n" % ptDependentPruning
+        cfg_modified += "process.preselectTreeTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.otherVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['otherVariables']
+        cfg_modified += "process.preselectTreeTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
+        cfgFileName_modified = os.path.join(outputFilePath, 'preselection', cfgFileName_original.replace("_cfg.py", "_%s_%s_%s_cfg.py" % (discriminator, sample, proc)))
+        print " cfgFileName_modified = '%s'" % cfgFileName_modified
+        cfgFile_modified = open(cfgFileName_modified, "w")
+        cfgFile_modified.write(cfg_modified)
+        cfgFile_modified.close()
+        preselectTreeTauIdMVA_configFileNames[discriminator][sample].append(cfgFileName_modified)
+
+        # presel_sub_name = cfgFileName_modified.replace('.py', '.sub')
+        # presel_sub_file = open(presel_sub_name, "w")
+        # presel_sub_file.write(presel_sub.safe_substitute({
+        #     "preselsh": presel_sub_name,
+        #     'preselid': '_'.join([DM, '0p5', discriminator, sample, version]),
+        # }))
+        # presel_sub_file.close()
+
+        logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
+        preselectTreeTauIdMVA_logFileNames[discriminator][sample].append(logFileName)
     #----------------------------------------------------------------------------
 
     #----------------------------------------------------------------------------
@@ -251,7 +313,7 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "\n"
         cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
         cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['signal']
-        cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['background']
+        cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % merged_preselected_root[discriminator]
         cfg_modified += "\n"
         cfg_modified += "process.reweightTreeTauIdMVA.signalSamples = cms.vstring('signal')\n"
         cfg_modified += "process.reweightTreeTauIdMVA.backgroundSamples = cms.vstring('background')\n"
@@ -262,6 +324,10 @@ for discriminator in mvaDiscriminators.keys():
         cfg_modified += "process.reweightTreeTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
         cfg_modified += "process.reweightTreeTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
         cfg_modified += "process.reweightTreeTauIdMVA.save = cms.string('%s')\n" % sample
+
+        if disable_xml_inclusion:
+            cfg_modified += reweighting_no_xml.safe_substitute()
+
         cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_%s_cfg.py" % (discriminator, sample)))
         print " cfgFileName_modified = '%s'" % cfgFileName_modified
         cfgFile_modified = open(cfgFileName_modified, "w")
@@ -300,6 +366,7 @@ for discriminator in mvaDiscriminators.keys():
     cfg_modified += "process.trainTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
     cfg_modified += "process.trainTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
     cfg_modified += "process.trainTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
+    cfg_modified += "process.trainTauIdMVA.datasetDirName = cms.string('%s')\n" % datasetDirName
     cfgFileName_modified = os.path.join(outputFilePath, cfgFileName_original.replace("_cfg.py", "_%s_cfg.py" % discriminator))
     print " cfgFileName_modified = '%s'" % cfgFileName_modified
     cfgFile_modified = open(cfgFileName_modified, "w")
@@ -310,7 +377,7 @@ for discriminator in mvaDiscriminators.keys():
     logFileName = cfgFileName_modified.replace("_cfg.py", ".log")
     trainTauIdMVA_logFileNames[discriminator] = logFileName
 
-print "Info: building config files for evaluating MVA performance"
+print "\n", "=" * 50, "Info: building config files for evaluating MVA performance"
 makeROCcurveTauIdMVA_configFileNames = {} # key = discriminator, "TestTree" or "TrainTree"
 makeROCcurveTauIdMVA_outputFileNames = {} # key = discriminator, "TestTree" or "TrainTree"
 makeROCcurveTauIdMVA_logFileNames    = {} # key = discriminator, "TestTree" or "TrainTree"
@@ -443,7 +510,7 @@ else:
                 cfg_modified += "\n"
                 cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'signalSamples')\n"
                 cfg_modified += "delattr(process.makeROCcurveTauIdMVA, 'backgroundSamples')\n"
-                cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('dataset/%s')\n" % tree
+                cfg_modified += "process.makeROCcurveTauIdMVA.treeName = cms.string('%s/%s')\n" % (datasetDirName, tree)
                 cfg_modified += "process.makeROCcurveTauIdMVA.preselection = cms.string('')\n"
                 cfg_modified += "process.makeROCcurveTauIdMVA.classId_signal = cms.int32(0)\n"
                 cfg_modified += "process.makeROCcurveTauIdMVA.classId_background = cms.int32(1)\n"
@@ -565,7 +632,10 @@ makeFile.write("\n")
 outputFileNames = []
 for discriminator in trainTauIdMVA_outputFileNames.keys():
     for sample in [ "signal", "background" ]:
-        outputFileNames.append(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])
+        if sample == "signal":
+            outputFileNames.append(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])
+        else:
+            outputFileNames += preselectTreeTauIdMVA_outputFileNames[discriminator][sample]
         outputFileNames.append(reweightTreeTauIdMVA_outputFileNames[discriminator][sample])
     outputFileNames.append(trainTauIdMVA_outputFileNames[discriminator])
 for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
@@ -574,20 +644,63 @@ for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
 outputFileNames.append(hadd_outputFileName)
 for plot in showROCcurvesTauIdMVA_outputFileNames.keys():
     outputFileNames.append(showROCcurvesTauIdMVA_outputFileNames[plot])
+
+print '\n Expected output filenames:'
+pp.pprint(outputFileNames)
+print '\n'
+
+
 makeFile.write("all: %s\n" % make_MakeFile_vstring(outputFileNames))
 makeFile.write("\techo 'Finished tau ID MVA training.'\n")
 makeFile.write("\n")
 for discriminator in trainTauIdMVA_outputFileNames.keys():
-    for sample in [ "signal", "background" ]:
-        makeFile.write("%s:\n" %
-          (preselectTreeTauIdMVA_outputFileNames[discriminator][sample]))
-        makeFile.write("\t%s%s %s &> %s\n" %
-          (nice, executable_preselectTreeTauIdMVA,
-           preselectTreeTauIdMVA_configFileNames[discriminator][sample],
-           preselectTreeTauIdMVA_logFileNames[discriminator][sample]))
+    for sample in ["signal", "background"]:
+        if sample == "signal":
+            makeFile.write("%s:\n" % (preselectTreeTauIdMVA_outputFileNames[discriminator][sample]))
+            makeFile.write("\t%s%s %s &> %s\n" %
+              (nice, executable_preselectTreeTauIdMVA,
+               preselectTreeTauIdMVA_configFileNames[discriminator][sample],
+               preselectTreeTauIdMVA_logFileNames[discriminator][sample]))
+
+            if use_condor:
+                addCondorToMake(makeFile,
+                    sh_name=''.join(os.path.join(outputFilePath, 'preselection', preselectTreeTauIdMVA_configFileNames[discriminator][sample].replace("_cfg.py", ".sh"))),
+                    py_name=preselectTreeTauIdMVA_configFileNames[discriminator][sample],
+                    log_name=preselectTreeTauIdMVA_logFileNames[discriminator][sample],
+                    execDir=execDir,
+                    executable_preselectTreeTauIdMVA=executable_preselectTreeTauIdMVA,
+                    outputFilePath=outputFilePath,
+                )
+
+        else:
+            hadd_command = "hadd " + merged_preselected_root[discriminator] + " "
+
+            for proc_i in range(0, len(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])):
+                makeFile.write("%s:\n" % (preselectTreeTauIdMVA_outputFileNames[discriminator][sample][proc_i]))
+                makeFile.write("\t%s%s %s &> %s\n" %
+                  (nice, executable_preselectTreeTauIdMVA,
+                   preselectTreeTauIdMVA_configFileNames[discriminator][sample][proc_i],
+                   preselectTreeTauIdMVA_logFileNames[discriminator][sample][proc_i]))
+
+                if use_condor:
+                    addCondorToMake(makeFile,
+                        sh_name=''.join(os.path.join(outputFilePath, 'preselection', preselectTreeTauIdMVA_configFileNames[discriminator][sample][proc_i].replace("_cfg.py", ".sh"))),
+                        py_name=preselectTreeTauIdMVA_configFileNames[discriminator][sample][proc_i],
+                        log_name=preselectTreeTauIdMVA_logFileNames[discriminator][sample][proc_i],
+                        execDir=execDir,
+                        executable_preselectTreeTauIdMVA=executable_preselectTreeTauIdMVA,
+                        outputFilePath=outputFilePath,
+                    )
+
+                hadd_command += ' ' + preselected_roots[discriminator][proc_i]
+
+            hadd_command += '\n'
+            pp.pprint(hadd_command)
+            makeFile.write(hadd_command)
+
         makeFile.write("%s: %s\n" %
           (reweightTreeTauIdMVA_outputFileNames[discriminator][sample],
-           make_MakeFile_vstring([ preselectTreeTauIdMVA_outputFileNames[discriminator]['signal'], preselectTreeTauIdMVA_outputFileNames[discriminator]['background'] ])))
+           make_MakeFile_vstring([ preselectTreeTauIdMVA_outputFileNames[discriminator]['signal']] + preselectTreeTauIdMVA_outputFileNames[discriminator]['background'])))
         makeFile.write("\t%s%s %s &> %s\n" %
           (nice, executable_reweightTreeTauIdMVA,
            reweightTreeTauIdMVA_configFileNames[discriminator][sample],
@@ -595,8 +708,8 @@ for discriminator in trainTauIdMVA_outputFileNames.keys():
     makeFile.write("%s: %s\n" %
       (trainTauIdMVA_outputFileNames[discriminator],
        make_MakeFile_vstring([ reweightTreeTauIdMVA_outputFileNames[discriminator]['signal'], reweightTreeTauIdMVA_outputFileNames[discriminator]['background'] ])))
-    makeFile.write("\t%s%s %s &> %s\n" %
-      (nice, executable_trainTauIdMVA,
+    makeFile.write("\tcd %s; %s%s %s &> %s\n" %
+      (execDir, nice, executable_trainTauIdMVA,
        trainTauIdMVA_configFileNames[discriminator],
        trainTauIdMVA_logFileNames[discriminator]))
 makeFile.write("\n")
