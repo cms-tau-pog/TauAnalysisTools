@@ -10,16 +10,20 @@ pp = pprint.PrettyPrinter(indent=4)
 from samplesHandles import SamplesHandles
 from crab_templates import crab_template_mc, crab_template_data
 # from submitHelpers import *
+import yaml
+config = yaml.load(open("TauAnalysisTools/TauAnalysisTools/test/config.yaml", 'r'))
 
 # ---------- Settings to touch ----------------
-sh = SamplesHandles("2018")
-samples = sh.samples
+sh = SamplesHandles(config['samples_key']['dR0p5'])
+shdR0p3 = SamplesHandles(config['samples_key']['dR0p3'])
+samples = sh.samples.copy()
+samples.update(shdR0p3.samples)
 # samples = {"ggA180toTauTau": samples["ggA180toTauTau"],
 # "QCDjetsPt2400to3200v1 ": samples["QCDjetsPt2400to3200v1"]}
 
-version = "tauId_v1"  # tauId_v1 appears in jobs only
+version = config['version']  # tauId_v1 appears in jobs only
 # suffix = "_"  # "_full_v2"  # appears in crab workdir name in the end
-workarea = "Autum2018" + version  # + suffix  # "Summer17_25ns_2017MCv2_maxlikelihood_3"  # "Summer17_25ns_2017MCv2_partial_withraw15"
+workarea = config['workarea_base'] + version  # + suffix  # "Summer17_25ns_2017MCv2_maxlikelihood_3"  # "Summer17_25ns_2017MCv2_partial_withraw15"
 submitJobFraction = 1.00
 cfgFile_original_name = "produceTauIdMVATrainingNtupleMiniAOD_cfg.py"
 store_output_path = '/store/user/ohlushch/TauIDMVATraining2018/' + workarea + '/'
