@@ -58,8 +58,13 @@ class SamplesHandles(object):
 
         elif self.era == "2018":
             self.global_tag = '102X_upgrade2018_realistic_v15'
-            self.samples_sg = SamplesHandles.getSamplesSg18()
-            self.samples_bg = SamplesHandles.getSamplesBg18()
+            self.samples_sg = SamplesHandles.getSamplesSg18(dR0p3=False)
+            self.samples_bg = SamplesHandles.getSamplesBg18(dR0p3=False)
+
+        elif self.era == "2018dR0p3":
+            self.global_tag = '102X_upgrade2018_realistic_v15'
+            self.samples_sg = SamplesHandles.getSamplesSg18(dR0p3=True)
+            self.samples_bg = SamplesHandles.getSamplesBg18(dR0p3=True)
 
         else:
             self.samples = {}
@@ -84,13 +89,17 @@ class SamplesHandles(object):
         return s
 
     @staticmethod
-    def getSamples18():
-        s = SamplesHandles.getSamplesSg18()
-        s.update(SamplesHandles.getSamplesBg18())
+    def getSamples18(dR0p3=False):
+        s = SamplesHandles.getSamplesSg18(dR0p3=dR0p3)
+        s.update(SamplesHandles.getSamplesBg18(dR0p3=dR0p3))
         return s
 
     @staticmethod
-    def getSamplesSg18():
+    def getSamples18dR0p3():
+        return SamplesHandles.getSamples18(dR0p3=True)
+
+    @staticmethod
+    def getSamplesSg18(dR0p3=False):
         samples = {
           'ZplusJets_madgraph': {
               'datasetpath': '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
@@ -128,10 +137,25 @@ class SamplesHandles(object):
            'datasetpath': '/TauGun_Pt-15to3000_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
         }
 
-        # Two W decay through leptons, including any decay of the tau lepton
-        samples['TTTo2L2Nu'] = {
-            'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-        }
+        if dR0p3:
+            samples = {
+                # ttH samples
+                # 'tthHiggs125toTauTau': {
+                #    'datasetpath': '/ttHJetToTT_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                # },
+
+                # Two W decay through leptons, including any decay of the tau lepton - the genuine tau is in dense env dew to b-jet!
+                'TTTo2L2Nu_Signal': {
+                    'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                },
+
+                'TTToSemiLeptonic_mtop175p5_Signal': {
+                    'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                },
+                'TTToSemiLeptonic_mtop169p5_Signal': {
+                    'datasetpath': '/TTToSemiLeptonic_mtop169p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                },
+            }
 
         SamplesHandles.addKeys(
             samples=samples,
@@ -145,56 +169,60 @@ class SamplesHandles(object):
         return samples
 
     @staticmethod
-    def getSamplesBg18():
+    def getSamplesBg18(dR0p3=False):
         samples = {
-          # 'TTJets_SingleLeptFromT' : {  # fully qcd jets - missing?
-          #   'datasetpath'                        : '/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
-          # },
-
-          # 'TTTo2L2Nu' : {  # two W decay through leptons, including any decay of the tau lepton
-          #   'datasetpath'                        : '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-          # },
-
-          'TTToHadronic': {  # two W decay through quarks
-            'datasetpath': '/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-          }
+            'TTToHadronic': {  # two W decay through quarks
+                'datasetpath': '/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            },
+            # there are still b-jets, most of which will on the other hand be removed by quality cuts
+            # keep out of training not to bias towards discrimination from b-jets even more
+            # 'TTTo2L2Nu_Background': {
+            #     'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            # },
+            # 'TTToSemiLeptonic_mtop175p5_Background': {
+            #     'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            # },
+            # 'TTToSemiLeptonic_mtop169p5_Background': {
+            #     'datasetpath': '/TTToSemiLeptonic_mtop169p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            # },
         }
 
-        # ? : /QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM
-        QCD_Pt_ranges = ['15to30','30to50','50to80','80to120','120to170','170to300','300to470','470to600','600to800','800to1000','1000to1400','1400to1800','1800to2400','2400to3200','3200toInf']
-        for massrange in QCD_Pt_ranges:
-            sampleName = "QCDjetsPt" + massrange
-            samples[sampleName] = {
-                'datasetpath': '/QCD_Pt_' + massrange + '_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+        if not dR0p3:
+            # ? : /QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM
+            QCD_Pt_ranges = ['15to30','30to50','50to80','80to120','120to170','170to300','300to470','470to600','600to800','800to1000','1000to1400','1400to1800','1800to2400','2400to3200','3200toInf']
+            for massrange in QCD_Pt_ranges:
+                sampleName = "QCDjetsPt" + massrange
+                samples[sampleName] = {
+                    'datasetpath': '/QCD_Pt_' + massrange + '_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                }
+
+            # include v2 samples for low and high masses
+            QCD_Pt_ranges = ['1400to1800', '1800to2400', '2400to3200', '3200toInf', '50to80']
+            for massrange in QCD_Pt_ranges:
+                sampleName = "QCDjetsPt" + massrange
+                samples[sampleName] = {
+                  'datasetpath': '/QCD_Pt_' + massrange + '_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM',
+                }
+
+            # samples["WplusJets_mcatnlo"] = {
+            #   'datasetpath'                        : '/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
+            # }
+
+            samples["Wplus1Jets_mcatnlo"] = {
+              'datasetpath'                        : '/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
             }
 
-        # include v2 samples for low and high masses
-        QCD_Pt_ranges = ['1400to1800', '1800to2400', '2400to3200', '3200toInf', '50to80']
-        for massrange in QCD_Pt_ranges:
-            sampleName = "QCDjetsPt" + massrange
-            samples[sampleName] = {
-              'datasetpath': '/QCD_Pt_' + massrange + '_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM',
+            samples["Wplus2Jets_mcatnlo"] = {
+              'datasetpath': '/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
             }
 
-        # samples["WplusJets_mcatnlo"] = {
-        #   'datasetpath'                        : '/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM',
-        # }
+            samples["Wplus3Jets_mcatnlo"] = {
+              'datasetpath': '/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
+            }
 
-        # samples["Wplus1Jets_mcatnlo"] = {
-        #   'datasetpath'                        : '/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM',
-        # }
-
-        samples["Wplus2Jets_mcatnlo"] = {
-          'datasetpath': '/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
-        }
-
-        samples["Wplus3Jets_mcatnlo"] = {
-          'datasetpath': '/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
-        }
-
-        samples["Wplus4Jets_mcatnlo"] = {
-          'datasetpath': '/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
-        }
+            samples["Wplus4Jets_mcatnlo"] = {
+              'datasetpath': '/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM',
+            }
 
         SamplesHandles.addKeys(
             samples=samples,
