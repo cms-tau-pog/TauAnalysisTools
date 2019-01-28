@@ -54,35 +54,32 @@ typedef std::vector<std::string> vstring;
 
 int main(int argc, char* argv[])
 {
-//--- parse command-line arguments
-  if ( argc < 2 ) {
+  //--- parse command-line arguments
+  if ( argc < 2 )
+  {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
     return 0;
   }
 
   std::cout << "<trainTauIdMVA>:" << std::endl;
 
-//--- keep track of time it takes the macro to execute
+  //--- keep track of time it takes the macro to execute
   TBenchmark clock;
   clock.Start("trainTauIdMVA");
 
-//--- read python configuration parameters
+  //--- read python configuration parameters
   if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
-    throw cms::Exception("trainTauIdMVA")
-      << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
+    throw cms::Exception("trainTauIdMVA") << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
-
   edm::ParameterSet cfgTrainTauIdMVA = cfg.getParameter<edm::ParameterSet>("trainTauIdMVA");
-
   std::string treeName = cfgTrainTauIdMVA.getParameter<std::string>("treeName");
-
   vstring signalSamples = cfgTrainTauIdMVA.getParameter<vstring>("signalSamples");
   vstring backgroundSamples = cfgTrainTauIdMVA.getParameter<vstring>("backgroundSamples");
-
   bool applyPtReweighting = cfgTrainTauIdMVA.getParameter<bool>("applyPtReweighting");
   bool applyEtaReweighting = cfgTrainTauIdMVA.getParameter<bool>("applyEtaReweighting");
   TString reweightOption_tstring = cfgTrainTauIdMVA.getParameter<std::string>("reweight").data();
+
   int reweight_or_KILL = kReweight;
   int reweightOption = -1;
   TObjArray* reweightOption_items = reweightOption_tstring.Tokenize(":");
@@ -102,9 +99,8 @@ int main(int argc, char* argv[])
   }
 
   vstring inputVariables = cfgTrainTauIdMVA.getParameter<vstring>("inputVariables");
-
   vstring spectatorVariables = cfgTrainTauIdMVA.getParameter<vstring>("spectatorVariables");
-
+  vstring traintingVariables = cfgTrainTauIdMVA.getParameter<vstring>("traintingVariables");
   std::string branchNameEvtWeight = cfgTrainTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
 
   fwlite::InputSource inputFiles(cfg);
@@ -113,55 +109,55 @@ int main(int argc, char* argv[])
   std::cout << " outputFileName = " << outputFileName << std::endl;
   TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
 
+  // Reading input file
   TChain* tree_signal = new TChain(treeName.data());
   TChain* tree_background = new TChain(treeName.data());
-  for ( vstring::const_iterator inputFileName = inputFiles.files().begin(); inputFileName != inputFiles.files().end(); ++inputFileName ) {
+  for ( vstring::const_iterator inputFileName = inputFiles.files().begin(); inputFileName != inputFiles.files().end(); ++inputFileName )
+  {
     bool matchesSample_signal = false;
-    for ( vstring::const_iterator signal = signalSamples.begin();
-	  signal != signalSamples.end(); ++signal ) {
-      if ( inputFileName->find(*signal) != std::string::npos ) matchesSample_signal = true;
-    }
+    for ( vstring::const_iterator signal = signalSamples.begin(); signal != signalSamples.end(); ++signal )
+      if ( inputFileName->find(*signal) != std::string::npos )
+        matchesSample_signal = true;
+
     bool matchesSample_background = false;
-    for ( vstring::const_iterator background = backgroundSamples.begin();
-	  background != backgroundSamples.end(); ++background ) {
-      if ( inputFileName->find(*background) != std::string::npos ) matchesSample_background = true;
-    }
-    if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) ) {
-      throw cms::Exception("trainTauIdMVA")
-	 << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
-    }
-    if ( matchesSample_signal ) {
+    for ( vstring::const_iterator background = backgroundSamples.begin(); background != backgroundSamples.end(); ++background )
+      if ( inputFileName->find(*background) != std::string::npos )
+        matchesSample_background = true;
+
+    if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) )
+      throw cms::Exception("trainTauIdMVA") << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
+
+    if ( matchesSample_signal )
+    {
       std::cout << "signal Tree: adding file = " << (*inputFileName) << std::endl;
       tree_signal->AddFile(inputFileName->data());
     }
-    if ( matchesSample_background ) {
+    if ( matchesSample_background )
+    {
       std::cout << "background Tree: adding file = " << (*inputFileName) << std::endl;
       tree_background->AddFile(inputFileName->data());
     }
   }
 
-  if ( !(tree_signal->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("trainTauIdMVA")
-      << "Failed to identify signal Tree !!\n";
-  }
-  if ( !(tree_background->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("trainTauIdMVA")
-      << "Failed to identify background Tree !!\n";
-  }
+  // Input files should be merged
+  if ( !(tree_signal->GetListOfFiles()->GetEntries() >= 1) )
+    throw cms::Exception("trainTauIdMVA") << "Failed to identify signal Tree !!\n";
+  if ( !(tree_background->GetListOfFiles()->GetEntries() >= 1) )
+    throw cms::Exception("trainTauIdMVA") << "Failed to identify background Tree !!\n";
 
   // CV: need to call TChain::LoadTree before processing first event
   //     in order to prevent ROOT causing a segmentation violation,
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  //tree_signal->LoadTree(0);
-  //tree_background->LoadTree(0);
+  // tree_signal->LoadTree(0);
+  // tree_background->LoadTree(0);
 
   std::cout << "signal Tree contains " << tree_signal->GetEntries() << " Entries in " << tree_signal->GetListOfFiles()->GetEntries() << " files." << std::endl;
-  tree_signal->Print();
-  tree_signal->Scan("*", "", "", 20, 0);
+  // tree_signal->Print();
+  // tree_signal->Scan("*", "", "", 20, 0);
 
   std::cout << "background Tree contains " << tree_background->GetEntries() << " Entries in " << tree_background->GetListOfFiles()->GetEntries() << " files." << std::endl;
-  tree_background->Print();
-  tree_background->Scan("*", "", "", 20, 0);
+  // tree_background->Print();
+  // tree_background->Scan("*", "", "", 20, 0);
 
   // Testing with less events
   // std::cout << "Info: This is a test training" << std::endl;
@@ -173,62 +169,25 @@ int main(int argc, char* argv[])
   std::string mvaName = cfgTrainTauIdMVA.getParameter<std::string>("mvaName");
   std::string mvaMethodType = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodType");
   std::string mvaMethodName = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodName");
-
   std::string mvaTrainingOptions = cfgTrainTauIdMVA.getParameter<std::string>("mvaTrainingOptions");
   std::string datasetDirName = cfgTrainTauIdMVA.getParameter<std::string>("datasetDirName");
-
-
   TMVA::Tools::Instance();
   TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
-
   TMVA::DataLoader* dataloader = new TMVA::DataLoader(datasetDirName);
 
   std::cout << "SetBranchStatus to 0..." << std::endl;
   tree_signal->SetBranchStatus("*", 0);
   tree_background->SetBranchStatus("*", 0);
-  // for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
-  // {
-  //   unsigned int idx = inputVariable->find_last_of("/");
-  //   if (idx == (inputVariable->length() - 2))
-  //   {
-  //     std::string inputVariableName = std::string(*inputVariable, 0, idx);
-  //     char inputVariableType = (*inputVariable)[idx + 1];
-  //     tree_signal->SetBranchStatus(inputVariableName.data(), 1);
-  //     tree_background->SetBranchStatus(inputVariableName.data(), 1);
-  //   }
-  //   else throw cms::Exception("trainTauIdMVA") << "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
-  // }
   std::cout << "SetBranchStatus to 1..." << std::endl;
-  vstring traintingVariables = {"recTauPt",
-    "recTauEta",
-    "chargedIsoPtSum",
-    "neutralIsoPtSum_ptGt1.0",
-    "puCorrPtSum",
-    "photonPtSumOutsideSignalCone_ptGt1.0",
-    "recTauDecayMode",
-    "recTauNphoton_ptGt1.0",
-    "recTauPtWeightedDetaStrip_ptGt1.0",
-    "recTauPtWeightedDphiStrip_ptGt1.0",
-    "recTauPtWeightedDrSignal_ptGt1.0",
-    "recTauPtWeightedDrIsolation_ptGt1.0",
-    "recTauEratio",
-    "recImpactParam",
-    "recImpactParam",
-    "recImpactParamSign",
-    "recImpactParam3D",
-    "recImpactParam3D",
-    "recImpactParamSign3D",
-    "hasRecDecayVertex",
-    "recDecayDistMag",
-    "recDecayDistSign",
-    "recTauGJangleDiff"}; // cfgTrainTauIdMVA.getParameter<vstring>("traintingVariables");
-  for ( vstring::const_iterator spectatorVariable = traintingVariables.begin(); spectatorVariable != traintingVariables.end(); ++spectatorVariable )
-  // for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
+  // Keep in memmory the weight branches
+  traintingVariables.push_back(branchNameEvtWeight);
+  if ((applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight) traintingVariables.push_back("ptVsEtaReweight");
+  // Keep in RAM inly training variables and needed weights
+  for ( vstring::const_iterator loadedInRAMBranch = traintingVariables.begin(); loadedInRAMBranch != traintingVariables.end(); ++loadedInRAMBranch )
   {
-    int idxSpectatorVariable = spectatorVariable->find_last_of("/");
-    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
-    tree_signal->SetBranchStatus(spectatorVariableName.data(), 1);
-    tree_background->SetBranchStatus(spectatorVariableName.data(), 1);
+    std::string loadedInRAMBranchName = std::string(*loadedInRAMBranch, 0, loadedInRAMBranch->find_last_of("/"));
+    tree_signal->SetBranchStatus(loadedInRAMBranchName.data(), 1);
+    tree_background->SetBranchStatus(loadedInRAMBranchName.data(), 1);
   }
   std::cout << "SetBranchStatus to 1 done" << std::endl;
 
@@ -264,25 +223,45 @@ int main(int argc, char* argv[])
       dataloader->AddSpectator(spectatorVariableName.data());
     }
   }
-  if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight &&
-       (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) ) {
+
+  // reweighting signal
+  if ( (applyPtReweighting || applyEtaReweighting) &&
+        reweight_or_KILL == kReweight &&
+       (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) )
+  {
     std::string signalWeightExpression = "ptVsEtaReweight";
     if ( branchNameEvtWeight != "" ) signalWeightExpression.append("*").append(branchNameEvtWeight);
+
+    std::cout << "Info: dataloader->SetSignalWeightExpression : " << signalWeightExpression.data() << std::endl;
     dataloader->SetSignalWeightExpression(signalWeightExpression.data());
-  } else {
-    if ( branchNameEvtWeight != "" ) dataloader->SetSignalWeightExpression(branchNameEvtWeight.data());
   }
-  if ( (applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight &&
-       (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) ) {
+  else if ( branchNameEvtWeight != "" )
+  {
+    std::cout << "Info: dataloader->SetSignalWeightExpression : " << branchNameEvtWeight.data() << std::endl;
+    dataloader->SetSignalWeightExpression(branchNameEvtWeight.data());
+  }
+
+  // reweighting background
+  if ( (applyPtReweighting || applyEtaReweighting) &&
+        reweight_or_KILL == kReweight &&
+       (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) )
+  {
     std::string backgroundWeightExpression = "ptVsEtaReweight";
     if ( branchNameEvtWeight != "" ) backgroundWeightExpression.append("*").append(branchNameEvtWeight);
+
+    std::cout << "Info: dataloader->SetBackgroundWeightExpression : " << backgroundWeightExpression.data() << std::endl;
     dataloader->SetBackgroundWeightExpression(backgroundWeightExpression.data());
-  } else {
-    if ( branchNameEvtWeight != "" ) dataloader->SetBackgroundWeightExpression(branchNameEvtWeight.data());
+  }
+  else if ( branchNameEvtWeight != "" )
+  {
+    std::cout << "Info: dataloader->SetBackgroundWeightExpression : " << branchNameEvtWeight.data() << std::endl;
+    dataloader->SetBackgroundWeightExpression(branchNameEvtWeight.data());
   }
 
   TCut cut = "";
   dataloader->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
+  // EqualNumEvents, None ==> No weight renormalisation applied: use original global and event weight BUT GIVE SAME RENORM NUMBERS WHEN THE WEIGHTS ARE CORRECT
+  // dataloader->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
   factory->BookMethod(dataloader, mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
 
   std::cout << "Info: calling TMVA::Factory::TrainAllMethods" << std::endl;
