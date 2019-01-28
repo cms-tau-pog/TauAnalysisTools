@@ -12,17 +12,19 @@ presel_sub = Template('''
 universe                = vanilla
 executable              = $preselsh
 
-log                     = pres_$preselid.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).log
-output                  = pres_$preselid.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).out
-error                   = pres_$preselid.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).err
+log                     = pres_$preselid.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).clog
+output                  = pres_$preselid.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).cout
+error                   = pres_$preselid.$(Cluster).$(DOLLAR).$$(Name).$(DOLLAR).cerr
 
 
 should_transfer_files   = No
 requirements   = OpSysAndVer == "SL6"
 
-request_cpus = Cpus
-rank = Cpus
+# request_cpus = Cpus
+# rank = Cpus
 
+# choose the machine with max RAM possible
+rank = Memory
 
 # (the cpu time for this job) -l h_cpu=72:00:00
 # Defaults to 1 day:
