@@ -8,3 +8,4 @@
 *crab_tauIdMVATrainingNtupleProduction*.py
 *produceTauIdMVATrainingNtupleMiniAOD*.py
 */python/*/__init__.py
+*.err
