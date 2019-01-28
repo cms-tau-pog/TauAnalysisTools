@@ -38,34 +38,34 @@ for sampleName, sampleOption in samples.items():
     folderToBeCreated = outputPath + sampleName
     print "folderToBeCreated:", folderToBeCreated
 
-    if os.path.isdir(folderToBeCreated) and len(os.listdir(folderToBeCreated)) != 0:
-        if rewriteall is not True:
+    # if os.path.isdir(folderToBeCreated) and len(os.listdir(folderToBeCreated)) != 0:
+    #     if rewriteall is not True:
 
-            tocontinue = False
+    #         tocontinue = False
 
-            if rewriteall is None:
-                reply = None
-                while not any(x == reply for x in ["y", "Y", "n", "N"]):
-                    reply = raw_input('rewrite the ' + folderToBeCreated + " folder? [y/n]. Type [Y/N] to apply this to all files.")
-                    if reply == "Y":
-                        rewriteall = True
-                    elif reply == "n":
-                        print "Ignorig rewriting", folderToBeCreated
-                        tocontinue = True
-                        break
-                    elif reply == "N":
-                        rewriteall = False
-                        tocontinue = True
-                        break
-                    elif reply != "y":
-                        print ("Sorry, invalid input, try again.")
+    #         if rewriteall is None:
+    #             reply = None
+    #             while not any(x == reply for x in ["y", "Y", "n", "N"]):
+    #                 reply = raw_input('rewrite the ' + folderToBeCreated + " folder? [y/n]. Type [Y/N] to apply this to all files.")
+    #                 if reply == "Y":
+    #                     rewriteall = True
+    #                 elif reply == "n":
+    #                     print "Ignorig rewriting", folderToBeCreated
+    #                     tocontinue = True
+    #                     break
+    #                 elif reply == "N":
+    #                     rewriteall = False
+    #                     tocontinue = True
+    #                     break
+    #                 elif reply != "y":
+    #                     print ("Sorry, invalid input, try again.")
 
-            if rewriteall is False or tocontinue:
-                print "Ignoring", folderToBeCreated
-                continue
+    #         if rewriteall is False or tocontinue:
+    #             print "Ignoring", folderToBeCreated
+    #             continue
 
-        print "Overwriting ", folderToBeCreated
-        shutil.rmtree(folderToBeCreated)
+    #     print "Overwriting ", folderToBeCreated
+    #     shutil.rmtree(folderToBeCreated)
 
     if not os.path.isdir(folderToBeCreated):
         os.makedirs(folderToBeCreated)
@@ -73,7 +73,7 @@ for sampleName, sampleOption in samples.items():
     # subfolder = sampleName  #+ "_" + version
     filesToCopy = os.path.join(inputPath, sampleOption['datasetpath'].split('/')[1], '*' + sampleName + '*', "*/*/*.root")
 
-    copyCommand = "cp " + filesToCopy + " " + folderToBeCreated + "/"
+    copyCommand = "cp -n " + filesToCopy + " " + folderToBeCreated + "/"
     args = shlex.split(copyCommand)
     args[0] = sampleName
     print copyCommand, "\n"
