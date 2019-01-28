@@ -455,7 +455,7 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
     else if ( applyEtaReweighting )
       ptVsEtaReweight = histogramAbsEta->GetBinContent(histogramAbsEta->FindBin(absEta));
 
-    //std::cout << "Pt = " << pt << ", eta = " << eta << ": ptVsEtaReweight = " << ptVsEtaReweight << std::endl;
+    // std::cout << "Pt = " << pt << ", eta = " << eta << ": ptVsEtaReweight = " << ptVsEtaReweight << std::endl;
     if ( ptVsEtaReweight > 1.e+2 || !std::isfinite(ptVsEtaReweight) ) ptVsEtaReweight = 1.e+2;
     bool skipEvent = false;
     if ( reweight_or_KILL == kKILL )
@@ -464,7 +464,7 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
       double u = rnd.Rndm();
       if ( u > ptVsEtaReweight )
       {
-        //std::cout << "u = " << u << " --> skipping event." << std::endl;
+        // std::cout << "u = " << u << " --> skipping event for reweighting" << std::endl;
         skipEvent = true;
       }
       ptVsEtaReweight = 1.0;
