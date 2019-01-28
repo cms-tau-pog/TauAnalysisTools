@@ -548,8 +548,8 @@
 	        "applyEtaReweighting" : true,
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
-	        "applyEventPruningBackground" : 3,
-	        "applyPtDependentPruningSignal" : true,
+	        "applyEventPruningBackground" : 0,
+	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
@@ -744,7 +744,7 @@
 	        "reweight"            : "min:KILL",
 	        "applyEventPruningSignal"   : 0,
 	        "applyEventPruningBackground" : 0,
-	        "applyPtDependentPruningSignal" : true,
+	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
 	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
