@@ -49,7 +49,8 @@ namespace
 {
   void normalizeHistogram(TH1* histogram)
   {
-    if ( histogram->Integral() > 0. ) {
+    if ( histogram->Integral() > 0. )
+    {
       if ( !histogram->GetSumw2N() ) histogram->Sumw2();
       histogram->Scale(1./histogram->Integral());
     }
@@ -223,63 +224,63 @@ int main(int argc, char* argv[])
   //
 
   //--- Chain input root files
-  TChain* inputTree_signal = new TChain(inputTreeName.data());
-  TChain* inputTree_background = new TChain(inputTreeName.data());
-  for ( vstring::const_iterator inputFileName = inputFiles.files().begin();	inputFileName != inputFiles.files().end(); ++inputFileName )
-  {
-    bool matchesSample_signal = false;
-    for ( vstring::const_iterator signal = signalSamples.begin(); signal != signalSamples.end(); ++signal )
-      if ( inputFileName->find(*signal) != std::string::npos ) matchesSample_signal = true;
-
-    bool matchesSample_background = false;
-    for ( vstring::const_iterator background = backgroundSamples.begin(); background != backgroundSamples.end(); ++background )
-      if ( inputFileName->find(*background) != std::string::npos ) matchesSample_background = true;
-
-    if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) )
-      throw cms::Exception("reweightTreeTauIdMVA") << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
-
-    if ( matchesSample_signal )
+    TChain* inputTree_signal = new TChain(inputTreeName.data());
+    TChain* inputTree_background = new TChain(inputTreeName.data());
+    for ( vstring::const_iterator inputFileName = inputFiles.files().begin();	inputFileName != inputFiles.files().end(); ++inputFileName )
     {
-      std::cout << "input Tree for signal: adding file = " << (*inputFileName) << std::endl;
-      inputTree_signal->AddFile(inputFileName->data());
-    }
-    if ( matchesSample_background )
-    {
-      std::cout << "input Tree for background: adding file = " << (*inputFileName) << std::endl;
-      inputTree_background->AddFile(inputFileName->data());
-    }
-  }
-  if ( !(inputTree_signal->GetListOfFiles()->GetEntries() >= 1) ) throw cms::Exception("reweightTreeTauIdMVA") << "Failed to identify input Tree for signal !!\n";
-  if ( !(inputTree_background->GetListOfFiles()->GetEntries() >= 1) ) throw cms::Exception("reweightTreeTauIdMVA") << "Failed to identify input Tree for background !!\n";
+      bool matchesSample_signal = false;
+      for ( vstring::const_iterator signal = signalSamples.begin(); signal != signalSamples.end(); ++signal )
+        if ( inputFileName->find(*signal) != std::string::npos ) matchesSample_signal = true;
 
-  //--- Create list of branches to keep
-  vstring branchesToKeep_expressions = inputVariables;
-  branchesToKeep_expressions.push_back(branchNameEvtWeight);
-  branchesToKeep_expressions.push_back(branchNamePt);
-  branchesToKeep_expressions.push_back(branchNameEta);
-  branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), spectatorVariables.begin(), spectatorVariables.end());
-  // DONE: ADD A LIST OF BRANCHES TO STORE FOR XML
-  branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), xmlinputVariables.begin(), xmlinputVariables.end());
-  // branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), xmlspectatorVariables.begin(), xmlspectatorVariables.end());
-  //
-  if ( keepAllBranches )
-  {
-    TTree* inputTree = 0;
-    if      ( saveOption == kSaveSignal     ) inputTree = inputTree_signal;
-    else if ( saveOption == kSaveBackground ) inputTree = inputTree_background;
-    if ( inputTree )
-    {
-      TObjArray* branches = inputTree->GetListOfBranches();
-      int numBranches = branches->GetEntries();
-      for ( int iBranch = 0; iBranch < numBranches; ++iBranch )
+      bool matchesSample_background = false;
+      for ( vstring::const_iterator background = backgroundSamples.begin(); background != backgroundSamples.end(); ++background )
+        if ( inputFileName->find(*background) != std::string::npos ) matchesSample_background = true;
+
+      if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) )
+        throw cms::Exception("reweightTreeTauIdMVA") << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
+
+      if ( matchesSample_signal )
       {
-      	TBranch* branch = dynamic_cast<TBranch*>(branches->At(iBranch));
-      	assert(branch);
-      	std::string branchName = branch->GetName();
-      	branchesToKeep_expressions.push_back(branchName);
+        std::cout << "input Tree for signal: adding file = " << (*inputFileName) << std::endl;
+        inputTree_signal->AddFile(inputFileName->data());
+      }
+      if ( matchesSample_background )
+      {
+        std::cout << "input Tree for background: adding file = " << (*inputFileName) << std::endl;
+        inputTree_background->AddFile(inputFileName->data());
       }
     }
-  }
+    if ( !(inputTree_signal->GetListOfFiles()->GetEntries() >= 1) ) throw cms::Exception("reweightTreeTauIdMVA") << "Failed to identify input Tree for signal !!\n";
+    if ( !(inputTree_background->GetListOfFiles()->GetEntries() >= 1) ) throw cms::Exception("reweightTreeTauIdMVA") << "Failed to identify input Tree for background !!\n";
+
+  //--- Create list of branches to keep
+    vstring branchesToKeep_expressions = inputVariables;
+    branchesToKeep_expressions.push_back(branchNameEvtWeight);
+    branchesToKeep_expressions.push_back(branchNamePt);
+    branchesToKeep_expressions.push_back(branchNameEta);
+    branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), spectatorVariables.begin(), spectatorVariables.end());
+    // DONE: ADD A LIST OF BRANCHES TO STORE FOR XML
+    branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), xmlinputVariables.begin(), xmlinputVariables.end());
+    // branchesToKeep_expressions.insert(branchesToKeep_expressions.end(), xmlspectatorVariables.begin(), xmlspectatorVariables.end());
+    //
+    if ( keepAllBranches )
+    {
+      TTree* inputTree = 0;
+      if      ( saveOption == kSaveSignal     ) inputTree = inputTree_signal;
+      else if ( saveOption == kSaveBackground ) inputTree = inputTree_background;
+      if ( inputTree )
+      {
+        TObjArray* branches = inputTree->GetListOfBranches();
+        int numBranches = branches->GetEntries();
+        for ( int iBranch = 0; iBranch < numBranches; ++iBranch )
+        {
+        	TBranch* branch = dynamic_cast<TBranch*>(branches->At(iBranch));
+        	assert(branch);
+        	std::string branchName = branch->GetName();
+        	branchesToKeep_expressions.push_back(branchName);
+        }
+      }
+    }
 
   //--- check if signal or background entries are to be reweighted such that
   //    Pt and eta distributions of tau candidates match
@@ -312,6 +313,13 @@ int main(int argc, char* argv[])
     TH1* histogramLogPt_reweight_background         = 0;
     TH1* histogramAbsEta_reweight_background        = 0;
     TH2* histogramLogPtVsAbsEta_reweight_background = 0;
+    TH1* histogramLogPt_min         = new TH1D("histogramLogPt_min",         "log(tauPt) min(signal, background)",                 400, 0., 10.);
+    TH1* histogramAbsEta_min        = new TH1D("histogramAbsEta_min",        "abs(tauEta) min(signal, background)",                100, 0.,  5.);
+    TH2* histogramLogPtVsAbsEta_min = new TH2D("histogramLogPtVsAbsEta_min", "log(tauPt) vs. abs(tauEta) min(signal, background)", 100, 0.,  5., 400, 0., 10.);
+    TH1* histogramLogPt_flat         = new TH1D("histogramLogPt_flat",         "log(tauPt) flat",                 400, 0., 10.);
+    TH1* histogramAbsEta_flat        = new TH1D("histogramAbsEta_flat",        "abs(tauEta) flat",                100, 0.,  5.);
+    TH2* histogramLogPtVsAbsEta_flat = new TH2D("histogramLogPtVsAbsEta_flat", "log(tauPt) vs. abs(tauEta) flat", 100, 0.,  5., 400, 0., 10.);
+
     if ( reweightOption == kReweight_or_KILLsignal )
     {
       histogramLogPt_reweight_signal             = divideHistograms(histogramLogPt_background, histogramLogPt_signal);
@@ -326,9 +334,6 @@ int main(int argc, char* argv[])
     }
     else if ( reweightOption == kReweight_or_KILLflat )
     {
-      TH1* histogramLogPt_flat         = new TH1D("histogramLogPt_flat",         "log(tauPt) flat",                 400, 0., 10.);
-      TH1* histogramAbsEta_flat        = new TH1D("histogramAbsEta_flat",        "abs(tauEta) flat",                100, 0.,  5.);
-      TH2* histogramLogPtVsAbsEta_flat = new TH2D("histogramLogPtVsAbsEta_flat", "log(tauPt) vs. abs(tauEta) flat", 100, 0.,  5., 400, 0., 10.);
       makeFlatHistogram(histogramLogPt_flat);
       makeFlatHistogram(histogramAbsEta_flat);
       makeFlatHistogram(histogramLogPtVsAbsEta_flat);
@@ -338,27 +343,19 @@ int main(int argc, char* argv[])
       histogramLogPt_reweight_background         = divideHistograms(histogramLogPt_flat, histogramLogPt_background);
       histogramAbsEta_reweight_background        = divideHistograms(histogramAbsEta_flat, histogramAbsEta_background);
       histogramLogPtVsAbsEta_reweight_background = dynamic_cast<TH2*>(divideHistograms(histogramLogPtVsAbsEta_flat, histogramLogPtVsAbsEta_background));
-      delete histogramLogPt_flat;
-      delete histogramAbsEta_flat;
-      delete histogramLogPtVsAbsEta_flat;
     }
     else if ( reweightOption == kReweight_or_KILLmin )
     {
-      TH1* histogramLogPt_min         = new TH1D("histogramLogPt_min",         "log(tauPt) min(signal, background)",                 400, 0., 10.);
-      TH1* histogramAbsEta_min        = new TH1D("histogramAbsEta_min",        "abs(tauEta) min(signal, background)",                100, 0.,  5.);
-      TH2* histogramLogPtVsAbsEta_min = new TH2D("histogramLogPtVsAbsEta_min", "log(tauPt) vs. abs(tauEta) min(signal, background)", 100, 0.,  5., 400, 0., 10.);
       makeMinHistogram(histogramLogPt_min, histogramLogPt_signal, histogramLogPt_background);
       makeMinHistogram(histogramAbsEta_min, histogramAbsEta_signal, histogramAbsEta_background);
       makeMinHistogram(histogramLogPtVsAbsEta_min, histogramLogPtVsAbsEta_signal, histogramLogPtVsAbsEta_background);
       histogramLogPt_reweight_signal             = divideHistograms(histogramLogPt_min, histogramLogPt_signal);
       histogramAbsEta_reweight_signal            = divideHistograms(histogramAbsEta_min, histogramAbsEta_signal);
       histogramLogPtVsAbsEta_reweight_signal     = dynamic_cast<TH2*>(divideHistograms(histogramLogPtVsAbsEta_min, histogramLogPtVsAbsEta_signal));
+
       histogramLogPt_reweight_background         = divideHistograms(histogramLogPt_min, histogramLogPt_background);
       histogramAbsEta_reweight_background        = divideHistograms(histogramAbsEta_min, histogramAbsEta_background);
       histogramLogPtVsAbsEta_reweight_background = dynamic_cast<TH2*>(divideHistograms(histogramLogPtVsAbsEta_min, histogramLogPtVsAbsEta_background));
-      delete histogramLogPt_min;
-      delete histogramAbsEta_min;
-      delete histogramLogPtVsAbsEta_min;
     }
 
     TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
@@ -427,13 +424,19 @@ int main(int argc, char* argv[])
     if ( histogramLogPtVsAbsEta_signal              ) histogramLogPtVsAbsEta_signal->Write();
     if ( histogramLogPt_reweight_signal             ) histogramLogPt_reweight_signal->Write();
     if ( histogramAbsEta_reweight_signal            ) histogramAbsEta_reweight_signal->Write();
-    if ( histogramLogPtVsAbsEta_signal              ) histogramLogPtVsAbsEta_reweight_signal->Write();
+    if ( histogramLogPtVsAbsEta_reweight_signal     ) histogramLogPtVsAbsEta_reweight_signal->Write();
     if ( histogramLogPt_background                  ) histogramLogPt_background->Write();
     if ( histogramAbsEta_background                 ) histogramAbsEta_background->Write();
     if ( histogramLogPtVsAbsEta_background          ) histogramLogPtVsAbsEta_background->Write();
     if ( histogramLogPt_reweight_background         ) histogramLogPt_reweight_background->Write();
     if ( histogramAbsEta_reweight_background        ) histogramAbsEta_reweight_background->Write();
     if ( histogramLogPtVsAbsEta_reweight_background ) histogramLogPtVsAbsEta_reweight_background->Write();
+    if ( histogramLogPt_min                         ) histogramLogPt_min->Write();
+    if ( histogramAbsEta_min                        ) histogramAbsEta_min->Write();
+    if ( histogramLogPtVsAbsEta_min                 ) histogramLogPtVsAbsEta_min->Write();
+    if ( histogramLogPt_flat                        ) histogramLogPt_flat->Write();
+    if ( histogramAbsEta_flat                       ) histogramAbsEta_flat->Write();
+    if ( histogramLogPtVsAbsEta_flat                ) histogramLogPtVsAbsEta_flat->Write();
     delete outputFile_histograms;
 
     delete histogramLogPt_signal;
@@ -448,6 +451,12 @@ int main(int argc, char* argv[])
     delete histogramLogPtVsAbsEta_background;
     delete histogramLogPtVsAbsEta_reweight_signal;
     delete histogramLogPtVsAbsEta_reweight_background;
+    delete histogramLogPt_min;
+    delete histogramAbsEta_min;
+    delete histogramLogPtVsAbsEta_min;
+    delete histogramLogPt_flat;
+    delete histogramAbsEta_flat;
+    delete histogramLogPtVsAbsEta_flat;
   }
 
   delete inputTree_signal;
