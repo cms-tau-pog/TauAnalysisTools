@@ -139,15 +139,16 @@ class SamplesHandles(object):
 
         if dR0p3:
             samples = {
+                # NOTE: for this trainign that is suited for ttH analysis it's better to Not exceed the 30% of events from the skimmed TT samples
                 # ttH samples
-                # 'tthHiggs125toTauTau': {
-                #    'datasetpath': '/ttHJetToTT_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-                # },
+                'tthHiggs125toTauTau': {
+                   'datasetpath': '/ttHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                },
 
                 # Two W decay through leptons, including any decay of the tau lepton - the genuine tau is in dense env dew to b-jet!
-                'TTTo2L2Nu_Signal': {
-                    'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-                },
+                # 'TTTo2L2Nu_Signal': {
+                #     'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+                # },
 
                 'TTToSemiLeptonic_mtop175p5_Signal': {
                     'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
@@ -179,12 +180,12 @@ class SamplesHandles(object):
             # 'TTTo2L2Nu_Background': {
             #     'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
             # },
-            # 'TTToSemiLeptonic_mtop175p5_Background': {
-            #     'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-            # },
-            # 'TTToSemiLeptonic_mtop169p5_Background': {
-            #     'datasetpath': '/TTToSemiLeptonic_mtop169p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-            # },
+            'TTToSemiLeptonic_mtop175p5_Background': {
+                'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            },
+            'TTToSemiLeptonic_mtop169p5_Background': {
+                'datasetpath': '/TTToSemiLeptonic_mtop169p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            },
         }
 
         if not dR0p3:
