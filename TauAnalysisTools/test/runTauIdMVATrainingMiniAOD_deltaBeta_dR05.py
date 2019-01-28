@@ -16,17 +16,18 @@ from condorTemplates import presel_sub, presel_sh
 config = yaml.load(open("config.yaml", 'r'))
 preselections, cutDiscriminatorsAll, trainings, commonsDict = getTrainingSets(trainingsets='trainingsets.json')
 
-inputFilePath = os.path.join(config['nfs_base'], 'ntuples')
-outputFilePath = Template(os.path.join(config['nfs_base'], "$version"))
-
+inputFilePath = os.path.join(config['nfs_base'], config['workarea_base'] + config['version'], 'ntuples')
+outputFilePath = Template(os.path.join(config['nfs_base'], config['workarea_base'] + config['version'], "$trainingtype"))
 # ---------- Settings to touch ----------------
 DM = "new"
 disable_xml_inclusion = True
 use_condor = True
 
-traintingVariables = ['recTauPt', 'recTauEta', 'chargedIsoPtSum', 'neutralIsoPtSum_ptGt1.0', 'puCorrPtSum', 'photonPtSumOutsideSignalCone_ptGt1.0', 'recTauDecayMode', 'recTauNphoton_ptGt1.0', 'recTauPtWeightedDetaStrip_ptGt1.0', 'recTauPtWeightedDphiStrip_ptGt1.0', 'recTauPtWeightedDrSignal_ptGt1.0', 'recTauPtWeightedDrIsolation_ptGt1.0', 'recTauEratio', 'recImpactParam', 'recImpactParam', 'recImpactParamSign', 'recImpactParam3D', 'recImpactParam3D', 'recImpactParamSign3D', 'hasRecDecayVertex', 'recDecayDistMag', 'recDecayDistSign', 'recTauGJangleDiff' ]
+traintingVariables = ['recTauPt', 'recTauEta', 'chargedIsoPtSum', 'neutralIsoPtSum_ptGt1.0', 'puCorrPtSum', 'photonPtSumOutsideSignalCone_ptGt1.0', 'recTauDecayMode', 'recTauNphoton_ptGt1.0', 'recTauPtWeightedDetaStrip_ptGt1.0', 'recTauPtWeightedDphiStrip_ptGt1.0', 'recTauPtWeightedDrSignal_ptGt1.0', 'recTauPtWeightedDrIsolation_ptGt1.0', 'recTauEratio', 'recImpactParam', 'recImpactParam', 'recImpactParamSign', 'recImpactParam3D', 'recImpactParam3D', 'recImpactParamSign3D', 'hasRecDecayVertex', 'recDecayDistMag', 'recDecayDistSign', 'recTauGJangleDiff']
+#TODO:
+prepareTreeOptions = "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V"
 
-v = config['version']
+# v = config['version']
 decaymodes = {
     "new": {
         "mvaDiscriminators": {
@@ -49,7 +50,7 @@ decaymodes = {
                 ]
             }
         },
-        "version": 'tauId_dR05_new_' + v,
+        "version": 'tauId_dR05_new_' + config['version'],
     },
     "old": {
         "mvaDiscriminators": {
@@ -74,7 +75,7 @@ decaymodes = {
                 ]
             }
         },
-        "version": 'tauId_dR05_old_' + v
+        "version": 'tauId_dR05_old_' + config['version'],
     }
 }
 
@@ -94,8 +95,7 @@ computeROConAllEvents = False
 
 train_option = 'optaDBAll'
 
-version = decaymodes[DM]["version"]
-outputFilePath = outputFilePath.substitute(version=version)
+outputFilePath = outputFilePath.substitute(trainingtype=decaymodes[DM]["version"])
 
 samples_key = config['samples_key']['dR0p5']
 sh = SamplesHandles(samples_key)
@@ -105,17 +105,19 @@ backgroundSamples = sh.samples_bg.keys()
 # Setting for very specific test
 if samples_key == "2017PU":
     # Rewrite to analyse PU samples
-    subfolder = "noPU" # for regular runs use empty string
+    subfolder = "noPU"  # for regular runs use empty string
     samples = sh.getSamplesPU17(subfolder)
     for key in samples.keys():
-        if samples[key]['type'] == 'BackgroundMC': backgroundSamples = [key]
-        elif samples[key]['type'] == 'SignalMC': signalSamples = [key]
+        if samples[key]['type'] == 'BackgroundMC':
+            backgroundSamples = [key]
+        elif samples[key]['type'] == 'SignalMC':
+            signalSamples = [key]
 
     pp.pprint(signalSamples)
 
     version = subfolder
-    inputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/ntuples/" + subfolder + (len(subfolder) > 0 )*"/"
-    outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/%s/trainfilesfinal_newDM" % version + (len(subfolder) > 0 )*"_" + subfolder+ "/"
+    inputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/ntuples/" + subfolder + (len(subfolder) > 0 ) * "/"
+    outputFilePath = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2017/Summer17_25ns_PU/%s/trainfilesfinal_newDM" % version + (len(subfolder) > 0 ) * "_" + subfolder+ "/"
 
 
 # DO NOT process isodR03 and isodR05 together! - different input variables
@@ -658,7 +660,7 @@ def make_MakeFile_vstring(list_of_strings):
     return retVal
 
 # done building config files, now build Makefile...
-makeFileName = os.path.join(outputFilePath, "Makefile_runTauIdMVATraining_%s_%s" % (version, train_option))
+makeFileName = os.path.join(outputFilePath, "Makefile_runTauIdMVATraining_%s_%s.make" % (decaymodes[DM]["version"], train_option))
 makeFile = open(makeFileName, "w")
 makeFile.write("\n")
 outputFileNames = []
@@ -789,4 +791,4 @@ makeFile.write("\techo 'Finished deleting old files.'\n")
 makeFile.write("\n")
 makeFile.close()
 
-print("Finished building Makefile. Now execute 'make -f %s'." % makeFileName)
+print("\n Finished building Makefile. Now execute 'make -f %s'." % makeFileName)
