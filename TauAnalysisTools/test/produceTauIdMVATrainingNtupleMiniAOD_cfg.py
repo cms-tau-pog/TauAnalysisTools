@@ -16,56 +16,95 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
 # process.add_(cms.Service("PrintLoadingPlugins"))
 
-key = '2018_TTToHad'
+key = '2018_QCD30tp50'
 test_files = {
     'RelValQCD_FlatPt_15_3000HS_13_1': {
-        'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/E89C4CD3-CEBB-E711-BF4F-0025905B856C.root',
-        'type' : 'BackgroundMC',
-        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+        'file': '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/E89C4CD3-CEBB-E711-BF4F-0025905B856C.root',
+        'type': 'BackgroundMC',
+        'comment': "2017 MCv2, with 2016 training, phpt>1"
     },
     'RelValQCD_FlatPt_15_3000HS_13_2': {
-        'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/EE4BC1EA-CEBB-E711-984B-0CC47A78A418.root',
-        'type' : 'BackgroundMC',
-        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+        'file': '/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/EE4BC1EA-CEBB-E711-984B-0CC47A78A418.root',
+        'type': 'BackgroundMC',
+        'comment': "2017 MCv2, with 2016 training, phpt>1"
     },
     'RelValZTT_13_1': {
-        'file' : '/store/relval/CMSSW_9_4_0_pre3/RelValZTT_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/0A99A363-65BB-E711-A1CF-003048FFD72C.root',
-        'type' : 'SignalMC',
-        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+        'file': '/store/relval/CMSSW_9_4_0_pre3/RelValZTT_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/0A99A363-65BB-E711-A1CF-003048FFD72C.root',
+        'type': 'SignalMC',
+        'comment': "2017 MCv2, with 2016 training, phpt>1"
     },
     'RelValZTT_13_2': {
-        'file' :'/store/relval/CMSSW_9_4_0_pre3/RelValZTT_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/28E2B54E-65BB-E711-ABDD-0025905A606A.root',
-        'type' : 'SignalMC',
-        'comment' : "2017 MCv2, with 2016 training, phpt>1"
+        'file': '/store/relval/CMSSW_9_4_0_pre3/RelValZTT_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v4-v1/10000/28E2B54E-65BB-E711-ABDD-0025905A606A.root',
+        'type': 'SignalMC',
+        'comment': "2017 MCv2, with 2016 training, phpt>1"
     },
     '2017MCv1_DY': {
-        'file' :'/store/mc/RunIISummer17MiniAOD/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10_ext1-v2/10000/00F9D855-E293-E711-B625-02163E014200.root',
-        'type' : 'BackgroundMC',
-        'comment' : "2017 MCv1, with 2016 training, phpt>0.5"
+        'file': '/store/mc/RunIISummer17MiniAOD/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10_ext1-v2/10000/00F9D855-E293-E711-B625-02163E014200.root',
+        'type': 'BackgroundMC',
+        'comment': "2017 MCv1, with 2016 training, phpt>0.5"
     },
     '2017MCv1_ggH': {
-        'file' :'/store/mc/RunIISummer17MiniAOD/SUSYGluGluToHToTauTau_M-2600_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10-v2/50000/04BF6396-8F9C-E711-9BE4-0CC47A1DF620.root',
-        'type' : 'SignalMC',
+        'file': '/store/mc/RunIISummer17MiniAOD/SUSYGluGluToHToTauTau_M-2600_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10-v2/50000/04BF6396-8F9C-E711-9BE4-0CC47A1DF620.root',
+        'type': 'SignalMC',
         'globaltag': '92X_upgrade2017_realistic_v10',
-        'comment' : "2017 MCv1, with 2016 training, phpt>0.5"
+        'comment': "2017 MCv1, with 2016 training, phpt>0.5"
     },
     '2017MCv2_W3Jets': {
-        'file' :'/store/mc/RunIIFall17MiniAOD/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v3/80000/02B37840-A50C-E811-B96F-008CFAF70DF6.root',
-        'type' : 'BackgroundMC',
+        'file': '/store/mc/RunIIFall17MiniAOD/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v3/80000/02B37840-A50C-E811-B96F-008CFAF70DF6.root',
+        'type': 'BackgroundMC',
         'globaltag': '94X_mc2017_realistic_v10',
-        'comment' : "2017 MCv2"
+        'comment': "2017 MCv2"
     },
+
+    '2016MCv3': {
+        'file': '/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/270000/FEFC23FC-37C7-E811-97DA-0CC47AA53D86.root',
+        'type': 'BackgroundMC',
+        'globaltag': '94X_mcRun2_asymptotic_v3',
+        'comment': "2016 MCv3"
+    },
+
+    '2017MCv3_ZTT': {
+        'file': '/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/20000/00D13F2E-6F44-E811-923E-001E0BED0560.root',
+        'type': 'BackgroundMC',
+        'globaltag': '94X_mc2017_realistic_v17',
+        'comment': "2017 MCv3"
+    },
+
     '2018_ZTT': {
-        'file' :'/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root',
-        'type' : 'SignalMC',
+        'file': '/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root',
+        'type': 'SignalMC',
         'globaltag': '102X_upgrade2018_realistic_v15',
-        'comment' : "2018, ZTT"
+        'comment': "2018, ZTT"
     },
-    '2018_TTToHad':{
+    '2018_TTToHad': {
         'file': '/store/mc/RunIIAutumn18MiniAOD/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/100000/2FA2A920-8461-264C-8A72-74C1179D019D.root',
-        'type' : 'BackgroundMC',
+        'type': 'BackgroundMC',
         'globaltag': '102X_upgrade2018_realistic_v15',
-        'comment' : "2018, TTToHad"
+        'comment': "2018, TTToHad"
+    },
+    '2018_QCD15to30': {
+        'file': '/store/mc/RunIIAutumn18MiniAOD/QCD_Pt_15to30_TuneCP5_13TeV_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/100000/4230934C-1D60-CE4B-BDDA-1FF203D301B3.root',
+        'type': 'BackgroundMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment': "2018, QCD15to30"
+    },
+    '2018_QCD30tp50': {
+        'file': '/store/mc/RunIIAutumn18MiniAOD/QCD_Pt_30to50_TuneCP5_13TeV_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/270000/5FA1D9DE-9092-354D-BAE9-041DD1670F00.root',
+        'type': 'BackgroundMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment': "2018, QCD30tp50"
+    },
+    '2018_QCD50to80': {
+        'file': '/store/mc/RunIIAutumn18MiniAOD/QCD_Pt_50to80_TuneCP5_13TeV_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/270000/FB40BC28-926A-8A4E-9076-9A9CE590DE2C.root',
+        'type': 'BackgroundMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment': "2018, QCD50to80"
+    },
+    '2018_QCD80to120': {
+        'file': '/store/mc/RunIIAutumn18MiniAOD/QCD_Pt_80to120_TuneCP5_13TeV_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/100000/FF9E7432-6F73-A94B-80B4-B2F11D1DCD20.root',
+        'type': 'BackgroundMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment': "2018, QCD80to120"
     }
 }
 
@@ -84,10 +123,10 @@ process.source = cms.Source("PoolSource",
 )
 
 # Only for local runs. Replaced during submittion to GRID with -1
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1005))
-
-verbosity = 1
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(15000))
+verbosity = 0
 #__verbosity = 0  # hook to disable printout when submitted to grid
+
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 
 #--------------------------------------------------------------------------------
@@ -342,7 +381,7 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
 process.produceTauIdMVATrainingNtupleMiniAODSequence += process.tauIdMVATrainingNtupleProducerMiniAOD
 
 process.p = cms.Path(process.rerunMvaIsolationSequence
-    * process.NewTauIDsEmbedded # *getattr(process, "NewTauIDsEmbedded")
+    * process.NewTauIDsEmbedded  # *getattr(process, "NewTauIDsEmbedded")
     * process.produceTauIdMVATrainingNtupleMiniAODSequence)
 
 # process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
@@ -350,10 +389,10 @@ process.p = cms.Path(process.rerunMvaIsolationSequence
 # process.Schedule = cms.Schedule(process.p, process.printFirstEventContentPath)
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("tauIdMVATrainingNtupleMiniAOD.root"),
+    fileName=cms.string("tauIdMVATrainingNtupleMiniAOD_" + key + ".root"),
 )
 
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(False))
+process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
 
 #processDumpFile = open('produceTauIdMVATrainingNtupleMiniAOD.dump', 'w')
 #print >> processDumpFile, process.dumpPython()
