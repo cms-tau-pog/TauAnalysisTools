@@ -30,6 +30,7 @@
 #include <iostream>
 #include <fstream>
 
+
 TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(const edm::ParameterSet& cfg)
 	: moduleLabel_(cfg.getParameter<std::string>("@module_label")),
 	maxChargedHadrons_(3),
@@ -170,6 +171,28 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 	ptMin_nPhotons_ = cfg.getParameter<std::vector<std::string> >("ptMin_nPhotons");
 	ptMin_photonPtSumOutsideSignalCone = cfg.getParameter<std::vector<std::string> >("ptMin_photonPtSumOutsideSignalCone");
 	ptMin_photonPtSumOutsideSignalConedRgt0p1 = cfg.getParameter<std::vector<std::string> >("ptMin_photonPtSumOutsideSignalConedRgt0p1");
+
+	tmvaMacro = cfg.getParameter<std::string>("tmvaMacro");
+	tmvaMacroBranch = cfg.getParameter<std::string>("tmvaMacroBranch");
+	tmvaMacroVariables = cfg.getParameter<std::vector<std::string> >("tmvaMacroVariables");
+	loadedResponse = nullptr;
+	if (tmvaMacro.size() > 0 && tmvaMacroVariables.size() > 0 && tmvaMacroBranch.size() > 0)
+	{
+		// load the generated response class into macro and compile it (ROOT)
+		// or include it into any C++ executable
+		// gROOT->LoadMacro( tmvaMacro.data() ); // usage in ROOT
+
+		// define the names of the input variables (same as for training)
+		for(auto i: tmvaMacroVariables)
+		{
+			inputVars.push_back(i);
+			inputVec.push_back(0);
+		}
+
+		// create a class object for the Fisher response
+		loadedResponse = new ReadBDTG(inputVars);
+		// the user’s event loop ...
+	}
 
 	verbosity_ = (cfg.exists("verbosity")) ? cfg.getParameter<int>("verbosity") : 0;
 	std::cout << "verbosity_:" << verbosity_<< "\n";
@@ -338,6 +361,12 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	// addBranchI("recTau_isolationGammaCands_size"); -> recTauNphotonIso
 	addBranchVF("recTau_isolationGammaCands_pt");
 	addBranchVF("recTau_isolationGammaCands_dR");
+
+	// TMVA from locat training
+	if (tmvaMacro.size() > 0 && tmvaMacroVariables.size() > 0 && tmvaMacroBranch.size() > 0)
+	{
+		addBranchF(tmvaMacroBranch.data());
+	}
 }
 
 namespace
@@ -1390,6 +1419,69 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 				if (verbosity_) std::cout << "produce::before Fill: 3\n";
 			*/
 
+
+			// local TMVA run
+			if (tmvaMacro.size() > 0 && tmvaMacroVariables.size() > 0 && tmvaMacroBranch.size() > 0 && loadedResponse )
+			{
+				for (unsigned int i = 0; i<tmvaMacroVariables.size(); i++)
+				{
+					if (tmvaMacroVariables[i].compare("TMath::Log(TMath::Max(1.,recTauPt))") == 0) inputVec[i] = TMath::Log(TMath::Max(1., recTau->p4().pt()));
+        			else if (tmvaMacroVariables[i].compare("TMath::Abs(recTauEta)") == 0) inputVec[i] = TMath::Abs(recTau->p4().eta());
+        			else if (tmvaMacroVariables[i].compare("TMath::Log(TMath::Max(1.e-2,chargedIsoPtSum))") == 0) inputVec[i] = TMath::Log(TMath::Max((float)1.e-2, recTau->tauID("chargedIsoPtSum")));
+        			else if (tmvaMacroVariables[i].compare("TMath::Log(TMath::Max(1.e-2,neutralIsoPtSum_ptGt1.0))") == 0) inputVec[i] = TMath::Log(TMath::Max((float)1.e-2,recTau->tauID("neutralIsoPtSum")));
+        			else if (tmvaMacroVariables[i].compare("TMath::Log(TMath::Max(1.e-2,puCorrPtSum))") == 0) inputVec[i] = TMath::Log(TMath::Max((float)1.e-2,recTau->tauID("puCorrPtSum")));
+        			else if (tmvaMacroVariables[i].compare("TMath::Log(TMath::Max(1.e-2,photonPtSumOutsideSignalCone_ptGt1.0))") == 0) inputVec[i] = TMath::Log(TMath::Max((float)1.e-2,recTau->tauID("photonPtSumOutsideSignalCone")));
+        			else if (tmvaMacroVariables[i].compare("recTauDecayMode") == 0) inputVec[i] = recTau->decayMode();
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(30.,recTauNphoton_ptGt1.0)") == 0) inputVec[i] = TMath::Min(int(30), int(n_photons_total(*recTau)));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(0.5,recTauPtWeightedDetaStrip_ptGt1.0)") == 0) inputVec[i] = TMath::Min((float)0.5,  pt_weighted_deta_strip(*recTau, recTau->decayMode()));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(0.5,recTauPtWeightedDphiStrip_ptGt1.0)") == 0) inputVec[i] = TMath::Min((float)0.5, pt_weighted_dphi_strip(*recTau, recTau->decayMode()));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(0.5,recTauPtWeightedDrSignal_ptGt1.0)") == 0) inputVec[i] = TMath::Min((float)0.5, pt_weighted_dr_signal(*recTau, recTau->decayMode()));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(0.5,recTauPtWeightedDrIsolation_ptGt1.0)") == 0) inputVec[i] = TMath::Min((float)0.5, pt_weighted_dr_iso(*recTau, recTau->decayMode()));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(1.,recTauEratio)") == 0) inputVec[i] = TMath::Min((float)1., returnEratio(*recTau));
+        			else if (tmvaMacroVariables[i].compare("TMath::Sign(+1.,recImpactParam)") == 0) inputVec[i] = TMath::Sign(+1., recTau->dxy());
+        			else if (tmvaMacroVariables[i].compare("TMath::Sqrt(TMath::Abs(TMath::Min(1.,TMath::Abs(recImpactParam))))") == 0) inputVec[i] = TMath::Sqrt(TMath::Abs(TMath::Min((float)1.,TMath::Abs( recTau->dxy()))));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(10.,TMath::Abs(recImpactParamSign))") == 0) inputVec[i] = TMath::Min((float)10.,TMath::Abs(recTau->dxy_Sig()));
+        			else if (tmvaMacroVariables[i].compare("TMath::Sign(+1.,recImpactParam3D)") == 0) inputVec[i] = TMath::Sign(+1.,recTau->ip3d());
+        			else if (tmvaMacroVariables[i].compare("TMath::Sqrt(TMath::Abs(TMath::Min(1.,TMath::Abs(recImpactParam3D))))") == 0) inputVec[i] = TMath::Sqrt(TMath::Abs(TMath::Min((float)1.,TMath::Abs(recTau->ip3d()))));
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(10.,TMath::Abs(recImpactParamSign3D))") == 0) inputVec[i] = TMath::Min((float)10.,TMath::Abs(recTau->ip3d_Sig()));
+        			else if (tmvaMacroVariables[i].compare("hasRecDecayVertex") == 0) inputVec[i] = recTau->hasSecondaryVertex();
+        			else if (tmvaMacroVariables[i].compare("TMath::Sqrt(recDecayDistMag)") == 0)
+        			{
+						double x = recTau->flightLength().x();
+						double y = recTau->flightLength().y();
+						double z = recTau->flightLength().z();
+						double r = TMath::Sqrt(x*x + y*y);
+						double mag = TMath::Sqrt(r*r + z*z);
+        				inputVec[i] = TMath::Sqrt(mag);
+        			}
+        			else if (tmvaMacroVariables[i].compare("TMath::Min(10.,recDecayDistSign)") == 0) inputVec[i] = TMath::Min((float)10.,recTau->flightLengthSig());
+        			else if (tmvaMacroVariables[i].compare("TMath::Max(-1.,recTauGJangleDiff)") == 0)
+    				{
+    					double mTau = 1.77682;
+						double mAOne = recTau->p4().M();
+						double flightLengthMag = recTau->flightLength().Mag2();
+						double pAOneMag = recTau->p();
+						double thetaGJmax = TMath::ASin( (TMath::Power(mTau,2) - TMath::Power(mAOne,2)) / ( 2 * mTau * pAOneMag) );
+						double thetaGJmeasured = TMath::ACos( ( recTau->p4().px() * recTau->flightLength().x() + recTau->p4().py() * recTau->flightLength().y() + recTau->p4().pz() * recTau->flightLength().z()) / ( pAOneMag * TMath::Sqrt(flightLengthMag)) );
+    					if (recTau->hasSecondaryVertex() && recTau->decayMode() == 10) inputVec[i] = TMath::Max(-1.,thetaGJmeasured - thetaGJmax);
+    					else inputVec[i] = -999.;
+    				}
+				}
+				if (verbosity_) std::cout << "loadedResponse:" << loadedResponse->GetMvaValue( inputVec ) << " to branch " << tmvaMacroBranch.data() << std::endl;
+				setValueF(tmvaMacroBranch.data(), loadedResponse->GetMvaValue( inputVec ));
+
+				if (verbosity_) std::cout << "branch = " << tmvaMacroBranch.data() << ": value = " << loadedResponse->GetMvaValue( inputVec ) << std::endl;
+				branchMap::iterator branch = branches_.find(tmvaMacroBranch.data());
+
+				if (branch != branches_.end())
+					{
+
+						branch->second.valueF_ = loadedResponse->GetMvaValue( inputVec );
+						if (verbosity_) std::cout <<"confirm:" << branch->second.valueF_ << std::endl;
+					}
+				else throw cms::Exception("InvalidParameter") << "No branch with name = " << tmvaMacroBranch.data() << " defined !!\n";
+
+			}
 			//--- fill all computed quantities into TTree
 			assert(ntuple_);
 			if (verbosity_) std::cout << "produce::before fill\n";

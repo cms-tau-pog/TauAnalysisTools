@@ -32,6 +32,15 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
+// #include "TMVA.h"
+// #include "TMVA/DataLoader.h"
+// #include "TMVA/MethodBase.h"
+// #include "TMVA/Tools.h"
+// #include "TMVA/Reader.h"
+
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+using namespace TMVA;
 
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
@@ -43,6 +52,34 @@
 #include <string>
 #include <vector>
 #include <ostream>
+
+// #TauAnalysisTools/TauAnalysisTools
+//needed for import of IClassifierReader
+#include "TauAnalysisTools/TauAnalysisTools/data/dataset_oldDM_tauId_dR05_old_v2/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_1p0_BDTG.class.C"
+// #ifndef IClassifierReader__def
+// #define IClassifierReader__def
+
+// class IClassifierReader {
+
+//  public:
+
+//    // constructor
+//    IClassifierReader() : fStatusIsClean( true ) {}
+//    virtual ~IClassifierReader() {}
+
+//    // return classifier response
+//    virtual double GetMvaValue( const std::vector<double>& inputValues ) const = 0;
+
+//    // returns classifier status
+//    bool IsStatusClean() const { return fStatusIsClean; }
+
+//  protected:
+
+//    bool fStatusIsClean;
+// };
+
+// #endif
+
 
 class TauIdMVATrainingNtupleProducerMiniAOD : public edm::EDProducer
 {
@@ -192,6 +229,13 @@ private:
 	std::vector<std::string> ptMin_nPhotons_;
 	std::vector<std::string> ptMin_photonPtSumOutsideSignalCone;
 	std::vector<std::string> ptMin_photonPtSumOutsideSignalConedRgt0p1;
+
+	std::string tmvaMacro;
+	std::string tmvaMacroBranch;
+	std::vector<std::string> tmvaMacroVariables;
+	std::vector<std::string> inputVars;
+	std::vector<double> inputVec;
+	IClassifierReader* loadedResponse;
 
 	struct branchEntryType {
 
