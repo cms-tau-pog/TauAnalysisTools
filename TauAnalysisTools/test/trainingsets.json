@@ -69,6 +69,16 @@
 			"color"                : 14
 		},
 
+		"rawMVAoldDMwLT2018" : {
+			"preselection"        : "preselection_oldDMs",
+			"discriminator"       : "2018_raw",
+			"numBins"             : 30000,
+			"min"                 : -1.5,
+			"max"                 : 1.5,
+			"legendEntry"         : "2018 MVA, dRiso 0.5, old DM",
+			"color"                : 15
+		},
+
 		"rawMVAnewDMwLT" : {
 	        "preselection"        : "preselection_newDMs",
 	        "discriminator"       : "byIsolationMVArun2v1DBnewDMwLTraw",
@@ -188,6 +198,7 @@
 		"genVisTauPt/F",
 		"genTauPt/F",
 
+		"2018_raw",
 
 		"byCombinedIsolationDeltaBetaCorrRaw3Hits",
 		"byLooseCombinedIsolationDeltaBetaCorr3Hits",
