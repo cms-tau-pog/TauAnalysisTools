@@ -63,6 +63,8 @@ def produceRunScripts(
 
     inputFileNames_signal     = getInputFileNames(inputFilePath, signalSamples)
     if not len(inputFileNames_signal) > 0:
+        print 'inputFilePath:', inputFilePath
+        print 'signalSamples:', signalSamples
         raise ValueError("Failed to find signal samples !!")
     inputFileNames_background = getInputFileNames(inputFilePath, backgroundSamples)
     if not len(inputFileNames_background) > 0:
@@ -155,7 +157,7 @@ def produceRunScripts(
             for proc in preselHandles[sample]['samples']:  # signalSamples:
                 outputFileName = os.path.join(outputFilePath, "preselectTreeTauIdMVA_%s_%s_%s.root" % (discriminator, sample, proc))
                 preselected_roots[discriminator][sample].append(outputFileName)
-                print " outputFileName = '%s'" % outputFileName
+                print " preselection outputFileName = '%s'" % outputFileName
                 preselectTreeTauIdMVA_outputFileNames[discriminator][sample].append(outputFileName)
 
                 cfgFileName_original = configFile_preselectTreeTauIdMVA
@@ -199,7 +201,7 @@ def produceRunScripts(
         reweightTreeTauIdMVA_logFileNames[discriminator]    = {}
         for sample in ["signal", "background"]:
             outputFileName = os.path.join(outputFilePath, "reweightTreeTauIdMVA_%s_%s.root" % (discriminator, sample))
-            print " outputFileName = '%s'" % outputFileName
+            print " reweighted outputFileName = '%s'" % outputFileName
             reweightTreeTauIdMVA_outputFileNames[discriminator][sample] = outputFileName
 
             cfgFileName_original = configFile_reweightTreeTauIdMVA
@@ -209,7 +211,7 @@ def produceRunScripts(
             cfg_modified  = cfg_original
             cfg_modified += "\n"
             cfg_modified += "process.fwliteInput.fileNames = cms.vstring()\n"
-            cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % preselectTreeTauIdMVA_outputFileNames[discriminator]['signal']
+            cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % merged_preselected_root[discriminator]['signal']
             cfg_modified += "process.fwliteInput.fileNames.append('%s')\n" % merged_preselected_root[discriminator]['background']
             cfg_modified += "\n"
             cfg_modified += "process.reweightTreeTauIdMVA.signalSamples = cms.vstring('signal')\n"
@@ -554,6 +556,7 @@ def produceRunScripts(
     for discriminator in trainTauIdMVA_outputFileNames.keys():
         # Preselection
         for sample in ["signal", "background"]:
+            makeFile.write("# Preselecting %s \n" % (sample))
             hadd_command = "\n\thadd " + merged_preselected_root[discriminator][sample] + " "
 
             for proc_i in range(0, len(preselectTreeTauIdMVA_outputFileNames[discriminator][sample])):
@@ -579,22 +582,32 @@ def produceRunScripts(
             makeFile.write(hadd_command)
 
             # Reweighting
+            makeFile.write("# Run the reweighting\n")
             makeFile.write("%s: %s\n" %
-              (reweightTreeTauIdMVA_outputFileNames[discriminator][sample],
-               make_MakeFile_vstring(preselectTreeTauIdMVA_outputFileNames[discriminator]['signal'] + preselectTreeTauIdMVA_outputFileNames[discriminator]['background'])))
+                           (reweightTreeTauIdMVA_outputFileNames[discriminator][sample],
+                            make_MakeFile_vstring(
+                                preselectTreeTauIdMVA_outputFileNames[discriminator]['signal'] +
+                                preselectTreeTauIdMVA_outputFileNames[discriminator]['background'])))
             makeFile.write("\t%s%s %s &> %s\n" %
-              (nice, executable_reweightTreeTauIdMVA,
-               reweightTreeTauIdMVA_configFileNames[discriminator][sample],
-               reweightTreeTauIdMVA_logFileNames[discriminator][sample]))
+                           (nice, executable_reweightTreeTauIdMVA,
+                            reweightTreeTauIdMVA_configFileNames[discriminator][sample],
+                            reweightTreeTauIdMVA_logFileNames[discriminator][sample]))
 
         # Training
+        # - requirements
+        makeFile.write("# Run the training\n")
         makeFile.write("%s: %s\n" %
-          (trainTauIdMVA_outputFileNames[discriminator],
-           make_MakeFile_vstring([reweightTreeTauIdMVA_outputFileNames[discriminator]['signal'], reweightTreeTauIdMVA_outputFileNames[discriminator]['background']])))
+                       (trainTauIdMVA_outputFileNames[discriminator],
+                        make_MakeFile_vstring(
+                            [reweightTreeTauIdMVA_outputFileNames[discriminator]['signal'],
+                             reweightTreeTauIdMVA_outputFileNames[discriminator]['background']])))
+        # - cd the src and run training
         makeFile.write("\tcd %s; %s%s %s &> %s\n" %
-          (execDir, nice, executable_trainTauIdMVA,
-           trainTauIdMVA_configFileNames[discriminator],
-           trainTauIdMVA_logFileNames[discriminator]))
+                       (os.path.join('/'.join(execDir.split('/')[:-3]), 'str'),
+                        nice,
+                        executable_trainTauIdMVA,
+                        trainTauIdMVA_configFileNames[discriminator],
+                        trainTauIdMVA_logFileNames[discriminator]))
     makeFile.write("\n")
 
     for discriminator in makeROCcurveTauIdMVA_outputFileNames.keys():
@@ -602,17 +615,17 @@ def produceRunScripts(
             if tree in makeROCcurveTauIdMVA_outputFileNames[discriminator].keys():
                 if discriminator in trainTauIdMVA_outputFileNames.keys():
                     makeFile.write("%s: %s %s\n" %
-                      (makeROCcurveTauIdMVA_outputFileNames[discriminator][tree],
-                       trainTauIdMVA_outputFileNames[discriminator],
-                       # executable_makeROCcurveTauIdMVA,
-                       ""))
+                                   (makeROCcurveTauIdMVA_outputFileNames[discriminator][tree],
+                                    trainTauIdMVA_outputFileNames[discriminator],
+                                    # executable_makeROCcurveTauIdMVA,
+                                    ""))
                 else:
-                    makeFile.write("%s:\n" %
-                      (makeROCcurveTauIdMVA_outputFileNames[discriminator][tree]))
+                    makeFile.write("%s:\n" % (makeROCcurveTauIdMVA_outputFileNames[discriminator][tree]))
                 makeFile.write("\t%s%s %s &> %s\n" %
-                  (nice, executable_makeROCcurveTauIdMVA,
-                   makeROCcurveTauIdMVA_configFileNames[discriminator][tree],
-                   makeROCcurveTauIdMVA_logFileNames[discriminator][tree]))
+                               (nice,
+                                executable_makeROCcurveTauIdMVA,
+                                makeROCcurveTauIdMVA_configFileNames[discriminator][tree],
+                                makeROCcurveTauIdMVA_logFileNames[discriminator][tree]))
 
     makeFile.write("\n")
     makeFile.write("%s: %s\n" % (hadd_outputFileName, make_MakeFile_vstring(hadd_inputFileNames)))

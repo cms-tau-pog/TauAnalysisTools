@@ -45,13 +45,15 @@ decaymodes = {
         "cutDiscriminators": {
             # 'rawMVAoldDMwLT': cutDiscriminatorsAll['rawMVAoldDMwLT'],
             # 'rawMVAoldDMwLT2016': cutDiscriminatorsAll['rawMVAoldDMwLT2016']
-            'rawMVAoldDMdR03wLT': cutDiscriminatorsAll['rawMVAoldDMdR03wLT']
+            'rawMVAoldDMdR03wLT': cutDiscriminatorsAll['rawMVAoldDMdR03wLT'],
+            'rawMVAoldDMdR03wLT2017': cutDiscriminatorsAll['rawMVAoldDMdR03wLT2017'],
         },
         "plots": {  # Here you list all the selections(trained or cut-based) that are compared on the plot
-            'mvaIsolation_optDeltaR03BDeltaBeta' : {
+            'mvaIsolation_optDeltaR03BDeltaBeta': {
                 'graphs': [
                     'mvaIsolation3HitsDeltaR03opt2aLTDB',
-                    'rawMVAoldDMdR03wLT'
+                    'rawMVAoldDMdR03wLT',
+                    'rawMVAoldDMdR03wLT2017',
                 ]
             }
         },

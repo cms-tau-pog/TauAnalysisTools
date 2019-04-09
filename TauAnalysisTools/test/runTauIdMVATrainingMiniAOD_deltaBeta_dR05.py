@@ -12,8 +12,9 @@ pp = pprint.PrettyPrinter(indent=4)
 
 from submitHelpers import getTrainingSets
 
-config = yaml.load(open("config.yaml", 'r'))
-preselections, cutDiscriminatorsAll, trainings, commonsDict = getTrainingSets(trainingsets='trainingsets.json')
+config = yaml.load(open(os.path.join(os.environ['CMSSW_BASE'], "src/TauAnalysisTools/TauAnalysisTools/test/config.yaml"), 'r'))
+preselections, cutDiscriminatorsAll, trainings, commonsDict = getTrainingSets(
+    trainingsets=os.path.join(os.environ['CMSSW_BASE'], 'src/TauAnalysisTools/TauAnalysisTools/test/trainingsets.json'))
 
 inputFilePath = os.path.join(config['nfs_base'], config['workarea_base'] + config['version'], 'ntuples')
 outputFilePath = Template(os.path.join(config['nfs_base'], config['workarea_base'] + config['version'], "$trainingtype"))
@@ -63,6 +64,7 @@ decaymodes = {
             'rawMVAoldDMwLT': cutDiscriminatorsAll['rawMVAoldDMwLT'],
             'rawMVAoldDMwLT2016': cutDiscriminatorsAll['rawMVAoldDMwLT2016'],
             'rawMVAoldDMwLT2017v2': cutDiscriminatorsAll['rawMVAoldDMwLT2017v2'],
+            # 'rawMVAoldDMwLT2018': cutDiscriminatorsAll['rawMVAoldDMwLT2018'],
         },
         "plots": {
             'mvaIsolation_optDeltaR05BDeltaBeta_oldDM': {
@@ -72,6 +74,7 @@ decaymodes = {
                     'rawMVAoldDMwLT',
                     'rawMVAoldDMwLT2016',
                     'rawMVAoldDMwLT2017v2'
+                    # 'rawMVAoldDMwLT2018',
                 ]
             }
         },
