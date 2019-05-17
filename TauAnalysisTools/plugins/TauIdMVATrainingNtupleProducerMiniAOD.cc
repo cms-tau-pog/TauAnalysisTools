@@ -190,7 +190,7 @@ TauIdMVATrainingNtupleProducerMiniAOD::TauIdMVATrainingNtupleProducerMiniAOD(con
 		}
 
 		// create a class object for the Fisher response
-		loadedResponse = new ReadBDTG(inputVars);
+		// loadedResponse = new ReadBDTG(inputVars);
 		// the user’s event loop ...
 	}
 
@@ -1423,6 +1423,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 
 
 			// local TMVA run
+			/*
 			if (tmvaMacro.size() > 0 && tmvaMacroVariables.size() > 0 && tmvaMacroBranch.size() > 0 && loadedResponse )
 			{
 				for (unsigned int i = 0; i<tmvaMacroVariables.size(); i++)
@@ -1484,6 +1485,7 @@ void TauIdMVATrainingNtupleProducerMiniAOD::produce(edm::Event& evt, const edm::
 				else throw cms::Exception("InvalidParameter") << "No branch with name = " << tmvaMacroBranch.data() << " defined !!\n";
 
 			}
+			*/
 			//--- fill all computed quantities into TTree
 			assert(ntuple_);
 			if (verbosity_) std::cout << "produce::before fill\n";

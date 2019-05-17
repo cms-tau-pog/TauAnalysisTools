@@ -55,30 +55,30 @@ using namespace TMVA;
 
 // #TauAnalysisTools/TauAnalysisTools
 //needed for import of IClassifierReader
-#include "TauAnalysisTools/TauAnalysisTools/data/dataset_oldDM_tauId_dR05_old_v2/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_1p0_BDTG.class.C"
-// #ifndef IClassifierReader__def
-// #define IClassifierReader__def
+// #include "TauAnalysisTools/TauAnalysisTools/data/dataset_oldDM_tauId_dR05_old_v2/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_1p0_BDTG.class.C"
+#ifndef IClassifierReader__def
+#define IClassifierReader__def
 
-// class IClassifierReader {
+class IClassifierReader {
 
-//  public:
+ public:
 
-//    // constructor
-//    IClassifierReader() : fStatusIsClean( true ) {}
-//    virtual ~IClassifierReader() {}
+   // constructor
+   IClassifierReader() : fStatusIsClean( true ) {}
+   virtual ~IClassifierReader() {}
 
-//    // return classifier response
-//    virtual double GetMvaValue( const std::vector<double>& inputValues ) const = 0;
+   // return classifier response
+   virtual double GetMvaValue( const std::vector<double>& inputValues ) const = 0;
 
-//    // returns classifier status
-//    bool IsStatusClean() const { return fStatusIsClean; }
+   // returns classifier status
+   bool IsStatusClean() const { return fStatusIsClean; }
 
-//  protected:
+ protected:
 
-//    bool fStatusIsClean;
-// };
+   bool fStatusIsClean;
+};
 
-// #endif
+#endif
 
 
 class TauIdMVATrainingNtupleProducerMiniAOD : public edm::EDProducer

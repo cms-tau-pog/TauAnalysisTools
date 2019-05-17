@@ -454,7 +454,7 @@ process.p = cms.Path(process.rerunMvaIsolationSequence
 # process.printFirstEventContentPath = cms.Path(process.printEventContent)
 # process.Schedule = cms.Schedule(process.p, process.printFirstEventContentPath)
 
-dest = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2018/outputs_afs2/"
+dest = ""
 #__dest = ""
 #__key = ""
 file_name = dest + "tauIdMVATrainingNtupleMiniAOD_" + key + "_2018_raw_new_shortDM" + ".root"
