@@ -50,7 +50,7 @@ void saveGBRForest( const GBRForest * gbr , const std::string& mvaName, const st
   std::string outputFileName_gbr = std::string(outputFileName, 0, idx);
   outputFileName_gbr.append("_gbr");
   if ( idx != std::string::npos ) outputFileName_gbr.append(std::string(outputFileName, idx));
-  std::cout << " outputFileName = " << outputFileName_gbr << std::endl;
+  std::cout << " outputFileName_gbr = " << outputFileName_gbr << std::endl;
 
   //ROOT::Cintex::Cintex::Enable();
   TFile* outputFile = new TFile(outputFileName_gbr.data(), "RECREATE");
@@ -100,7 +100,8 @@ void saveAsGBRForest( const std::string& weightsfile, const std::string& mvaName
   // GBRForest gbrForest_ = GBRForest( weightsfile );
   // saveGBRForest(gbrForest_ *, mvaName, outputFileName );
 
-
+  std::cout << " saveAsGBRForest ::  \n weightsfile: " << weightsfile << " \n mvaName: " << mvaName << " \noutputFileName: " << outputFileName << std::endl;
+  std::cout << " getting GBRFores by weightfile\n";
   std::unique_ptr<const GBRForest> gbrForest_  = createGBRForest( weightsfile );
   saveGBRForest(gbrForest_.get(), mvaName, outputFileName );
 
@@ -351,11 +352,12 @@ TTree* preselectTree(TTree* inputTree, const std::string& outputTreeName,
   if (createClassId) outputTree->Branch("classID", &classId, Form("%s/I", "classID"));
 
   // outputTree->SetDirectory(outputFile)
+  std::string mm = maxEvents == -1 ? std::to_string(numEntries) : (std::to_string(maxEvents) + " selected");
   for ( int iEntry = 0; iEntry < numEntries && (maxEvents == -1 || selectedEntries < maxEvents); ++iEntry )
   {
     if ( iEntry > 0 && (iEntry % reportEvery) == 0 )
     {
-      std::cout << "processing Entry " << iEntry << " (" << selectedEntries << " Entries selected) out of " << (maxEvents == -1 || selectedEntries < maxEvents) << std::endl;
+      std::cout << "processing Entry " << iEntry << " (" << selectedEntries << " Entries selected) out of " << mm << std::endl;
       if (createClassId) std::cout << "classId " << classId << std::endl;
     }
     inputTree->GetEntry(iEntry);

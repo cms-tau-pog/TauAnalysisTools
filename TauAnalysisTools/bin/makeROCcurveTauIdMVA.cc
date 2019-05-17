@@ -427,6 +427,7 @@ int main(int argc, char* argv[])
       plotEntries_signal.push_back(plotEntry_signal);
     }
     std::cout << "discriminator: " << discriminator << std::endl;
+    std::cout << "SG (fillHistograms) ...\n";
     fillHistograms(
       preselectedTree_signal,
       discriminator, branchNameLogTauPt, branchNameTauPt, branchNameEvtWeight,
@@ -454,7 +455,7 @@ int main(int argc, char* argv[])
       plotEntry_background->bookHistograms();
       plotEntries_background.push_back(plotEntry_background);
     }
-
+    std::cout << "BG (fillHistograms) ...\n";
     fillHistograms(
       preselectedTree_background,
       discriminator, branchNameLogTauPt, branchNameTauPt, branchNameEvtWeight,
@@ -466,13 +467,15 @@ int main(int argc, char* argv[])
       delete (*it);
 
 
+  std::cout << "normalizeHistograms(plotEntries_signal) ..."  << std::endl;
   normalizeHistograms(plotEntries_signal);
+  std::cout << "normalizeHistograms(plotEntries_background) ..."  << std::endl;
   normalizeHistograms(plotEntries_background);
 
   std::vector<TGraph*> graphsROCcurve;
   assert(plotEntries_signal.size() == plotEntries_background.size());
   size_t numTauPtBins = plotEntries_signal.size();
-  std::cout << "numTauPtBins:" << numTauPtBins;
+  std::cout << "makeROCcurve for umTauPtBins:" << numTauPtBins << std::endl;
 
   for ( size_t iTauPtBin = 0; iTauPtBin < numTauPtBins; ++iTauPtBin )
   {

@@ -80,6 +80,23 @@ int main(int argc, char* argv[])
   bool applyEtaReweighting = cfgTrainTauIdMVA.getParameter<bool>("applyEtaReweighting");
   TString reweightOption_tstring = cfgTrainTauIdMVA.getParameter<std::string>("reweight").data();
 
+  vstring inputVariables = cfgTrainTauIdMVA.getParameter<vstring>("inputVariables");
+  vstring spectatorVariables = cfgTrainTauIdMVA.getParameter<vstring>("spectatorVariables");
+  vstring traintingVariables = cfgTrainTauIdMVA.getParameter<vstring>("traintingVariables");  // used only to disable loading into memory unnecessary branches
+  std::string branchNameEvtWeight = cfgTrainTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
+
+  // train MVA parameters
+  std::string mvaName = cfgTrainTauIdMVA.getParameter<std::string>("mvaName");
+  std::string mvaMethodType = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodType");
+  std::string mvaMethodName = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodName");
+  std::string mvaTrainingOptions = cfgTrainTauIdMVA.getParameter<std::string>("mvaTrainingOptions");
+  std::string datasetDirName = cfgTrainTauIdMVA.getParameter<std::string>("datasetDirName");
+  std::string prepareTreeOptions = cfgTrainTauIdMVA.getParameter<std::string>("prepareTreeOptions");
+
+  fwlite::InputSource inputFiles(cfg);
+  std::string outputFileName = cfgTrainTauIdMVA.getParameter<std::string>("outputFileName");
+  std::cout << " outputFileName = " << outputFileName << std::endl;
+
   int reweight_or_KILL = kReweight;
   int reweightOption = -1;
   TObjArray* reweightOption_items = reweightOption_tstring.Tokenize(":");
@@ -98,229 +115,215 @@ int main(int argc, char* argv[])
       << "Invalid Configuration parameter 'reweight' = " << reweightOption_tstring.Data() << " !!\n";
   }
 
-  vstring inputVariables = cfgTrainTauIdMVA.getParameter<vstring>("inputVariables");
-  vstring spectatorVariables = cfgTrainTauIdMVA.getParameter<vstring>("spectatorVariables");
-  vstring traintingVariables = cfgTrainTauIdMVA.getParameter<vstring>("traintingVariables");
-  std::string branchNameEvtWeight = cfgTrainTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
+  // Training
+    TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
 
-  fwlite::InputSource inputFiles(cfg);
-
-  std::string outputFileName = cfgTrainTauIdMVA.getParameter<std::string>("outputFileName");
-  std::cout << " outputFileName = " << outputFileName << std::endl;
-  TFile* outputFile = new TFile(outputFileName.data(), "RECREATE");
-
-  // Reading input file
-  TChain* tree_signal = new TChain(treeName.data());
-  TChain* tree_background = new TChain(treeName.data());
-  for ( vstring::const_iterator inputFileName = inputFiles.files().begin(); inputFileName != inputFiles.files().end(); ++inputFileName )
-  {
-    bool matchesSample_signal = false;
-    for ( vstring::const_iterator signal = signalSamples.begin(); signal != signalSamples.end(); ++signal )
-      if ( inputFileName->find(*signal) != std::string::npos )
-        matchesSample_signal = true;
-
-    bool matchesSample_background = false;
-    for ( vstring::const_iterator background = backgroundSamples.begin(); background != backgroundSamples.end(); ++background )
-      if ( inputFileName->find(*background) != std::string::npos )
-        matchesSample_background = true;
-
-    if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) )
-      throw cms::Exception("trainTauIdMVA") << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
-
-    if ( matchesSample_signal )
+    // Reading input file
+    TChain* tree_signal = new TChain(treeName.data());
+    TChain* tree_background = new TChain(treeName.data());
+    for ( vstring::const_iterator inputFileName = inputFiles.files().begin(); inputFileName != inputFiles.files().end(); ++inputFileName )
     {
-      std::cout << "signal Tree: adding file = " << (*inputFileName) << std::endl;
-      tree_signal->AddFile(inputFileName->data());
+      bool matchesSample_signal = false;
+      for ( vstring::const_iterator signal = signalSamples.begin(); signal != signalSamples.end(); ++signal )
+        if ( inputFileName->find(*signal) != std::string::npos )
+          matchesSample_signal = true;
+
+      bool matchesSample_background = false;
+      for ( vstring::const_iterator background = backgroundSamples.begin(); background != backgroundSamples.end(); ++background )
+        if ( inputFileName->find(*background) != std::string::npos )
+          matchesSample_background = true;
+
+      if ( (matchesSample_signal && matchesSample_background) || !(matchesSample_signal || matchesSample_background) )
+        throw cms::Exception("trainTauIdMVA") << "Failed to identify if inputFile = " << (*inputFileName) << " is signal or background !!\n";
+
+      if ( matchesSample_signal )
+      {
+        std::cout << "signal Tree: adding file = " << (*inputFileName) << std::endl;
+        tree_signal->AddFile(inputFileName->data());
+      }
+      if ( matchesSample_background )
+      {
+        std::cout << "background Tree: adding file = " << (*inputFileName) << std::endl;
+        tree_background->AddFile(inputFileName->data());
+      }
     }
-    if ( matchesSample_background )
+
+    // Input files should be merged
+    if ( !(tree_signal->GetListOfFiles()->GetEntries() >= 1) )
+      throw cms::Exception("trainTauIdMVA") << "Failed to identify signal Tree !!\n";
+    if ( !(tree_background->GetListOfFiles()->GetEntries() >= 1) )
+      throw cms::Exception("trainTauIdMVA") << "Failed to identify background Tree !!\n";
+
+    // CV: need to call TChain::LoadTree before processing first event
+    //     in order to prevent ROOT causing a segmentation violation,
+    //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
+    // tree_signal->LoadTree(0);
+    // tree_background->LoadTree(0);
+
+    std::cout << "signal Tree contains " << tree_signal->GetEntries() << " Entries in " << tree_signal->GetListOfFiles()->GetEntries() << " files." << std::endl;
+    // tree_signal->Print();
+    // tree_signal->Scan("*", "", "", 20, 0);
+
+    std::cout << "background Tree contains " << tree_background->GetEntries() << " Entries in " << tree_background->GetListOfFiles()->GetEntries() << " files." << std::endl;
+    // tree_background->Print();
+    // tree_background->Scan("*", "", "", 20, 0);
+
+    // Testing with less events
+    // std::cout << "Info: This is a test training" << std::endl;
+    // TTree * t_mini_sg = tree_signal->GetTree()->CloneTree(1000);
+    // TTree * t_mini_bg = tree_background->GetTree()->CloneTree(1000);
+    // std::cout << "minisignal Tree contains " << t_mini_sg->GetEntries() << " " << t_mini_bg->GetEntries() <<  " Entries in " << std::endl;
+
+  //--- train MVA
+    TMVA::Tools::Instance();
+    TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
+    TMVA::DataLoader* dataloader = new TMVA::DataLoader(datasetDirName);
+
+    std::cout << "SetBranchStatus to 0..." << std::endl;
+    tree_signal->SetBranchStatus("*", 0);
+    tree_background->SetBranchStatus("*", 0);
+    std::cout << "SetBranchStatus to 1..." << std::endl;
+    // Keep in memmory the weight branches
+    traintingVariables.push_back(branchNameEvtWeight);
+    if ((applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight) traintingVariables.push_back("ptVsEtaReweight");
+    // Keep in RAM inly training variables and needed weights
+    for ( vstring::const_iterator loadedInRAMBranch = traintingVariables.begin(); loadedInRAMBranch != traintingVariables.end(); ++loadedInRAMBranch )
     {
-      std::cout << "background Tree: adding file = " << (*inputFileName) << std::endl;
-      tree_background->AddFile(inputFileName->data());
+      std::string loadedInRAMBranchName = std::string(*loadedInRAMBranch, 0, loadedInRAMBranch->find_last_of("/"));
+      tree_signal->SetBranchStatus(loadedInRAMBranchName.data(), 1);
+      tree_background->SetBranchStatus(loadedInRAMBranchName.data(), 1);
     }
-  }
+    std::cout << "SetBranchStatus to 1 done" << std::endl;
 
-  // Input files should be merged
-  if ( !(tree_signal->GetListOfFiles()->GetEntries() >= 1) )
-    throw cms::Exception("trainTauIdMVA") << "Failed to identify signal Tree !!\n";
-  if ( !(tree_background->GetListOfFiles()->GetEntries() >= 1) )
-    throw cms::Exception("trainTauIdMVA") << "Failed to identify background Tree !!\n";
-
-  // CV: need to call TChain::LoadTree before processing first event
-  //     in order to prevent ROOT causing a segmentation violation,
-  //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  // tree_signal->LoadTree(0);
-  // tree_background->LoadTree(0);
-
-  std::cout << "signal Tree contains " << tree_signal->GetEntries() << " Entries in " << tree_signal->GetListOfFiles()->GetEntries() << " files." << std::endl;
-  // tree_signal->Print();
-  // tree_signal->Scan("*", "", "", 20, 0);
-
-  std::cout << "background Tree contains " << tree_background->GetEntries() << " Entries in " << tree_background->GetListOfFiles()->GetEntries() << " files." << std::endl;
-  // tree_background->Print();
-  // tree_background->Scan("*", "", "", 20, 0);
-
-  // Testing with less events
-  // std::cout << "Info: This is a test training" << std::endl;
-  // TTree * t_mini_sg = tree_signal->GetTree()->CloneTree(1000);
-  // TTree * t_mini_bg = tree_background->GetTree()->CloneTree(1000);
-  // std::cout << "minisignal Tree contains " << t_mini_sg->GetEntries() << " " << t_mini_bg->GetEntries() <<  " Entries in " << std::endl;
-
-//--- train MVA
-  std::string mvaName = cfgTrainTauIdMVA.getParameter<std::string>("mvaName");
-  std::string mvaMethodType = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodType");
-  std::string mvaMethodName = cfgTrainTauIdMVA.getParameter<std::string>("mvaMethodName");
-  std::string mvaTrainingOptions = cfgTrainTauIdMVA.getParameter<std::string>("mvaTrainingOptions");
-  std::string datasetDirName = cfgTrainTauIdMVA.getParameter<std::string>("datasetDirName");
-  TMVA::Tools::Instance();
-  TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
-  TMVA::DataLoader* dataloader = new TMVA::DataLoader(datasetDirName);
-
-  std::cout << "SetBranchStatus to 0..." << std::endl;
-  tree_signal->SetBranchStatus("*", 0);
-  tree_background->SetBranchStatus("*", 0);
-  std::cout << "SetBranchStatus to 1..." << std::endl;
-  // Keep in memmory the weight branches
-  traintingVariables.push_back(branchNameEvtWeight);
-  if ((applyPtReweighting || applyEtaReweighting) && reweight_or_KILL == kReweight) traintingVariables.push_back("ptVsEtaReweight");
-  // Keep in RAM inly training variables and needed weights
-  for ( vstring::const_iterator loadedInRAMBranch = traintingVariables.begin(); loadedInRAMBranch != traintingVariables.end(); ++loadedInRAMBranch )
-  {
-    std::string loadedInRAMBranchName = std::string(*loadedInRAMBranch, 0, loadedInRAMBranch->find_last_of("/"));
-    tree_signal->SetBranchStatus(loadedInRAMBranchName.data(), 1);
-    tree_background->SetBranchStatus(loadedInRAMBranchName.data(), 1);
-  }
-  std::cout << "SetBranchStatus to 1 done" << std::endl;
-
-  dataloader->AddSignalTree(tree_signal);
-  dataloader->AddBackgroundTree(tree_background);
-
-  for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
-  {
-    unsigned int idx = inputVariable->find_last_of("/");
-    if ( idx == (inputVariable->length() - 2) )
-    {
-      std::string inputVariableName = std::string(*inputVariable, 0, idx);
-      char inputVariableType = (*inputVariable)[idx + 1];
-      dataloader->AddVariable(inputVariableName.data(), inputVariableType);
-    }
-    else throw cms::Exception("trainTauIdMVA") << "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
-  }
-
-  for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
-  {
-    int idxSpectatorVariable = spectatorVariable->find_last_of("/");
-    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
-    bool isInputVariable = false;
+    dataloader->AddSignalTree(tree_signal);
+    dataloader->AddBackgroundTree(tree_background);
 
     for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
     {
-      int idxInputVariable = inputVariable->find_last_of("/");
-      std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
-      if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
+      unsigned int idx = inputVariable->find_last_of("/");
+      if ( idx == (inputVariable->length() - 2) )
+      {
+        std::string inputVariableName = std::string(*inputVariable, 0, idx);
+        char inputVariableType = (*inputVariable)[idx + 1];
+        dataloader->AddVariable(inputVariableName.data(), inputVariableType);
+      }
+      else throw cms::Exception("trainTauIdMVA") << "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
     }
-    if ( !isInputVariable )
+
+    for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
     {
-      dataloader->AddSpectator(spectatorVariableName.data());
+      int idxSpectatorVariable = spectatorVariable->find_last_of("/");
+      std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
+      bool isInputVariable = false;
+
+      for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
+      {
+        int idxInputVariable = inputVariable->find_last_of("/");
+        std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
+        if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
+      }
+      if ( !isInputVariable )
+      {
+        dataloader->AddSpectator(spectatorVariableName.data());
+      }
     }
-  }
 
-  // reweighting signal
-  if ( (applyPtReweighting || applyEtaReweighting) &&
-        reweight_or_KILL == kReweight &&
-       (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) )
-  {
-    std::string signalWeightExpression = "ptVsEtaReweight";
-    if ( branchNameEvtWeight != "" ) signalWeightExpression.append("*").append(branchNameEvtWeight);
+    // reweighting signal
+    if ( (applyPtReweighting || applyEtaReweighting) &&
+          reweight_or_KILL == kReweight &&
+         (reweightOption == kReweight_or_KILLsignal || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) )
+    {
+      std::string signalWeightExpression = "ptVsEtaReweight";
+      if ( branchNameEvtWeight != "" ) signalWeightExpression.append("*").append(branchNameEvtWeight);
 
-    std::cout << "Info: dataloader->SetSignalWeightExpression : " << signalWeightExpression.data() << std::endl;
-    dataloader->SetSignalWeightExpression(signalWeightExpression.data());
-  }
-  else if ( branchNameEvtWeight != "" )
-  {
-    std::cout << "Info: dataloader->SetSignalWeightExpression : " << branchNameEvtWeight.data() << std::endl;
-    dataloader->SetSignalWeightExpression(branchNameEvtWeight.data());
-  }
+      std::cout << "Info: dataloader->SetSignalWeightExpression : " << signalWeightExpression.data() << std::endl;
+      dataloader->SetSignalWeightExpression(signalWeightExpression.data());
+    }
+    else if ( branchNameEvtWeight != "" )
+    {
+      std::cout << "Info: dataloader->SetSignalWeightExpression : " << branchNameEvtWeight.data() << std::endl;
+      dataloader->SetSignalWeightExpression(branchNameEvtWeight.data());
+    }
 
-  // reweighting background
-  if ( (applyPtReweighting || applyEtaReweighting) &&
-        reweight_or_KILL == kReweight &&
-       (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) )
-  {
-    std::string backgroundWeightExpression = "ptVsEtaReweight";
-    if ( branchNameEvtWeight != "" ) backgroundWeightExpression.append("*").append(branchNameEvtWeight);
+    // reweighting background
+    if ( (applyPtReweighting || applyEtaReweighting) &&
+          reweight_or_KILL == kReweight &&
+         (reweightOption == kReweight_or_KILLbackground || reweightOption == kReweight_or_KILLflat || reweightOption == kReweight_or_KILLmin) )
+    {
+      std::string backgroundWeightExpression = "ptVsEtaReweight";
+      if ( branchNameEvtWeight != "" ) backgroundWeightExpression.append("*").append(branchNameEvtWeight);
 
-    std::cout << "Info: dataloader->SetBackgroundWeightExpression : " << backgroundWeightExpression.data() << std::endl;
-    dataloader->SetBackgroundWeightExpression(backgroundWeightExpression.data());
-  }
-  else if ( branchNameEvtWeight != "" )
-  {
-    std::cout << "Info: dataloader->SetBackgroundWeightExpression : " << branchNameEvtWeight.data() << std::endl;
-    dataloader->SetBackgroundWeightExpression(branchNameEvtWeight.data());
-  }
+      std::cout << "Info: dataloader->SetBackgroundWeightExpression : " << backgroundWeightExpression.data() << std::endl;
+      dataloader->SetBackgroundWeightExpression(backgroundWeightExpression.data());
+    }
+    else if ( branchNameEvtWeight != "" )
+    {
+      std::cout << "Info: dataloader->SetBackgroundWeightExpression : " << branchNameEvtWeight.data() << std::endl;
+      dataloader->SetBackgroundWeightExpression(branchNameEvtWeight.data());
+    }
 
-  TCut cut = "";
-  dataloader->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
-  // EqualNumEvents, None ==> No weight renormalisation applied: use original global and event weight BUT GIVE SAME RENORM NUMBERS WHEN THE WEIGHTS ARE CORRECT
-  // dataloader->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
-  factory->BookMethod(dataloader, mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
+    TCut cut = "";
+    dataloader->PrepareTrainingAndTestTree(cut, prepareTreeOptions.data());
+    factory->BookMethod(dataloader, mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
 
-  std::cout << "Info: calling TMVA::Factory::TrainAllMethods" << std::endl;
-  factory->TrainAllMethods();
-  std::cout << "Info: calling TMVA::Factory::TestAllMethods" << std::endl;
-  factory->TestAllMethods();
-  std::cout << "Info: calling TMVA::Factory::EvaluateAllMethods" << std::endl;
-  factory->EvaluateAllMethods();
+    std::cout << "Info: calling TMVA::Factory::TrainAllMethods" << std::endl;
+    factory->TrainAllMethods();
+    std::cout << "Info: calling TMVA::Factory::TestAllMethods" << std::endl;
+    factory->TestAllMethods();
+    std::cout << "Info: calling TMVA::Factory::EvaluateAllMethods" << std::endl;
+    factory->EvaluateAllMethods();
 
-  delete factory;
-  TMVA::Tools::DestroyInstance();
-  delete outputFile;
+    delete factory;
+    TMVA::Tools::DestroyInstance();
+    delete outputFile;
 
-  delete tree_signal;
-  delete tree_background;
-  // Testing with less events
+    delete tree_signal;
+    delete tree_background;
+
+  // For testing with less events
   // delete tree_signal_mini;
   // delete tree_background_mini;
 
-  std::cout << "Info: converting MVA to GBRForest format" << std::endl;
-  TMVA::Tools::Instance();
-  TMVA::Reader* reader = new TMVA::Reader("!V:!Silent");
-  Float_t dummyVariable;
-  for ( vstring::const_iterator inputVariable = inputVariables.begin();
-	inputVariable != inputVariables.end(); ++inputVariable ) {
-    int idx = inputVariable->find_last_of("/");
-    std::string inputVariableName = std::string(*inputVariable, 0, idx);
-    reader->AddVariable(inputVariableName.data(), &dummyVariable);
-  }
-
-  for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
-  {
-    int idxSpectatorVariable = spectatorVariable->find_last_of("/");
-    std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
-    bool isInputVariable = false;
-
-    for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
-    {
-      int idxInputVariable = inputVariable->find_last_of("/");
-      std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
-      if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
+  // Transforming output to GBRForest
+    std::cout << "Info: converting MVA to GBRForest format" << std::endl;
+    TMVA::Tools::Instance();
+    TMVA::Reader* reader = new TMVA::Reader("!V:!Silent");
+    Float_t dummyVariable;
+    for ( vstring::const_iterator inputVariable = inputVariables.begin();
+  	inputVariable != inputVariables.end(); ++inputVariable ) {
+      int idx = inputVariable->find_last_of("/");
+      std::string inputVariableName = std::string(*inputVariable, 0, idx);
+      reader->AddVariable(inputVariableName.data(), &dummyVariable);
     }
-    if (!isInputVariable) reader->AddSpectator(spectatorVariableName.data(), &dummyVariable);
 
-  }
-  const std::string& weightsfile(Form("%s/weights/%s_%s.weights.xml", datasetDirName.data(), mvaName.data(), mvaMethodName.data()));
-  // CMSSW 9
-  // TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), weightsfile.c_str());  // https://github.com/cms-sw/cmssw/commit/0f09c19f5464811fdbf36f178ad833ab45f34f49#diff-9e5a1ffbf53411d5d6efeab6c46a2c76L39
-  // saveAsGBRForest(mva, mvaName, outputFileName);
+    for ( vstring::const_iterator spectatorVariable = spectatorVariables.begin(); spectatorVariable != spectatorVariables.end(); ++spectatorVariable )
+    {
+      int idxSpectatorVariable = spectatorVariable->find_last_of("/");
+      std::string spectatorVariableName = std::string(*spectatorVariable, 0, idxSpectatorVariable);
+      bool isInputVariable = false;
 
-  // CMSSW 10
-  saveAsGBRForest(weightsfile, mvaName, outputFileName);
-  // std::unique_ptr<const GBRForest> gbrForest_ = std::make_unique<GBRForest>( weightsfile );
+      for ( vstring::const_iterator inputVariable = inputVariables.begin(); inputVariable != inputVariables.end(); ++inputVariable )
+      {
+        int idxInputVariable = inputVariable->find_last_of("/");
+        std::string inputVariableName = std::string(*inputVariable, 0, idxInputVariable);
+        if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
+      }
+      if (!isInputVariable) reader->AddSpectator(spectatorVariableName.data(), &dummyVariable);
 
-  /*
-  - auto temp{ reader->BookMVA(softmuon_mva_name, weightsfile.c_str()) };
-  - gbrForest_ = std::make_unique<GBRForest>( dynamic_cast<TMVA::MethodBDT*>( temp ) );
-  std::unique_ptr<const GBRForest> gbrForest_  = std::make_unique<GBRForest>( weightsfile );
-  */
+    }
+    const std::string& weightsfile(Form("%s/weights/%s_%s.weights.xml", datasetDirName.data(), mvaName.data(), mvaMethodName.data()));
+    std::cout << " weightsfile = " << weightsfile << std::endl;
+    // CMSSW 9
+    // TMVA::IMethod* mva = reader->BookMVA(mvaMethodName.data(), weightsfile.c_str());  // https://github.com/cms-sw/cmssw/commit/0f09c19f5464811fdbf36f178ad833ab45f34f49#diff-9e5a1ffbf53411d5d6efeab6c46a2c76L39
+    // saveAsGBRForest(mva, mvaName, outputFileName);
+
+    // CMSSW 10
+    saveAsGBRForest(weightsfile, mvaName, outputFileName);
+    /*
+    - auto temp{ reader->BookMVA(softmuon_mva_name, weightsfile.c_str()) };
+    - gbrForest_ = std::make_unique<GBRForest>( dynamic_cast<TMVA::MethodBDT*>( temp ) );
+    std::unique_ptr<const GBRForest> gbrForest_ = std::make_unique<GBRForest>( weightsfile );
+    */
   // delete mva;
 
   clock.Show("trainTauIdMVA");

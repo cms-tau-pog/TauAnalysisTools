@@ -170,6 +170,12 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
   edm::ParameterSet cfgReweightTreeTauIdMVA = cfg.getParameter<edm::ParameterSet>("reweightTreeTauIdMVA");
   std::string inputTreeName = cfgReweightTreeTauIdMVA.getParameter<std::string>("inputTreeName");
+  std::string inputTreeNamesg = cfgReweightTreeTauIdMVA.getParameter<std::string>("inputTreeNamesg");
+  std::string inputTreeNamebg = cfgReweightTreeTauIdMVA.getParameter<std::string>("inputTreeNamebg");
+  if (inputTreeNamesg.length() == 0) inputTreeNamesg = inputTreeName;
+  if (inputTreeNamebg.length() == 0) inputTreeNamebg = inputTreeName;
+  std::cout << "inputTreeNamesg: " << inputTreeNamesg << "\n";
+  std::cout << "inputTreeNamebg: " << inputTreeNamebg << "\n";
   std::string outputTreeName = cfgReweightTreeTauIdMVA.getParameter<std::string>("outputTreeName");
   vstring signalSamples = cfgReweightTreeTauIdMVA.getParameter<vstring>("signalSamples");
   vstring backgroundSamples = cfgReweightTreeTauIdMVA.getParameter<vstring>("backgroundSamples");
@@ -195,6 +201,8 @@ int main(int argc, char* argv[])
     else if ( item_string == "KILL"       ) reweight_or_KILL = kKILL;
     else throw cms::Exception("reweightTreeTauIdMVA") << "Invalid Configuration parameter 'reweight' = " << reweightOption_tstring.Data() << " !!\n";
   }
+  std::cout << "reweightOption: " << reweightOption << "\n";
+  std::cout << "reweight_or_KILL: " << reweight_or_KILL << "\n";
   vstring inputVariables = cfgReweightTreeTauIdMVA.getParameter<vstring>("inputVariables");
   vstring spectatorVariables = cfgReweightTreeTauIdMVA.getParameter<vstring>("spectatorVariables");
   std::string branchNameEvtWeight = cfgReweightTreeTauIdMVA.getParameter<std::string>("branchNameEvtWeight");
@@ -224,8 +232,8 @@ int main(int argc, char* argv[])
   //
 
   //--- Chain input root files
-    TChain* inputTree_signal = new TChain(inputTreeName.data());
-    TChain* inputTree_background = new TChain(inputTreeName.data());
+    TChain* inputTree_signal = new TChain(inputTreeNamesg.data());
+    TChain* inputTree_background = new TChain(inputTreeNamebg.data());
     for ( vstring::const_iterator inputFileName = inputFiles.files().begin();	inputFileName != inputFiles.files().end(); ++inputFileName )
     {
       bool matchesSample_signal = false;
