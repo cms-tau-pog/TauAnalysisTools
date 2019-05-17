@@ -22,12 +22,13 @@ def pruneToNEvents(fileName, treeName, m=None, frac=None):
             raise Exception('bad frac')
     else:
         frac = (nentries - m) / nentries
+        frac = float(m) / nentries
         if frac < 0:
             raise Exception('too few events in the input file')
 
     # Create a new file + a clone of old tree in new file
     output_filename = fileName.split('.root')[0] + '_' + str(frac) + 'fr_' + str(m) + 'ev.root'
-    print 'output:', output_filename, '\n ', nentries, '->', m
+    print 'output:', output_filename, '\n ', nentries, '->', m, '\n fraction to keep:', frac, float(m / nentries)
     newfile = ROOT.TFile(output_filename, "recreate")
     newtree = oldtree.CloneTree(0)
 
@@ -40,10 +41,6 @@ def pruneToNEvents(fileName, treeName, m=None, frac=None):
     for event in range(0, nentries):
         if event == nentries - 2:
             print 'by the end ', event, 'nout:', nout,
-        rr = r.random()
-        if rr > 1:
-            print rr
-            exit(1)
         if r.random() > frac:
             skipped += 1
             continue

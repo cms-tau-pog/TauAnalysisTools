@@ -85,8 +85,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description='addNormalizingWeight parser'
     )
-    parser.add_argument('-i', type=str, default=[''], nargs="*", help='input file')
-    parser.add_argument('-t', type=str, default=[''], nargs="*", help='input tree')
+    parser.add_argument('-i', type=str, default=[''], nargs="*", help='input files')
+    parser.add_argument('-t', type=str, default=[''], nargs="*", help='input trees')
     parser.add_argument('-f', type=float, default=None, help='weight for output events')
     args = parser.parse_args()
 
