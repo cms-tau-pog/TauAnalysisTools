@@ -366,6 +366,8 @@ void TauIdMVATrainingNtupleProducerMiniAOD::beginJob()
 	if (tmvaMacro.size() > 0 && tmvaMacroVariables.size() > 0 && tmvaMacroBranch.size() > 0)
 	{
 		addBranchF(tmvaMacroBranch.data());
+		// for (auto single_tmvaMacroBranch : tmvaMacroBranch)
+		// 	addBranchF(single_tmvaMacroBranch.data());
 	}
 }
 

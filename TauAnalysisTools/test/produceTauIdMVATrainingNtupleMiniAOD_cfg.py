@@ -393,8 +393,18 @@ process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATraining
     ptMin_photonPtSumOutsideSignalCone=cms.vstring("1.0"),
     ptMin_photonPtSumOutsideSignalConedRgt0p1=cms.vstring("1.0"),
     #--------------------------------------------------------
-    tmvaMacroBranch=cms.string("2018_raw"),
-    tmvaMacro=cms.string("$CMSSW_BASE/dataset_oldDM_tauId_dR05_old_v2/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_1p0_BDTG.class.C"),
+    # old
+    # tmvaMacroBranch=cms.string("2018_raw"),
+    # tmvaMacro=cms.string("$CMSSW_BASE/dataset_oldDM_tauId_dR05_old_v2/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_1p0_BDTG.class.C"),
+    # new
+    # tmvaMacroBranch=cms.string("2018_raw_new"),
+    # tmvaMacro=cms.string("$CMSSW_BASE/dataset_newDM_tauId_dR05_new_v2/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0_BDTG.class.C",),
+    # new short DM
+    tmvaMacroBranch=cms.string("2018_raw_new_shortDM"),
+    tmvaMacro=cms.string("$CMSSW_BASE/dataset_newDM_tauId_dR05_new_v3/weights/mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_short_BDTG.class.C",),
+    # 0.3
+    # tmvaMacroBranch=cms.string("2018_raw_0p3"),
+    # tmvaMacro=cms.string("$CMSSW_BASE/dataset_oldDM_tauId_dR03_old_v2/weights/mvaIsolation3HitsDeltaR03opt2aLTDB_BDTG.class.C"),
     tmvaMacroVariables=cms.vstring(
         "TMath::Log(TMath::Max(1.,recTauPt))",
         "TMath::Abs(recTauEta)",

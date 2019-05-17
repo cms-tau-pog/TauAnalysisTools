@@ -31,8 +31,8 @@ prepareTreeOptions = "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_B
 decaymodes = {
     "new": {
         "mvaDiscriminators": {
-            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0'],
-            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5']
+            # 'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0'],
+            'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_short': trainings['mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_short']
         },
         "cutDiscriminators": {
             'rawMVAnewDMwLT': cutDiscriminatorsAll['rawMVAnewDMwLT'],
@@ -43,8 +43,8 @@ decaymodes = {
         "plots": {
             'mvaIsolation_optDeltaR05BDeltaBeta_newDM': {
                 'graphs': [
-                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0',
-                    # 'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p5',
+                    # 'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_1p0',
+                    'mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_short',
                     'rawMVAnewDMwLT',
                     'rawMVAnewDMwLT2016',
                     'rawMVAnewDMwLT2017v2',

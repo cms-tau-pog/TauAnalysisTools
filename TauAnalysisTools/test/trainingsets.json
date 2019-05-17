@@ -3,6 +3,7 @@
 	{
 		"preselection_oldDMs": "decayModeFindingOldDMs > 0.5 && numSelectedOfflinePrimaryVertices >= 1 && TMath::Abs(recTauVtxZ - selectedOfflinePrimaryVertexZ) < 0.4 && recJetLooseId > 0.5 && leadPFChargedHadrCandPt > 1. && chargedIsoPtSum < 10.",
 		"preselection_newDMs" :    "decayModeFindingNewDMs > 0.5 && numSelectedOfflinePrimaryVertices >= 1 && TMath::Abs(recTauVtxZ - selectedOfflinePrimaryVertexZ) < 0.4 && recJetLooseId > 0.5 && leadPFChargedHadrCandPt > 1. && chargedIsoPtSum < 10.",
+		"preselection_newDMsShort" :    "decayModeFindingNewDMs > 0.5 && numSelectedOfflinePrimaryVertices >= 1 && TMath::Abs(recTauVtxZ - selectedOfflinePrimaryVertexZ) < 0.4 && recJetLooseId > 0.5 && leadPFChargedHadrCandPt > 1. && chargedIsoPtSum < 10. && (recTauDecayMode == 0 || recTauDecayMode == 1 || recTauDecayMode == 2 || recTauDecayMode == 10 || recTauDecayMode == 11)",
 
 		"preselection_dR03_oldDMs" :    "decayModeFindingOldDMs > 0.5 && numSelectedOfflinePrimaryVertices >= 1 && TMath::Abs(recTauVtxZ - selectedOfflinePrimaryVertexZ) < 0.4 && recJetLooseId > 0.5 && leadPFChargedHadrCandPt > 1. && chargedIsoPtSumdR03 < 10.",
 		"preselection_dR03_newDMs" :    "decayModeFindingNewDMs > 0.5 && numSelectedOfflinePrimaryVertices >= 1 && TMath::Abs(recTauVtxZ - selectedOfflinePrimaryVertexZ) < 0.4 && recJetLooseId > 0.5 && leadPFChargedHadrCandPt > 1. && chargedIsoPtSumdR03 < 10."
@@ -661,6 +662,53 @@
 	        "color"               : 4
 	    },
 
+
+		"mvaIsolation3HitsDeltaR05opt2aLTDB_newDM_short" : {
+	        "preselection"        : "preselection_newDMsShort",
+	        "applyPtReweighting"  : true,
+	        "applyEtaReweighting" : true,
+	        "reweight"            : "min:KILL",
+	        "applyEventPruningSignal"   : 0,
+	        "applyEventPruningBackground" : 0,
+	        "applyPtDependentPruningSignal" : false,
+	        "applyPtDependentPruningBackground" : true,
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "inputVariables"      : [
+	            "TMath::Log(TMath::Max(1., recTauPt))/F",
+	            "TMath::Abs(recTauEta)/F",
+	            "TMath::Log(TMath::Max(1.e-2, chargedIsoPtSum))/F",
+	            "TMath::Log(TMath::Max(1.e-2, neutralIsoPtSum_ptGt1.0))/F",
+	            "TMath::Log(TMath::Max(1.e-2, puCorrPtSum))/F",
+	            "TMath::Log(TMath::Max(1.e-2, photonPtSumOutsideSignalCone_ptGt1.0))/F",
+	            "recTauDecayMode/I",
+	            "TMath::Min(30., recTauNphoton_ptGt1.0)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDetaStrip_ptGt1.0)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDphiStrip_ptGt1.0)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDrSignal_ptGt1.0)/F",
+	            "TMath::Min(0.5, recTauPtWeightedDrIsolation_ptGt1.0)/F",
+	            "TMath::Min(1., recTauEratio)/F",
+	            "TMath::Sign(+1., recImpactParam)/F",
+	            "TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam))))/F",
+	            "TMath::Min(10., TMath::Abs(recImpactParamSign))/F",
+	            "TMath::Sign(+1., recImpactParam3D)/F",
+	            "TMath::Sqrt(TMath::Abs(TMath::Min(1., TMath::Abs(recImpactParam3D))))/F",
+	            "TMath::Min(10., TMath::Abs(recImpactParamSign3D))/F",
+	            "hasRecDecayVertex/I",
+	            "TMath::Sqrt(recDecayDistMag)/F",
+	            "TMath::Min(10., recDecayDistSign)/F",
+	            "TMath::Max(-1.,recTauGJangleDiff)/F"
+	        ],
+	        "spectatorVariables"  : [
+	            "commonSpectatorVariables",
+				"byIsolationMVArun2v1DBnewDMwLTraw",
+				"byIsolationMVArun2v1DBnewDMwLTraw2016",
+				"byIsolationMVArun2017v2DBnewDMwLTraw2017"
+	        ],
+	        "otherVariables" : [],
+	        "legendEntry"         : "nom.2018 tr., new DM(short)",
+	        "_comment"			  : "only DM 0,1,2,10,11 are considered",
+	        "color"               : 4
+	    },
 
 
 	    "mvaIsolation3HitsDeltaR05opt2aLTDB" : {
