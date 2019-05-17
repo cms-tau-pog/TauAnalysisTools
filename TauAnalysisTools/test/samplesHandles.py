@@ -66,6 +66,16 @@ class SamplesHandles(object):
             self.samples_sg = SamplesHandles.getSamplesSg18(dR0p3=True)
             self.samples_bg = SamplesHandles.getSamplesBg18(dR0p3=True)
 
+        elif self.era == "2017v3":  # RunIIFall17MiniAODv2
+            self.global_tag = '94X_mc2017_realistic_v17'
+            self.samples_sg = SamplesHandles.getSamplesSg17v3(dR0p3=False)
+            self.samples_bg = SamplesHandles.getSamplesBg17v3(dR0p3=False)
+
+        elif self.era == "2016v3":  # RunIISummer16MiniAODv3
+            self.global_tag = '94X_mcRun2_asymptotic_v3'
+            self.samples_sg = SamplesHandles.getSamplesSg16v3(dR0p3=False)
+            self.samples_bg = SamplesHandles.getSamplesBg16v3(dR0p3=False)
+
         else:
             self.samples = {}
             self.samples_sg = {}
@@ -93,6 +103,7 @@ class SamplesHandles(object):
         s = SamplesHandles.getSamplesSg18(dR0p3=dR0p3)
         s.update(SamplesHandles.getSamplesBg18(dR0p3=dR0p3))
         return s
+
 
     @staticmethod
     def getSamples18dR0p3():
@@ -174,21 +185,22 @@ class SamplesHandles(object):
         samples = {
             'TTToHadronic': {  # two W decay through quarks
                 'datasetpath': '/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-            },
+            }
+        }
+        if dR0p3:
+            samples['TTToSemiLeptonic_mtop175p5_Background'] = {
+                'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            }
+            samples['TTToSemiLeptonic_mtop169p5_Background'] = {
+                'datasetpath': '/TTToSemiLeptonic_mtop169p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+            }
             # there are still b-jets, most of which will on the other hand be removed by quality cuts
             # keep out of training not to bias towards discrimination from b-jets even more
             # 'TTTo2L2Nu_Background': {
             #     'datasetpath': '/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
             # },
-            'TTToSemiLeptonic_mtop175p5_Background': {
-                'datasetpath': '/TTToSemiLeptonic_mtop175p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-            },
-            'TTToSemiLeptonic_mtop169p5_Background': {
-                'datasetpath': '/TTToSemiLeptonic_mtop169p5_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
-            },
-        }
 
-        if not dR0p3:
+        else:
             # ? : /QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM
             QCD_Pt_ranges = ['15to30','30to50','50to80','80to120','120to170','170to300','300to470','470to600','600to800','800to1000','1000to1400','1400to1800','1800to2400','2400to3200','3200toInf']
             for massrange in QCD_Pt_ranges:
@@ -237,6 +249,167 @@ class SamplesHandles(object):
         print "SOME SAMPLES ARE MISSING IN THE LIST OF SAMPLES: Wplus1Jets_mcatnlo, WplusJets_mcatnlo"
 
         return samples
+
+    @staticmethod
+    def getSamples17v3(dR0p3=False):
+        s = SamplesHandles.getSamplesSg17v3(dR0p3=dR0p3)
+        s.update(SamplesHandles.getSamplesBg17v3(dR0p3=dR0p3))
+        return s
+
+    @staticmethod
+    def getSamplesSg17v3(dR0p3=False):
+        samples = {
+            'ZplusJets_madgraph': {
+                'datasetpath': '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM',#! LO
+            },
+            'ZplusJets_madgraph_ext1': {  # Corrupted?
+                'datasetpath': '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM',#! LO
+            },
+        }
+        # mssmHiggsMassPoints1 = [90, 900, 80, 800, 700, 600, 450, 400, 350, 3200, 300, 2900, 2600, 250, 2300, 200, 2000, 180, 1800, 1600, 1500, 140, 1400, 130, 120, 1200, 110, 100]
+        # for massPoint in mssmHiggsMassPoints1:
+        #     ggSampleName = "ggA%1.0ftoTauTau" % massPoint
+        #     samples[ggSampleName] = {
+        #         'datasetpath': '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM' % massPoint,
+        #     }
+
+        # more samples are ignored for now
+
+        if dR0p3:
+            samples = {}
+
+        SamplesHandles.addKeys(
+            samples=samples,
+            extrakeys={
+                'files_per_job': 1,
+                'total_files': -1,
+                'type': 'SignalMC',
+            }
+        )
+
+        return samples
+
+    @staticmethod
+    def getSamplesBg17v3(dR0p3=False):
+        samples = {}
+        # samples = {
+        #     'TTToHadronic': {  # two W decay through quarks
+        #         'datasetpath': '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM',
+        #     }
+        # }
+        if dR0p3:
+            samples = {}
+        else:
+            QCD_Pt_ranges = ["80to120", "800to1000", "600to800", "50to80", "470to600", "3200toInf", "30to50", "300to470", "2400to3200", "1800to2400", "170to300", "15to30", "1400to1800", "120to170", "1000to1400"]
+            for massrange in QCD_Pt_ranges:
+                sampleName = "QCDjetsPt" + massrange
+                samples[sampleName] = {
+                    'datasetpath': '/QCD_Pt_' + massrange + '_TuneCP5_13TeV_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM',
+                }
+            samples["QCDjetsPt3200toInf_ext"] = {
+                'datasetpath': '/QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM',
+            }
+
+        # more are ignored...
+
+        SamplesHandles.addKeys(
+            samples=samples,
+            extrakeys={
+                'files_per_job': 1,
+                'total_files': -1,
+                'type': 'BackgroundMC',
+            }
+        )
+
+        print "SOME SAMPLES ARE MISSING IN THE LIST OF SAMPLES: Wplus1Jets_mcatnlo, WplusJets_mcatnlo"
+
+        return samples
+
+
+    @staticmethod
+    def getSamples16v3(dR0p3=False):
+        s = SamplesHandles.getSamplesSg16v3(dR0p3=dR0p3)
+        s.update(SamplesHandles.getSamplesBg16v3(dR0p3=dR0p3))
+        return s
+
+    @staticmethod
+    def getSamplesSg16v3(dR0p3=False):
+        samples = {
+            'ZplusJets_mcatnlo': {
+                'datasetpath': '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM',#! LO
+            },
+        }
+        #  # currently 29 mass points available
+        #  mssmHiggsMassPoints1 = [ 80, 90, 100, 110, 120, 130, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2300, 2600, 2900, 3200 ]
+        #  for massPoint in mssmHiggsMassPoints1:
+        #      ggSampleName = "ggA%1.0ftoTauTau" % massPoint
+        #      samples[ggSampleName] = {
+        #          'datasetpath'                        : '/SUSYGluGluToHToTauTau_M-%1.0f_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3*/MINIAODSIM' % massPoint,
+        #          'files_per_job'                      : 1,
+        #          'total_files'                        : -1,
+        #          'type'                               : 'SignalMC'
+        #      }
+
+        if dR0p3:
+            samples = {}
+
+        SamplesHandles.addKeys(
+            samples=samples,
+            extrakeys={
+                'files_per_job': 1,
+                'total_files': -1,
+                'type': 'SignalMC',
+            }
+        )
+
+        return samples
+
+    @staticmethod
+    def getSamplesBg16v3(dR0p3=False):
+        samples = {}
+
+        # samples = {
+        #     'TTToHadronic': {  # two W decay through quarks
+        #         'datasetpath': '/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM',
+        #     }
+        # }
+        if dR0p3:
+            samples = {}
+        else:
+            # /QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+            # /QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+            # /QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+            # /QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+            # /QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+            # /QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+            # /QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM
+
+            QCD_Pt_ranges = ["800to1000", "600to800", "50to80", "470to600", "3200toInf", "30to50", "300to470", "2400to3200", "1800to2400", "170to300", "15to30", "1400to1800"]
+            for massrange in QCD_Pt_ranges:
+                sampleName = "QCDjetsPt" + massrange
+                samples[sampleName] = {
+                    'datasetpath': '/QCD_Pt_' + massrange + '_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM',
+                }
+
+            samples["QCDjetsPt80to120"] = {'datasetpath': '/QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM'}
+            samples["QCDjetsPt120to170"] = {'datasetpath': '/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM'}
+            samples["QCDjetsPt1000to1400"] = {'datasetpath': '/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM'}
+
+        # more are ignored...
+
+        SamplesHandles.addKeys(
+            samples=samples,
+            extrakeys={
+                'files_per_job': 1,
+                'total_files': -1,
+                'type': 'BackgroundMC',
+            }
+        )
+
+        print "SOME SAMPLES ARE MISSING IN THE LIST OF SAMPLES: Wplus1Jets_mcatnlo, WplusJets_mcatnlo"
+
+        return samples
+
 
     @staticmethod
     def getSamplesdR03_16():

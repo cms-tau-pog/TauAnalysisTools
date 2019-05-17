@@ -70,12 +70,12 @@ test_files = {
         'comment': "2017 MCv3"
     },
 
-    '2018_ZTT': {
-        'file': '/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root',
-        'type': 'SignalMC',
-        'globaltag': '102X_upgrade2018_realistic_v15',
-        'comment': "2018, ZTT"
-    },
+    # '2018_ZTT': {
+    #     'file': '/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root',
+    #     'type': 'SignalMC',
+    #     'globaltag': '102X_upgrade2018_realistic_v15',
+    #     'comment': "2018, ZTT"
+    # },
     '2018_TTToHad': {
         'file': '/store/mc/RunIIAutumn18MiniAOD/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/100000/2FA2A920-8461-264C-8A72-74C1179D019D.root',
         'type': 'BackgroundMC',
@@ -105,7 +105,63 @@ test_files = {
         'type': 'BackgroundMC',
         'globaltag': '102X_upgrade2018_realistic_v15',
         'comment': "2018, QCD80to120"
-    }
+    },
+
+
+
+    '2018_QCD15to7000': {
+        'file': ['/store/mc/RunIIAutumn18MiniAOD/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15_ext1-v1/110000/FF7E6F76-76B3-2345-840B-073E02E94CC5.root',
+                 # '/store/mc/RunIIAutumn18MiniAOD/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15_ext1-v1/110000/FE7AFAAC-39F9-A74B-A2EB-21F0BE061CA8.root'
+        ],
+        'type': 'BackgroundMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment': "2018, QCD15to7000"
+        'das:' '/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM',
+        'nevents': 84000,
+    },
+    '2018_ZTT': {
+        'file': ['/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/90000/F6F754E3-9026-CC48-9018-FFBB087DADA5.root',
+        ],
+        'type': 'SignalMC',
+        'globaltag': '102X_upgrade2018_realistic_v15',
+        'comment': "2018, ZTT"
+        'das:' '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM',
+        'nevents': 33772,
+    },
+    '2017_QCD15to7000': {
+        'file': '/store/mc/RunIIFall17MiniAODv2/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/08E05001-8A42-E811-BDD5-B083FED3F2E8.root',
+        'type': 'BackgroundMC',
+        'globaltag': '94X_mc2017_realistic_v17',
+        'comment': "2017 MCv3, QCD15to7000"
+        'das:' '/QCD_Pt-15to7000_TuneCP5_Flat_13TeV_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM',
+        'nevents': 91624,
+    },
+    '2017_ZTT': {
+        'file': ['/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/20000/7A222A30-6244-E811-A53D-24BE05CEDC81.root',
+        ],
+        'type': 'SignalMC',
+        'globaltag': '94X_mc2017_realistic_v17',
+        'comment': "2017, ZTT"
+        'das:' '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM',
+        'nevents': 95705,
+    },
+    '2016_QCD15to7000': {
+        'file': '/store/mc/RunIISummer16MiniAODv3/QCD_Pt-15to7000_TuneCUETHS1_Flat_13TeV_herwigpp/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/280000/FE251B18-D420-E911-8570-0090FAA57730.root',
+        'type': 'BackgroundMC',
+        'globaltag': '94X_mcRun2_asymptotic_v3',
+        'comment': "2016 MCv3, QCD15to7000",
+        'das': '/QCD_Pt-15to7000_TuneCUETHS1_Flat_13TeV_herwigpp/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM',
+        'nevents': 145064,
+    },
+    '2016_ZTT': {
+        'file': ['/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/270000/C28EBB81-76C0-E811-8A96-A0369FC516AC.root',
+        ],
+        'type': 'SignalMC',
+        'globaltag': '94X_mc2017_realistic_v17',
+        'comment': "2016, ZTT"
+        'das:' '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM',
+        'nevents': 102092,
+    },
 }
 
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -155,7 +211,7 @@ else:
 from TauAnalysisTools.TauAnalysisTools.runTauIdMVA import *
 na = TauIDEmbedder(process, cms,
     debug=True,
-    toKeep = ["2017v1", "2017v2", "newDM2017v2", "dR0p32017v2", "2016v1", "newDM2016v1"]
+    toKeep=["2017v1", "2017v2", "newDM2017v2", "dR0p32017v2", "2016v1", "newDM2016v1"]
 )
 na.runTauID()
 
@@ -172,9 +228,9 @@ process.produceTauIdMVATrainingNtupleMiniAODSequence = cms.Sequence()
 #                 >= 7 if using 'offlinePrimaryVerticesWithBS' as input
 #
 process.selectedOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
-    src = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    cut = cms.string("isValid & ndof >= 4 & chi2 > 0 & abs(z) < 24 & abs(position.Rho) < 2."), # tracksSize & nTracks are set to 0 in MiniAOD
-    filter = cms.bool(False)
+    src=cms.InputTag('offlineSlimmedPrimaryVertices'),
+    cut=cms.string("isValid & ndof >= 4 & chi2 > 0 & abs(z) < 24 & abs(position.Rho) < 2."), # tracksSize & nTracks are set to 0 in MiniAOD
+    filter=cms.bool(False)
 )
 process.produceTauIdMVATrainingNtupleMiniAODSequence += process.selectedOfflinePrimaryVertices
 #--------------------------------------------------------------------------------
@@ -199,139 +255,139 @@ srcWeights = []
 #--------------------------------------------------------------------------------
 
 process.tauIdMVATrainingNtupleProducerMiniAOD = cms.EDProducer("TauIdMVATrainingNtupleProducerMiniAOD",
-    srcRecTaus = cms.InputTag('NewTauIDsEmbedded'),
-    srcPrunedGenParticles = cms.InputTag('prunedGenParticles'),
-    srcPackedGenParticles = cms.InputTag('packedGenParticles'),
-    srcRecJets = cms.InputTag('slimmedJets'),
-    minGenVisPt = cms.double(10.),
-    dRmatch = cms.double(0.3),
-    tauIdDiscriminators = cms.PSet(
-        decayModeFindingNewDMs = cms.string('decayModeFindingNewDMs'),
-        decayModeFindingOldDMs = cms.string('decayModeFinding'),
+    srcRecTaus=cms.InputTag('NewTauIDsEmbedded'),
+    srcPrunedGenParticles=cms.InputTag('prunedGenParticles'),
+    srcPackedGenParticles=cms.InputTag('packedGenParticles'),
+    srcRecJets=cms.InputTag('slimmedJets'),
+    minGenVisPt=cms.double(10.),
+    dRmatch=cms.double(0.3),
+    tauIdDiscriminators=cms.PSet(
+        decayModeFindingNewDMs=cms.string('decayModeFindingNewDMs'),
+        decayModeFindingOldDMs=cms.string('decayModeFinding'),
         # cut-based
-        byCombinedIsolationDeltaBetaCorrRaw3Hits = cms.string('byCombinedIsolationDeltaBetaCorrRaw3Hits'),
-        byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.string('byLooseCombinedIsolationDeltaBetaCorr3Hits'),
-        byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.string('byMediumCombinedIsolationDeltaBetaCorr3Hits'),
-        byTightCombinedIsolationDeltaBetaCorr3Hits = cms.string('byTightCombinedIsolationDeltaBetaCorr3Hits'),
+        byCombinedIsolationDeltaBetaCorrRaw3Hits=cms.string('byCombinedIsolationDeltaBetaCorrRaw3Hits'),
+        byLooseCombinedIsolationDeltaBetaCorr3Hits=cms.string('byLooseCombinedIsolationDeltaBetaCorr3Hits'),
+        byMediumCombinedIsolationDeltaBetaCorr3Hits=cms.string('byMediumCombinedIsolationDeltaBetaCorr3Hits'),
+        byTightCombinedIsolationDeltaBetaCorr3Hits=cms.string('byTightCombinedIsolationDeltaBetaCorr3Hits'),
         # 2015 ; standart training should be 2017 starting from MCv2
-        byIsolationMVArun2v1DBoldDMwLTraw = cms.string("byIsolationMVArun2v1DBoldDMwLTraw"),
-        #byVVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVVLooseIsolationMVArun2v1DBoldDMwLT"), <-- starting 2017
-        byVLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT"),
-        byLooseIsolationMVArun2v1DBoldDMwLT = cms.string("byLooseIsolationMVArun2v1DBoldDMwLT"),
-        byMediumIsolationMVArun2v1DBoldDMwLT = cms.string("byMediumIsolationMVArun2v1DBoldDMwLT"),
-        byTightIsolationMVArun2v1DBoldDMwLT = cms.string("byTightIsolationMVArun2v1DBoldDMwLT"),
-        byVTightIsolationMVArun2v1DBoldDMwLT = cms.string("byVTightIsolationMVArun2v1DBoldDMwLT"),
-        byVVTightIsolationMVArun2v1DBoldDMwLT = cms.string("byVVTightIsolationMVArun2v1DBoldDMwLT"),
+        byIsolationMVArun2v1DBoldDMwLTraw=cms.string("byIsolationMVArun2v1DBoldDMwLTraw"),
+        # byVVLooseIsolationMVArun2v1DBoldDMwLT=cms.string("byVVLooseIsolationMVArun2v1DBoldDMwLT"), <-- starting 2017
+        byVLooseIsolationMVArun2v1DBoldDMwLT=cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT"),
+        byLooseIsolationMVArun2v1DBoldDMwLT=cms.string("byLooseIsolationMVArun2v1DBoldDMwLT"),
+        byMediumIsolationMVArun2v1DBoldDMwLT=cms.string("byMediumIsolationMVArun2v1DBoldDMwLT"),
+        byTightIsolationMVArun2v1DBoldDMwLT=cms.string("byTightIsolationMVArun2v1DBoldDMwLT"),
+        byVTightIsolationMVArun2v1DBoldDMwLT=cms.string("byVTightIsolationMVArun2v1DBoldDMwLT"),
+        byVVTightIsolationMVArun2v1DBoldDMwLT=cms.string("byVVTightIsolationMVArun2v1DBoldDMwLT"),
         # 2015 new DM
-            byIsolationMVArun2v1DBnewDMwLTraw = cms.string("byIsolationMVArun2v1DBnewDMwLTraw"),
-        byVLooseIsolationMVArun2v1DBnewDMwLT = cms.string("byVLooseIsolationMVArun2v1DBnewDMwLT"),
-        byLooseIsolationMVArun2v1DBnewDMwLT = cms.string("byLooseIsolationMVArun2v1DBnewDMwLT"),
-        byMediumIsolationMVArun2v1DBnewDMwLT = cms.string("byMediumIsolationMVArun2v1DBnewDMwLT"),
-        byTightIsolationMVArun2v1DBnewDMwLT = cms.string("byTightIsolationMVArun2v1DBnewDMwLT"),
-        byVTightIsolationMVArun2v1DBnewDMwLT = cms.string("byVTightIsolationMVArun2v1DBnewDMwLT"),
-        byVVTightIsolationMVArun2v1DBnewDMwLT = cms.string("byVVTightIsolationMVArun2v1DBnewDMwLT"),
-        # 2015 dR = 0.3
-        byIsolationMVArun2v1DBdR03oldDMwLTraw = cms.string("byIsolationMVArun2v1DBdR03oldDMwLTraw"),
-        byVLooseIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byVLooseIsolationMVArun2v1DBdR03oldDMwLT"),
-        byLooseIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byLooseIsolationMVArun2v1DBdR03oldDMwLT"),
-        byMediumIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byMediumIsolationMVArun2v1DBdR03oldDMwLT"),
-        byTightIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byTightIsolationMVArun2v1DBdR03oldDMwLT"),
-        byVTightIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byVTightIsolationMVArun2v1DBdR03oldDMwLT"),
-        byVVTightIsolationMVArun2v1DBdR03oldDMwLT = cms.string("byVVTightIsolationMVArun2v1DBdR03oldDMwLT"),
+            byIsolationMVArun2v1DBnewDMwLTraw=cms.string("byIsolationMVArun2v1DBnewDMwLTraw"),
+        byVLooseIsolationMVArun2v1DBnewDMwLT=cms.string("byVLooseIsolationMVArun2v1DBnewDMwLT"),
+        byLooseIsolationMVArun2v1DBnewDMwLT=cms.string("byLooseIsolationMVArun2v1DBnewDMwLT"),
+        byMediumIsolationMVArun2v1DBnewDMwLT=cms.string("byMediumIsolationMVArun2v1DBnewDMwLT"),
+        byTightIsolationMVArun2v1DBnewDMwLT=cms.string("byTightIsolationMVArun2v1DBnewDMwLT"),
+        byVTightIsolationMVArun2v1DBnewDMwLT=cms.string("byVTightIsolationMVArun2v1DBnewDMwLT"),
+        byVVTightIsolationMVArun2v1DBnewDMwLT=cms.string("byVVTightIsolationMVArun2v1DBnewDMwLT"),
+        # 2015 dR=0.3
+        byIsolationMVArun2v1DBdR03oldDMwLTraw=cms.string("byIsolationMVArun2v1DBdR03oldDMwLTraw"),
+        byVLooseIsolationMVArun2v1DBdR03oldDMwLT=cms.string("byVLooseIsolationMVArun2v1DBdR03oldDMwLT"),
+        byLooseIsolationMVArun2v1DBdR03oldDMwLT=cms.string("byLooseIsolationMVArun2v1DBdR03oldDMwLT"),
+        byMediumIsolationMVArun2v1DBdR03oldDMwLT=cms.string("byMediumIsolationMVArun2v1DBdR03oldDMwLT"),
+        byTightIsolationMVArun2v1DBdR03oldDMwLT=cms.string("byTightIsolationMVArun2v1DBdR03oldDMwLT"),
+        byVTightIsolationMVArun2v1DBdR03oldDMwLT=cms.string("byVTightIsolationMVArun2v1DBdR03oldDMwLT"),
+        byVVTightIsolationMVArun2v1DBdR03oldDMwLT=cms.string("byVVTightIsolationMVArun2v1DBdR03oldDMwLT"),
         # 2017 v1 : included in CMSSW starting from MCv2
-        byIsolationMVArun2017v1DBoldDMwLTraw2017 = cms.string("byIsolationMVArun2017v1DBoldDMwLTraw2017"),
-        byVVLooseIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byVVLooseIsolationMVArun2017v1DBoldDMwLT2017"),
-        byVLooseIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byVLooseIsolationMVArun2017v1DBoldDMwLT2017"),
-        byLooseIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byLooseIsolationMVArun2017v1DBoldDMwLT2017"),
-        byMediumIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byMediumIsolationMVArun2017v1DBoldDMwLT2017"),
-        byTightIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byTightIsolationMVArun2017v1DBoldDMwLT2017"),
-        byVTightIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byVTightIsolationMVArun2017v1DBoldDMwLT2017"),
-        byVVTightIsolationMVArun2017v1DBoldDMwLT2017 = cms.string("byVVTightIsolationMVArun2017v1DBoldDMwLT2017"),
+        byIsolationMVArun2017v1DBoldDMwLTraw2017=cms.string("byIsolationMVArun2017v1DBoldDMwLTraw2017"),
+        byVVLooseIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byVVLooseIsolationMVArun2017v1DBoldDMwLT2017"),
+        byVLooseIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byVLooseIsolationMVArun2017v1DBoldDMwLT2017"),
+        byLooseIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byLooseIsolationMVArun2017v1DBoldDMwLT2017"),
+        byMediumIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byMediumIsolationMVArun2017v1DBoldDMwLT2017"),
+        byTightIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byTightIsolationMVArun2017v1DBoldDMwLT2017"),
+        byVTightIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byVTightIsolationMVArun2017v1DBoldDMwLT2017"),
+        byVVTightIsolationMVArun2017v1DBoldDMwLT2017=cms.string("byVVTightIsolationMVArun2017v1DBoldDMwLT2017"),
         # 2017 v2
-        byIsolationMVArun2017v2DBoldDMwLTraw2017 = cms.string('byIsolationMVArun2017v2DBoldDMwLTraw2017'),
-        byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byVVLooseIsolationMVArun2017v2DBoldDMwLT2017'),
-        byVLooseIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byVLooseIsolationMVArun2017v2DBoldDMwLT2017'),
-        byLooseIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byLooseIsolationMVArun2017v2DBoldDMwLT2017'),
-        byMediumIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byMediumIsolationMVArun2017v2DBoldDMwLT2017'),
-        byTightIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byTightIsolationMVArun2017v2DBoldDMwLT2017'),
-        byVTightIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byVTightIsolationMVArun2017v2DBoldDMwLT2017'),
-        byVVTightIsolationMVArun2017v2DBoldDMwLT2017 = cms.string('byVVTightIsolationMVArun2017v2DBoldDMwLT2017'),
+        byIsolationMVArun2017v2DBoldDMwLTraw2017=cms.string('byIsolationMVArun2017v2DBoldDMwLTraw2017'),
+        byVVLooseIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byVVLooseIsolationMVArun2017v2DBoldDMwLT2017'),
+        byVLooseIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byVLooseIsolationMVArun2017v2DBoldDMwLT2017'),
+        byLooseIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byLooseIsolationMVArun2017v2DBoldDMwLT2017'),
+        byMediumIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byMediumIsolationMVArun2017v2DBoldDMwLT2017'),
+        byTightIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byTightIsolationMVArun2017v2DBoldDMwLT2017'),
+        byVTightIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byVTightIsolationMVArun2017v2DBoldDMwLT2017'),
+        byVVTightIsolationMVArun2017v2DBoldDMwLT2017=cms.string('byVVTightIsolationMVArun2017v2DBoldDMwLT2017'),
         # 2017 v2 new DM
-        byIsolationMVArun2017v2DBnewDMwLTraw2017 = cms.string('byIsolationMVArun2017v2DBnewDMwLTraw2017'),
-        byVVLooseIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byVVLooseIsolationMVArun2017v2DBnewDMwLT2017'),
-        byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byVLooseIsolationMVArun2017v2DBnewDMwLT2017'),
-        byLooseIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byLooseIsolationMVArun2017v2DBnewDMwLT2017'),
-        byMediumIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byMediumIsolationMVArun2017v2DBnewDMwLT2017'),
-        byTightIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byTightIsolationMVArun2017v2DBnewDMwLT2017'),
-        byVTightIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byVTightIsolationMVArun2017v2DBnewDMwLT2017'),
-        byVVTightIsolationMVArun2017v2DBnewDMwLT2017 = cms.string('byVVTightIsolationMVArun2017v2DBnewDMwLT2017'),
-        # 2017 v2 dR = 0.3
-        byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017 = cms.string('byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017'),
-        byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
-        byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
-        byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
-        byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
-        byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
-        byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
-        byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017 = cms.string('byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byIsolationMVArun2017v2DBnewDMwLTraw2017=cms.string('byIsolationMVArun2017v2DBnewDMwLTraw2017'),
+        byVVLooseIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byVVLooseIsolationMVArun2017v2DBnewDMwLT2017'),
+        byVLooseIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byVLooseIsolationMVArun2017v2DBnewDMwLT2017'),
+        byLooseIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byLooseIsolationMVArun2017v2DBnewDMwLT2017'),
+        byMediumIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byMediumIsolationMVArun2017v2DBnewDMwLT2017'),
+        byTightIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byTightIsolationMVArun2017v2DBnewDMwLT2017'),
+        byVTightIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byVTightIsolationMVArun2017v2DBnewDMwLT2017'),
+        byVVTightIsolationMVArun2017v2DBnewDMwLT2017=cms.string('byVVTightIsolationMVArun2017v2DBnewDMwLT2017'),
+        # 2017 v2 dR=0.3
+        byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017=cms.string('byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017'),
+        byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
+        byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017=cms.string('byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017'),
         # 2016
-        #     byIsolationMVArun2v2DBoldDMwLTraw2016 = cms.string("byIsolationMVArun2v2DBoldDMwLTraw2016"),
-        # byVVLooseIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byVVLooseIsolationMVArun2v2DBoldDMwLT2016"),
-        # byVLooseIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byVLooseIsolationMVArun2v2DBoldDMwLT2016"),
-        # byLooseIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byLooseIsolationMVArun2v2DBoldDMwLT2016"),
-        # byMediumIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byMediumIsolationMVArun2v2DBoldDMwLT2016"),
-        # byTightIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byTightIsolationMVArun2v2DBoldDMwLT2016"),
-        # byVTightIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byVTightIsolationMVArun2v2DBoldDMwLT2016"),
-        # byVVTightIsolationMVArun2v2DBoldDMwLT2016 = cms.string("byVVTightIsolationMVArun2v2DBoldDMwLT2016"),
+        #     byIsolationMVArun2v2DBoldDMwLTraw2016=cms.string("byIsolationMVArun2v2DBoldDMwLTraw2016"),
+        # byVVLooseIsolationMVArun2v2DBoldDMwLT2016=cms.string("byVVLooseIsolationMVArun2v2DBoldDMwLT2016"),
+        # byVLooseIsolationMVArun2v2DBoldDMwLT2016=cms.string("byVLooseIsolationMVArun2v2DBoldDMwLT2016"),
+        # byLooseIsolationMVArun2v2DBoldDMwLT2016=cms.string("byLooseIsolationMVArun2v2DBoldDMwLT2016"),
+        # byMediumIsolationMVArun2v2DBoldDMwLT2016=cms.string("byMediumIsolationMVArun2v2DBoldDMwLT2016"),
+        # byTightIsolationMVArun2v2DBoldDMwLT2016=cms.string("byTightIsolationMVArun2v2DBoldDMwLT2016"),
+        # byVTightIsolationMVArun2v2DBoldDMwLT2016=cms.string("byVTightIsolationMVArun2v2DBoldDMwLT2016"),
+        # byVVTightIsolationMVArun2v2DBoldDMwLT2016=cms.string("byVVTightIsolationMVArun2v2DBoldDMwLT2016"),
         # redefined in https://github.com/cms-tau-pog/cmssw/pull/61/files
         # 2016
-        byIsolationMVArun2v1DBoldDMwLTraw2016 = cms.string("byIsolationMVArun2v1DBoldDMwLTraw2016"),
-        byVLooseIsolationMVArun2v1DBoldDMwLT2016 = cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT2016"),
-        byLooseIsolationMVArun2v1DBoldDMwLT2016 = cms.string("byLooseIsolationMVArun2v1DBoldDMwLT2016"),
-        byMediumIsolationMVArun2v1DBoldDMwLT2016 = cms.string("byMediumIsolationMVArun2v1DBoldDMwLT2016"),
-        byTightIsolationMVArun2v1DBoldDMwLT2016 = cms.string("byTightIsolationMVArun2v1DBoldDMwLT2016"),
-        byVTightIsolationMVArun2v1DBoldDMwLT2016 = cms.string("byVTightIsolationMVArun2v1DBoldDMwLT2016"),
-        byVVTightIsolationMVArun2v1DBoldDMwLT2016 = cms.string("byVVTightIsolationMVArun2v1DBoldDMwLT2016"),
+        byIsolationMVArun2v1DBoldDMwLTraw2016=cms.string("byIsolationMVArun2v1DBoldDMwLTraw2016"),
+        byVLooseIsolationMVArun2v1DBoldDMwLT2016=cms.string("byVLooseIsolationMVArun2v1DBoldDMwLT2016"),
+        byLooseIsolationMVArun2v1DBoldDMwLT2016=cms.string("byLooseIsolationMVArun2v1DBoldDMwLT2016"),
+        byMediumIsolationMVArun2v1DBoldDMwLT2016=cms.string("byMediumIsolationMVArun2v1DBoldDMwLT2016"),
+        byTightIsolationMVArun2v1DBoldDMwLT2016=cms.string("byTightIsolationMVArun2v1DBoldDMwLT2016"),
+        byVTightIsolationMVArun2v1DBoldDMwLT2016=cms.string("byVTightIsolationMVArun2v1DBoldDMwLT2016"),
+        byVVTightIsolationMVArun2v1DBoldDMwLT2016=cms.string("byVVTightIsolationMVArun2v1DBoldDMwLT2016"),
         # new DM 2016
-        byIsolationMVArun2v1DBnewDMwLTraw2016 = cms.string("byIsolationMVArun2v1DBnewDMwLTraw2016"),
-        byVLooseIsolationMVArun2v1DBnewDMwLT2016 = cms.string("byVLooseIsolationMVArun2v1DBnewDMwLT2016"),
-        byLooseIsolationMVArun2v1DBnewDMwLT2016 = cms.string("byLooseIsolationMVArun2v1DBnewDMwLT2016"),
-        byMediumIsolationMVArun2v1DBnewDMwLT2016 = cms.string("byMediumIsolationMVArun2v1DBnewDMwLT2016"),
-        byTightIsolationMVArun2v1DBnewDMwLT2016 = cms.string("byTightIsolationMVArun2v1DBnewDMwLT2016"),
-        byVTightIsolationMVArun2v1DBnewDMwLT2016 = cms.string("byVTightIsolationMVArun2v1DBnewDMwLT2016"),
-        byVVTightIsolationMVArun2v1DBnewDMwLT2016 = cms.string("byVVTightIsolationMVArun2v1DBnewDMwLT2016"),
-        againstMuonLoose3 = cms.string('againstMuonLoose3'),
-        againstMuonTight3 = cms.string('againstMuonTight3')
+        byIsolationMVArun2v1DBnewDMwLTraw2016=cms.string("byIsolationMVArun2v1DBnewDMwLTraw2016"),
+        byVLooseIsolationMVArun2v1DBnewDMwLT2016=cms.string("byVLooseIsolationMVArun2v1DBnewDMwLT2016"),
+        byLooseIsolationMVArun2v1DBnewDMwLT2016=cms.string("byLooseIsolationMVArun2v1DBnewDMwLT2016"),
+        byMediumIsolationMVArun2v1DBnewDMwLT2016=cms.string("byMediumIsolationMVArun2v1DBnewDMwLT2016"),
+        byTightIsolationMVArun2v1DBnewDMwLT2016=cms.string("byTightIsolationMVArun2v1DBnewDMwLT2016"),
+        byVTightIsolationMVArun2v1DBnewDMwLT2016=cms.string("byVTightIsolationMVArun2v1DBnewDMwLT2016"),
+        byVVTightIsolationMVArun2v1DBnewDMwLT2016=cms.string("byVVTightIsolationMVArun2v1DBnewDMwLT2016"),
+        againstMuonLoose3=cms.string('againstMuonLoose3'),
+        againstMuonTight3=cms.string('againstMuonTight3')
     ),
-    isolationPtSums = cms.PSet(
-        chargedIsoPtSum = cms.string("chargedIsoPtSum"),
-        neutralIsoPtSum = cms.string("neutralIsoPtSum"),
-        puCorrPtSum = cms.string("puCorrPtSum"),
-        neutralIsoPtSumWeight = cms.string("neutralIsoPtSumWeight"),
-        footprintCorrection = cms.string("footprintCorrection"),
-        photonPtSumOutsideSignalCone = cms.string("photonPtSumOutsideSignalCone"),
-        chargedIsoPtSumdR03 = cms.string('chargedIsoPtSumdR03'),
-        neutralIsoPtSumdR03 = cms.string('neutralIsoPtSumdR03'),
-        neutralIsoPtSumWeightdR03 = cms.string('neutralIsoPtSumWeightdR03'),
-        footprintCorrectiondR03 = cms.string('footprintCorrectiondR03'),
-        photonPtSumOutsideSignalConedR03 = cms.string('photonPtSumOutsideSignalConedR03')
+    isolationPtSums=cms.PSet(
+        chargedIsoPtSum=cms.string("chargedIsoPtSum"),
+        neutralIsoPtSum=cms.string("neutralIsoPtSum"),
+        puCorrPtSum=cms.string("puCorrPtSum"),
+        neutralIsoPtSumWeight=cms.string("neutralIsoPtSumWeight"),
+        footprintCorrection=cms.string("footprintCorrection"),
+        photonPtSumOutsideSignalCone=cms.string("photonPtSumOutsideSignalCone"),
+        chargedIsoPtSumdR03=cms.string('chargedIsoPtSumdR03'),
+        neutralIsoPtSumdR03=cms.string('neutralIsoPtSumdR03'),
+        neutralIsoPtSumWeightdR03=cms.string('neutralIsoPtSumWeightdR03'),
+        footprintCorrectiondR03=cms.string('footprintCorrectiondR03'),
+        photonPtSumOutsideSignalConedR03=cms.string('photonPtSumOutsideSignalConedR03')
     ),
-    vertexCollections = cms.PSet(
-        offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-        selectedOfflinePrimaryVertices = cms.InputTag('selectedOfflinePrimaryVertices')
+    vertexCollections=cms.PSet(
+        offlinePrimaryVertices=cms.InputTag('offlineSlimmedPrimaryVertices'),
+        selectedOfflinePrimaryVertices=cms.InputTag('selectedOfflinePrimaryVertices')
     ),
     #--------------------------------------------------------
     # CV: pile-up information for Monte Carlo and data
-    srcGenPileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
-    #inputFileNameLumiCalc = cms.FileInPath(inputFileNameLumiCalc),
-    isMC = cms.bool(isMC),
-    isSignal = cms.bool(isSignal),
-    dRClean = cms.double(dRClean),
-    ptCleanMin = cms.double(10.),
-    matchGenTauVis = cms.bool(True),
+    srcGenPileUpSummary=cms.InputTag('slimmedAddPileupInfo'),
+    # inputFileNameLumiCalc=cms.FileInPath(inputFileNameLumiCalc),
+    isMC=cms.bool(isMC),
+    isSignal=cms.bool(isSignal),
+    dRClean=cms.double(dRClean),
+    ptCleanMin=cms.double(10.),
+    matchGenTauVis=cms.bool(True),
     includeMaxLikeVar=cms.bool(False),
     #--------------------------------------------------------
-    srcWeights = cms.VInputTag(srcWeights),
+    srcWeights=cms.VInputTag(srcWeights),
     ptMin_allPhotonsVariables=cms.vstring("1.0"),
     ptMin_nPhotons=cms.vstring("1.0"),
     ptMin_photonPtSumOutsideSignalCone=cms.vstring("1.0"),
@@ -388,8 +444,13 @@ process.p = cms.Path(process.rerunMvaIsolationSequence
 # process.printFirstEventContentPath = cms.Path(process.printEventContent)
 # process.Schedule = cms.Schedule(process.p, process.printFirstEventContentPath)
 
+dest = "/nfs/dust/cms/user/glusheno/TauIDMVATraining2018/outputs_afs2/"
+#__dest = ""
+#__key = ""
+file_name = dest + "tauIdMVATrainingNtupleMiniAOD_" + key + "_2018_raw_new_shortDM" + ".root"
+#__file_name = "tauIdMVATrainingNtupleMiniAOD.root"  # hook to disable printout when submitted to grid
 process.TFileService = cms.Service("TFileService",
-    fileName=cms.string("tauIdMVATrainingNtupleMiniAOD_" + key + ".root"),
+    fileName=cms.string(file_name),
 )
 
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))

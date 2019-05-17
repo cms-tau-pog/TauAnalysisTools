@@ -10,7 +10,7 @@ pp = pprint.PrettyPrinter(indent=4)
 # from python_wrappers.subprocessHandler import SubprocessHandler
 
 import yaml
-config = yaml.load(open("config.yaml", 'r'))
+config = yaml.load(open(os.path.join(os.environ['CMSSW_BASE'], "src/TauAnalysisTools/TauAnalysisTools/test/config.yaml"), 'r'))
 
 # renice -n 19 -u `whoami`
 

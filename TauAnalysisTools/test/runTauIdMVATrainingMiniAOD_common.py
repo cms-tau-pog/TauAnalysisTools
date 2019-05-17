@@ -24,6 +24,7 @@ def produceRunScripts(
     cutDiscriminators,
     plots,
     traintingVariables,
+    prepareTreeOptions,
     allDiscriminators,
     use_condor,
     ):
@@ -42,11 +43,12 @@ def produceRunScripts(
 
     nice = 'nice '
 
-    configFile_preselectTreeTauIdMVA = 'preselectTreeTauIdMVA_cfg.py'
-    configFile_reweightTreeTauIdMVA  = 'reweightTreeTauIdMVA_cfg.py'
-    configFile_trainTauIdMVA         = 'trainTauIdMVA_cfg.py'
-    configFile_makeROCcurveTauIdMVA  = 'makeROCcurveTauIdMVA_cfg.py'
-    configFile_showROCcurvesTauIdMVA = 'showROCcurvesTauIdMVA_cfg.py'
+    configsDir = os.path.join(os.environ['CMSSW_BASE'], "src/TauAnalysisTools/TauAnalysisTools/test/")
+    configFile_preselectTreeTauIdMVA = configsDir + 'preselectTreeTauIdMVA_cfg.py'
+    configFile_reweightTreeTauIdMVA  = configsDir + 'reweightTreeTauIdMVA_cfg.py'
+    configFile_trainTauIdMVA         = configsDir + 'trainTauIdMVA_cfg.py'
+    configFile_makeROCcurveTauIdMVA  = configsDir + 'makeROCcurveTauIdMVA_cfg.py'
+    configFile_showROCcurvesTauIdMVA = configsDir + 'showROCcurvesTauIdMVA_cfg.py'
 
     def getInputFileNames(inputFilePath, samples):
         inputFileNames = []
@@ -264,6 +266,7 @@ def produceRunScripts(
         cfg_modified += "process.trainTauIdMVA.mvaTrainingOptions = cms.string('%s')\n" % mvaDiscriminators[discriminator]['mvaTrainingOptions']
         cfg_modified += "process.trainTauIdMVA.inputVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['inputVariables']
         cfg_modified += "process.trainTauIdMVA.traintingVariables = cms.vstring(%s)\n" % traintingVariables  # mvaDiscriminators[discriminator]['traintingVariables']
+        cfg_modified += "process.trainTauIdMVA.prepareTreeOptions = cms.string('%s')\n" % prepareTreeOptions
         cfg_modified += "process.trainTauIdMVA.spectatorVariables = cms.vstring(%s)\n" % mvaDiscriminators[discriminator]['spectatorVariables']
         cfg_modified += "process.trainTauIdMVA.outputFileName = cms.string('%s')\n" % outputFileName
         cfg_modified += "process.trainTauIdMVA.datasetDirName = cms.string('%s')\n" % datasetDirName

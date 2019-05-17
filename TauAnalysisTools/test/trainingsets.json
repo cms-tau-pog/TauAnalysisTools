@@ -100,7 +100,7 @@
 	    },
 
 		"rawMVAnewDMwLT2017v1" : {
-			"preselection"        : "preselection_oldDMs",
+			"preselection"        : "preselection_newDMs",
 			"discriminator"       : "byIsolationMVArun2017v1DBnewDMwLTraw2017",
 			"numBins"             : 30000,
 			"min"                 : -1.5,
@@ -110,12 +110,23 @@
 		},
 
 		"rawMVAnewDMwLT2017v2" : {
-			"preselection"        : "preselection_oldDMs",
+			"preselection"        : "preselection_newDMs",
 			"discriminator"       : "byIsolationMVArun2017v2DBnewDMwLTraw2017",
 			"numBins"             : 30000,
 			"min"                 : -1.5,
 			"max"                 : 1.5,
 			"legendEntry"         : "2017 MVAv2, dRiso 0.5, new DM",
+			"color"                : 14
+		},
+
+
+		"rawMVAnewDMwLT2018v1" : {
+			"preselection"        : "preselection_newDMs",
+			"discriminator"       : "2018_raw_new",
+			"numBins"             : 30000,
+			"min"                 : -1.5,
+			"max"                 : 1.5,
+			"legendEntry"         : "2018v1, local temp",
 			"color"                : 14
 		},
 
@@ -199,6 +210,7 @@
 		"genTauPt/F",
 
 		"2018_raw",
+		"2018_raw_new",
 
 		"byCombinedIsolationDeltaBetaCorrRaw3Hits",
 		"byLooseCombinedIsolationDeltaBetaCorr3Hits",
@@ -223,7 +235,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -269,7 +281,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -321,7 +333,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"	  : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -367,7 +379,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : false,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -415,7 +427,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -461,7 +473,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : false,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -512,7 +524,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -562,7 +574,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -592,9 +604,7 @@
 	            "commonSpectatorVariables",
 				"byIsolationMVArun2v1DBnewDMwLTraw",
 				"byIsolationMVArun2v1DBnewDMwLTraw2016",
-				"byIsolationMVArun2017v2DBnewDMwLTraw2017",
-	            "byIsolationMVArun2v1DBnewDMwLTraw",
-				"byIsolationMVArun2v1DBnewDMwLTraw2016"
+				"byIsolationMVArun2017v2DBnewDMwLTraw2017"
 	        ],
 	        "otherVariables" : [],
 	        "legendEntry"         : "nom.2017 tr., phpt>1, new DM",
@@ -610,7 +620,7 @@
 	        "applyEventPruningBackground" : 2,
 	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -662,7 +672,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -709,7 +719,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -757,7 +767,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -803,7 +813,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : true,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -850,7 +860,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -897,7 +907,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -944,7 +954,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -992,7 +1002,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1039,7 +1049,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1086,7 +1096,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1134,7 +1144,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1176,7 +1186,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1218,7 +1228,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1283,7 +1293,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1325,7 +1335,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",
@@ -1367,7 +1377,7 @@
 	        "applyEventPruningBackground" : 0,
 	        "applyPtDependentPruningSignal" : false,
 	        "applyPtDependentPruningBackground" : true,
-	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
+	        "mvaTrainingOptions"  : "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.20:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=5",
 	        "inputVariables"      : [
 	            "TMath::Log(TMath::Max(1., recTauPt))/F",
 	            "TMath::Abs(recTauEta)/F",

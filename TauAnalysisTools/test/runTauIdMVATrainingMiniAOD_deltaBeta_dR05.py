@@ -21,14 +21,13 @@ outputFilePath = Template(os.path.join(config['nfs_base'], config['workarea_base
 # ---------- Settings to touch ----------------
 DM = "new"
 disable_xml_inclusion = True
-use_condor = True
+use_condor = False
 
 # TODO:
 traintingVariables = ['recTauPt', 'recTauEta', 'chargedIsoPtSum', 'neutralIsoPtSum_ptGt1.0', 'puCorrPtSum', 'photonPtSumOutsideSignalCone_ptGt1.0', 'recTauDecayMode', 'recTauNphoton_ptGt1.0', 'recTauPtWeightedDetaStrip_ptGt1.0', 'recTauPtWeightedDphiStrip_ptGt1.0', 'recTauPtWeightedDrSignal_ptGt1.0', 'recTauPtWeightedDrIsolation_ptGt1.0', 'recTauEratio', 'recImpactParam', 'recImpactParam', 'recImpactParamSign', 'recImpactParam3D', 'recImpactParam3D', 'recImpactParamSign3D', 'hasRecDecayVertex', 'recDecayDistMag', 'recDecayDistSign', 'recTauGJangleDiff']
 # TODO:
 prepareTreeOptions = "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V"
 
-# v = config['version']
 decaymodes = {
     "new": {
         "mvaDiscriminators": {
@@ -39,6 +38,7 @@ decaymodes = {
             'rawMVAnewDMwLT': cutDiscriminatorsAll['rawMVAnewDMwLT'],
             'rawMVAnewDMwLT2016': cutDiscriminatorsAll['rawMVAnewDMwLT2016'],
             'rawMVAnewDMwLT2017v2': cutDiscriminatorsAll['rawMVAnewDMwLT2017v2'],
+            'rawMVAnewDMwLT2018v1': cutDiscriminatorsAll['rawMVAnewDMwLT2018v1'],
         },
         "plots": {
             'mvaIsolation_optDeltaR05BDeltaBeta_newDM': {
@@ -48,6 +48,7 @@ decaymodes = {
                     'rawMVAnewDMwLT',
                     'rawMVAnewDMwLT2016',
                     'rawMVAnewDMwLT2017v2',
+                    'rawMVAnewDMwLT2018v1',
                 ]
             }
         },
@@ -153,6 +154,7 @@ produceRunScripts(
     cutDiscriminators=cutDiscriminators,
     plots=plots,
     traintingVariables=traintingVariables,
+    prepareTreeOptions=prepareTreeOptions,
     allDiscriminators=allDiscriminators,
     use_condor=use_condor,
 )

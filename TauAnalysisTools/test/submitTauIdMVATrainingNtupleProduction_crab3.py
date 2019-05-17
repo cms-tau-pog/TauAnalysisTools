@@ -20,13 +20,15 @@ samples = sh.samples.copy()
 samples.update(shdR0p3.samples)
 # samples = {"ggA180toTauTau": samples["ggA180toTauTau"],
 # "QCDjetsPt2400to3200v1 ": samples["QCDjetsPt2400to3200v1"]}
+globaltag_name = sh.global_tag
 
 version = config['version']  # tauId_v1 appears in jobs only
 # suffix = "_"  # "_full_v2"  # appears in crab workdir name in the end
 workarea = config['workarea_base'] + version  # + suffix  # "Summer17_25ns_2017MCv2_maxlikelihood_3"  # "Summer17_25ns_2017MCv2_partial_withraw15"
 submitJobFraction = 1.00
 cfgFile_original_name = "produceTauIdMVATrainingNtupleMiniAOD_cfg.py"
-store_output_path = '/store/user/ohlushch/TauIDMVATraining2018/' + workarea + '/'
+store_output_path = '/' + os.path.join(config['store_base'], workarea) + '/'
+
 # ---------- end Settings to touch ----------------
 
 # Construct relevant names and pathes
@@ -64,7 +66,7 @@ for sampleName, sampleOption in samples.items():
     # create config file for cmsRun
     cfg_modified = cfg_original.replace("#__", "")
     cfg_modified = cfg_modified.replace("#type#", "'%s'" % sampleOption['type'])
-    cfg_modified = cfg_modified.replace("#gttype#", "'%s'" % sh.global_tag)
+    cfg_modified = cfg_modified.replace("#gttype#", "'%s'" % globaltag_name)
 
     #__globaltag_name = #gttype#
 
@@ -114,7 +116,7 @@ for sampleName, sampleOption in samples.items():
     crabFile.close()
 
     # keep track of commands necessary to create, submit and publish crab jobs
-    shellFile_create_and_submit.write("%s\n" % '%s submit %s' % (executable_crab, crabFileName_full))
+    shellFile_create_and_submit.write("%s\n" % '%s submit -c %s' % (executable_crab, crabFileName_full))
 
 shellFile_create_and_submit.close()
 
