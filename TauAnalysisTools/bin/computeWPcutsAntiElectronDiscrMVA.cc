@@ -13,7 +13,7 @@
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/PythonParameterSet/interface/MakePyBind11ParameterSets.h"
 
 #include "FWCore/Utilities/interface/Exception.h"
 
@@ -294,11 +294,11 @@ int main(int argc, char* argv[])
   clock.Start("computeWPcutsAntiElectronDiscrMVA");
 
 //--- read python configuration parameters
-  if ( !edm::boost_python::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+  if ( !edm::cmspybind11::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
     throw cms::Exception("computeWPcutsAntiElectronDiscrMVA")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
-  edm::ParameterSet cfg = edm::boost_python::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg = edm::cmspybind11::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgComputeWPcutsAntiElectronDiscrMVA = cfg.getParameter<edm::ParameterSet>("computeWPcutsAntiElectronDiscrMVA");
 
