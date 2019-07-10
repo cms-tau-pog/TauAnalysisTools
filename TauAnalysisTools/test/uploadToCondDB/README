@@ -113,5 +113,6 @@ Twiki Page with AlcaDB instructions for uploading payloads:
 https://cms-conddb.cern.ch/cmsDbBrowser/logs/condition_uploader_logs/Prod/ (or ..../Prep depending on what you want to browse)
 - Conditions uploader: https://twiki.cern.ch/twiki/bin/view/CMS/ConditionUploader
 - Browser service: https://twiki.cern.ch/twiki/bin/view/CMS/CmsDbBrowser
+- Updated Tutorial for AlCa/DB contacts: https://indico.cern.ch/event/828624/
 - Tutorial for AlCa/DB contacts: https://indico.cern.ch/event/507993/
 - conddb commands https://twiki.cern.ch/twiki/bin/viewauth/CMS/CondDBToolMap
